@@ -36,6 +36,9 @@
 
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="assets/logo.png">
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 
 <body>
@@ -55,6 +58,7 @@
                 <a href="#mesh-lab">Mesh Lab</a>
                 <a href="#tech">Technology</a>
                 <a href="#faq">FAQ</a>
+                <a href="#contact">Contact</a>
                 <a href="#download">Download</a>
             </div>
         </div>
@@ -525,6 +529,36 @@
                     <div class="faq-answer">Yes, Airlink is an open-source project and completely free to use. There are
                         no subscriptions, ads, or hidden costs.</div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 4rem;" data-reveal>
+                <h2 style="font-size: 2.5rem;">Connect with <span class="gradient-text">Us</span></h2>
+                <p style="color: var(--text-dim);">Have questions about the mesh? We're here to help.</p>
+            </div>
+            <div class="contact-container glass" data-reveal>
+                <form id="contact-form" class="contact-form">
+                    <div class="form-group">
+                        <label for="user_name">Name</label>
+                        <input type="text" name="user_name" id="user_name" placeholder="John Doe" required class="glass">
+                    </div>
+                    <div class="form-group">
+                        <label for="user_email">Email</label>
+                        <input type="email" name="user_email" id="user_email" placeholder="john@example.com" required class="glass">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea name="message" id="message" rows="5" placeholder="How can we help you?" required class="glass"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;" id="submit-btn">
+                        <span>Send Message</span>
+                        <i class="fa-solid fa-paper-plane" style="margin-left: 10px;"></i>
+                    </button>
+                    <div id="form-status" class="form-status"></div>
+                </form>
             </div>
         </div>
     </section>
