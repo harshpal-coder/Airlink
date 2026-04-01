@@ -653,7 +653,7 @@ if (contactForm) {
 
         // These IDs come from your EmailJS Dashboard
         const serviceID = 'service_vjtg4ps';
-        const templateID = 'template_3dko1go';
+        const templateID = 'template_ht10bts';
 
         emailjs.sendForm(serviceID, templateID, this)
             .then(() => {
