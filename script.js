@@ -159,7 +159,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // 3D Tilt Effect Logic
-const tiltElements = document.querySelectorAll('.hero-image, .feature-card, .tech-card');
+const tiltElements = document.querySelectorAll('.hero-image, .feature-card, .tech-card, .supporter-tier');
 tiltElements.forEach(el => {
     el.addEventListener('mousemove', (e) => {
         const rect = el.getBoundingClientRect();
@@ -792,6 +792,78 @@ document.getElementById('next-slide')?.addEventListener('click', () => {
     currentSlide = (currentSlide + 1) % slides.length;
     showSlide(currentSlide);
 });
+
+// --- LIVE SUPPORTERS FEED (REAL GOOGLE SHEET LINK) ---
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuhbmF-r7L7WKnAwaaltFc-ge8Fzb7PcjlQLyF_lj-aoOOKnsNELVkAUQMuxDND_jFIg/exec';
+const trackContainers = {
+    1: document.getElementById('track-1-content'),
+    2: document.getElementById('track-2-content'),
+    3: document.getElementById('track-3-content'),
+    4: document.getElementById('track-4-content')
+};
+
+let lastProcessedCount = 0;
+
+function createSupporterCard(name, tier) {
+    const card = document.createElement('div');
+    card.className = `supporter-card glass ${tier}`;
+    const init = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    card.innerHTML = `
+        <div class="supporter-avatar">${init}</div>
+        <div class="supporter-info"><strong>${name}</strong></div>
+    `;
+    return card;
+}
+
+async function fetchSupporters() {
+    if (GOOGLE_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
+
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL);
+        const supporters = await response.json();
+        
+        // Only process NEW supporters
+        if (supporters.length > lastProcessedCount) {
+            const newSupporters = supporters.slice(lastProcessedCount);
+            
+            newSupporters.forEach(supporter => {
+                const amount = parseFloat(supporter.amount) || 0;
+                let trackId, tier;
+
+                if (amount >= 50) { trackId = 1; tier = 'tier-platinum'; }
+                else if (amount >= 26) { trackId = 2; tier = 'tier-gold'; }
+                else if (amount >= 11) { trackId = 3; tier = 'tier-silver'; }
+                else if (amount >= 1) { trackId = 4; tier = 'tier-community'; }
+                else return; // Ignore invalid amounts
+
+                const container = trackContainers[trackId];
+                if (!container) return;
+
+                const newCard1 = createSupporterCard(supporter.name, tier);
+                const newCard2 = createSupporterCard(supporter.name, tier);
+
+                // Add to loop (front and mid)
+                const halfIndex = Math.floor(container.children.length / 2);
+                container.insertBefore(newCard1, container.children[0]);
+                container.insertBefore(newCard2, container.children[halfIndex + 1]);
+
+                // Manage track length (cap at 20 cards)
+                if (container.children.length > 20) {
+                    container.removeChild(container.children[halfIndex]);
+                    container.removeChild(container.lastChild);
+                }
+            });
+            
+            lastProcessedCount = supporters.length;
+        }
+    } catch (error) {
+        console.error('AirLink: Error fetching supporters:', error);
+    }
+}
+
+// Poll for sync every 10 seconds
+setInterval(fetchSupporters, 10000);
+fetchSupporters(); // Initial fetch on load
 
 // FAQ Toggles
 document.querySelectorAll('.faq-question').forEach(q => {
