@@ -840,20 +840,27 @@ function renderTrack(trackId, tier) {
     container.style.animation = list.length < 2 ? 'none' : '';
 }
 
+let lastJsonString = "";
+
 async function fetchSupporters() {
-    if (GOOGLE_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE' || GOOGLE_SCRIPT_URL.includes('macros/s/')) {
-        // Only run if the URL is valid (not the placeholder)
-        if (GOOGLE_SCRIPT_URL.includes('YOUR_APPS_SCRIPT_URL_HERE')) return;
-    }
+    if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyuhbmF-r7L7WKnAwaaltFc-ge8Fzb7PcjlQLyF_lj-aoOOKnsNELVkAUQMuxDND_jFIg/exec' || GOOGLE_SCRIPT_URL.includes('macros/s/')) {
+        // Run if we have a valid URL
+    } else return;
 
     try {
         const response = await fetch(GOOGLE_SCRIPT_URL);
-        const supporters = await response.json();
+        const currentJsonString = await response.text(); 
         
-        if (supporters.length > lastProcessedCount) {
-            const newSupporters = supporters.slice(lastProcessedCount);
-            
-            newSupporters.forEach(supporter => {
+        // Only update if the data has actually changed (add, edit, or delete)
+        if (currentJsonString !== lastJsonString) {
+            const supporters = JSON.parse(currentJsonString);
+            lastJsonString = currentJsonString;
+
+            // Reset state for a fresh sync
+            for (let id in supportersByTrack) supportersByTrack[id] = [];
+
+            // Sort everything back into tracks
+            supporters.forEach(supporter => {
                 const amount = parseFloat(supporter.amount) || 0;
                 let trackId;
 
@@ -864,29 +871,22 @@ async function fetchSupporters() {
                 else return;
 
                 supportersByTrack[trackId].unshift(supporter.name);
-                
-                // Keep history reasonable
-                if (supportersByTrack[trackId].length > 15) {
-                    supportersByTrack[trackId].pop();
-                }
             });
 
-            // Update all tracks that had changes
+            // Re-render all 4 tracks to reflect the current sheet state
             const tiers = { 1: 'tier-platinum', 2: 'tier-gold', 3: 'tier-silver', 4: 'tier-community' };
             for (let id in supportersByTrack) {
                 renderTrack(id, tiers[id]);
             }
-            
-            lastProcessedCount = supporters.length;
         }
     } catch (error) {
-        console.error('AirLink: Error fetching supporters:', error);
+        console.error('AirLink: Error syncing with Google Sheets:', error);
     }
 }
 
-// Poll for sync every 10 seconds
+// Sync with Google Sheets every 10 seconds
 setInterval(fetchSupporters, 10000);
-fetchSupporters(); // Initial fetch on load
+fetchSupporters(); // Initial sync on load
 
 // FAQ Toggles
 document.querySelectorAll('.faq-question').forEach(q => {
