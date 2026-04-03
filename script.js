@@ -864,10 +864,10 @@ async function fetchSupporters() {
                 const amount = parseFloat(supporter.amount) || 0;
                 let trackId;
 
-                if (amount >= 50) trackId = 1;
-                else if (amount >= 26) trackId = 2;
-                else if (amount >= 11) trackId = 3;
-                else if (amount >= 1) trackId = 4;
+                if (amount >= 101) trackId = 1;
+                else if (amount >= 51) trackId = 2;
+                else if (amount >= 21) trackId = 3;
+                else if (amount >= 11) trackId = 4;
                 else return;
 
                 supportersByTrack[trackId].unshift(supporter.name);
