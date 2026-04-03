@@ -634,8 +634,13 @@ footer {
 
 /* Supporters Section - 4-Track Horizontal Mesh */
 .supporters-scroll-container.horizontal {
-    height: auto;
+    width: 100vw;
     position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    height: auto;
     display: flex;
     flex-direction: column;
     gap: 1.5rem; /* Tighter gap for 4 rows */

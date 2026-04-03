@@ -836,8 +836,9 @@ function renderTrack(trackId, tier) {
         container.appendChild(createSupporterCard(name, tier));
     });
 
-    // Toggle animation off if there's only 1 item (it won't scroll anyway)
+    // Toggle animation and centering based on content length
     container.style.animation = list.length < 2 ? 'none' : '';
+    container.style.justifyContent = list.length < 2 ? 'center' : 'flex-start';
 }
 
 let lastJsonString = "";
