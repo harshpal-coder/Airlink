@@ -707,55 +707,61 @@ footer {
     height: 70px; /* Slightly shorter for 4 rows */
 }
 
-/* --- TIERED SIZING (₹-BASED) --- */
+/* --- TIERED BRANDING (₹-BASED) --- */
 
-/* Track 1: ₹50+ (Platinum) */
+/* Track 1: ₹101 (Platinum) - Cyber Teal & Diamond White */
 .supporter-card.tier-platinum {
-    min-width: 300px;
+    min-width: 320px;
     padding: 0 2.5rem;
-    border-color: rgba(0, 242, 255, 0.3);
-    box-shadow: 0 0 20px rgba(0, 242, 255, 0.05);
+    border-color: rgba(0, 242, 255, 0.4);
+    background: rgba(0, 242, 255, 0.05);
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
 }
 
 .supporter-card.tier-platinum .supporter-avatar {
-    width: 48px;
-    height: 48px;
+    background: linear-gradient(135deg, #00f2ff, #ffffff);
+    color: #000;
+    box-shadow: 0 0 15px #00f2ff;
 }
 
-/* Track 2: ₹26-50 (Gold) */
+/* Track 2: ₹51 (Gold) - Amber & Metallic Gold */
 .supporter-card.tier-gold {
-    min-width: 260px;
-    padding: 0 2rem;
-    border-color: rgba(255, 215, 0, 0.2);
+    min-width: 280px;
+    padding: 1rem 2rem;
+    border-color: rgba(255, 215, 0, 0.3);
+    background: rgba(255, 215, 0, 0.03);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
 }
 
 .supporter-card.tier-gold .supporter-avatar {
-    width: 42px;
-    height: 42px;
     background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
 }
 
-/* Track 3: ₹11-25 (Silver) */
+/* Track 3: ₹21 (Silver) - Brushed Silver & Obsidian */
 .supporter-card.tier-silver {
-    min-width: 220px;
-    padding: 0 1.5rem;
-    border-color: rgba(255, 255, 255, 0.1);
+    min-width: 240px;
+    padding: 0.8rem 1.5rem;
+    border-color: rgba(189, 195, 199, 0.2);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .supporter-card.tier-silver .supporter-avatar {
-    width: 38px;
-    height: 38px;
-    background: linear-gradient(135deg, #bdc3c7, #2c3e50);
+    background: linear-gradient(135deg, #bdc3c7, #7f8c8d);
+    color: #fff;
 }
 
-/* Track 4: ₹1-10 (Community) */
+/* Track 4: ₹11 (Community) - Soft Slate & Indigo */
 .supporter-card.tier-community {
-    min-width: 180px;
-    padding: 0 1rem;
+    min-width: 200px;
+    padding: 0.5rem 1rem;
+    border-color: rgba(140, 158, 255, 0.1);
     opacity: 0.8;
 }
 
 .supporter-card.tier-community .supporter-avatar {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: #ddd;
     width: 32px;
     height: 32px;
     font-size: 0.8rem;
