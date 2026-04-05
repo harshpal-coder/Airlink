@@ -630,6 +630,56 @@ footer {
 .footer-links a {
     color: var(--text-dim);
     text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+}
+
+/* Legal Content Page Styling */
+.legal-page {
+    padding-top: 150px;
+    padding-bottom: 100px;
+}
+
+.legal-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem;
+}
+
+.legal-content h1 {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.legal-content h2 {
+    font-size: 1.5rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.legal-content p {
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.legal-content ul {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    color: var(--text-dim);
+}
+
+.legal-content li {
+    margin-bottom: 0.5rem;
+}
+
+.legal-content section {
+    padding: 0;
 }
 
 /* Supporters Section - 4-Track Horizontal Mesh */
