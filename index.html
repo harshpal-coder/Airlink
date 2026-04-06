@@ -541,12 +541,17 @@
 
     <section id="supporters">
         <div class="container">
-            <div style="text-align: center; margin-bottom: 4rem;" data-reveal>
+            <div style="text-align: center; margin-bottom: 4rem; position: relative; display: flex; flex-direction: column; align-items: center;" data-reveal>
                 <div class="live-badge">
                     <span class="pulsing-dot"></span>
                     LIVE ACTIVITY
                 </div>
-                <h2 style="font-size: 2.5rem;">Our <span class="gradient-text">Supporters</span></h2>
+                <div id="total-money-container" class="glass" style="position: absolute; right: 0; top: 0; padding: 0.5rem 1.2rem; border-radius: 50px; border-color: rgba(0, 242, 255, 0.3); font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);">
+                    <i class="fa-solid fa-coins" style="color: #FFD700; filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));"></i> 
+                    <span style="color: var(--text-dim);">Total:</span>
+                    <span id="total-money-amount" style="color: var(--primary-color); font-size: 1.1rem;">₹0</span>
+                </div>
+                <h2 style="font-size: 2.5rem; margin-top: 1rem;">Our <span class="gradient-text">Supporters</span></h2>
                 <p style="color: var(--text-dim);">Powering the future of decentralized communication.</p>
             </div>
 
