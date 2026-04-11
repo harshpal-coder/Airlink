@@ -250,21 +250,6 @@ nav.scrolled {
     color: var(--text-dim);
 }
 
-/* Detailed Sections */
-.info-row {
-    display: flex;
-    align-items: center;
-    gap: 4rem;
-    margin-bottom: 8rem;
-}
-
-.info-row:nth-child(even) {
-    flex-direction: row-reverse;
-}
-
-.info-text {
-    flex: 1;
-}
 
 .info-visual {
     flex: 1;
@@ -278,15 +263,6 @@ nav.scrolled {
     overflow: hidden;
 }
 
-.mock-device {
-    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
-    animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
-}
 
 /* Use Cases Section */
 .use-cases-grid {
@@ -354,36 +330,6 @@ nav.scrolled {
     left: 10px;
 }
 
-/* Carousel Styles */
-.carousel-container {
-    padding: 3rem;
-    min-height: 400px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.carousel-layout {
-    display: flex;
-    align-items: center;
-    gap: 4rem;
-}
-
-.carousel-text { flex: 1; }
-.carousel-img { 
-    flex: 1; 
-    height: 300px; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center;
-}
-
-.carousel-nav {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 2rem;
-}
 
 /* Tech Grid */
 .tech-grid {
