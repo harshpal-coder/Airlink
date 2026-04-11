@@ -895,3 +895,187 @@ document.querySelectorAll('.faq-question').forEach(q => {
         item.classList.toggle('active');
     });
 });
+// --- INTERACTIVE TECH DEEP-DIVE ---
+const techDeepDive = document.getElementById('tech-deep-dive');
+const deepDiveContent = document.getElementById('deep-dive-content');
+const closeDeepDiveBtn = document.getElementById('close-deep-dive');
+
+const techCards = [
+    { id: 'tech-signal', type: 'signal', color: 'var(--primary-color)' },
+    { id: 'tech-nearby', type: 'nearby', color: 'var(--secondary-color)' },
+    { id: 'tech-routing', type: 'routing', color: '#FFD700' }
+];
+
+let activeVizInterval = null;
+
+function clearViz() {
+    if (activeVizInterval) clearInterval(activeVizInterval);
+    deepDiveContent.innerHTML = '';
+}
+
+function openDeepDive(type) {
+    clearViz();
+    techDeepDive.style.display = 'block';
+    setTimeout(() => {
+        techDeepDive.classList.add('active');
+        // Scroll to the deep-dive area
+        techDeepDive.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 10);
+    
+    if (type === 'signal') renderSignalViz();
+    else if (type === 'nearby') renderNearbyViz();
+    else if (type === 'routing') renderRoutingViz();
+}
+
+function closeDeepDive() {
+    techDeepDive.classList.remove('active');
+    setTimeout(() => {
+        techDeepDive.style.display = 'none';
+        clearViz();
+    }, 500);
+}
+
+if (closeDeepDiveBtn) {
+    closeDeepDiveBtn.addEventListener('click', closeDeepDive);
+}
+
+techCards.forEach(card => {
+    const el = document.getElementById(card.id);
+    if (el) {
+        el.addEventListener('click', () => openDeepDive(card.type));
+    }
+});
+
+function renderSignalViz() {
+    deepDiveContent.innerHTML = `
+        <h3 class="gradient-text">Signal Protocol: End-to-End Encryption</h3>
+        <p style="text-align: center; color: var(--text-dim); max-width: 600px;">
+            Uses the Double Ratchet algorithm. Every message has a unique key, and keys are never reused.
+        </p>
+        <div class="viz-container">
+            <div class="viz-node" style="position: absolute; left: 10%;"><i class="fa-solid fa-user"></i></div>
+            <div class="viz-node" style="position: absolute; right: 10%;"><i class="fa-solid fa-user"></i></div>
+            <div id="signal-path" style="width: 80%; height: 2px; background: var(--glass-border); position: absolute; z-index: 1;"></div>
+            <div id="encryption-key" class="rotating-key" style="position: absolute; top: 20%;"><i class="fa-solid fa-key"></i></div>
+            <div id="signal-message" class="viz-packet" style="left: 15%; top: 48%;"></div>
+            <div id="cipher-status" class="encryption-text" style="position: absolute; bottom: 10%;">PLAINTEXT: "Hello"</div>
+        </div>
+        <button class="btn btn-primary" onclick="startSignalSimulation()">Run Simulation</button>
+    `;
+}
+
+window.startSignalSimulation = function() {
+    const packet = document.getElementById('signal-message');
+    const status = document.getElementById('cipher-status');
+    const key = document.getElementById('encryption-key');
+    
+    let pos = 15;
+    let encrypted = false;
+    
+    if (activeVizInterval) clearInterval(activeVizInterval);
+    
+    activeVizInterval = setInterval(() => {
+        pos += 1;
+        packet.style.left = pos + '%';
+        
+        if (pos > 45 && !encrypted) {
+            encrypted = true;
+            status.innerHTML = 'CIPHERTEXT: <span style="color: #FF4444;">xK9$pL2!m...</span>';
+            packet.style.background = '#FF4444';
+            packet.style.boxShadow = '0 0 15px #FF4444';
+            key.style.color = '#00FF88';
+        }
+        
+        if (pos >= 85) {
+            pos = 15;
+            encrypted = false;
+            status.innerHTML = 'PLAINTEXT: "Hello"';
+            packet.style.background = 'white';
+            packet.style.boxShadow = '0 0 15px white';
+            key.style.color = '#FFD700';
+        }
+    }, 30);
+};
+
+function renderNearbyViz() {
+    deepDiveContent.innerHTML = `
+        <h3 style="color: var(--secondary-color);">Nearby Connections: P2P Discovery</h3>
+        <p style="text-align: center; color: var(--text-dim); max-width: 600px;">
+            Discovery using Bluetooth Low Energy (BLE) and high-speed transfers via Wi-Fi Direct.
+        </p>
+        <div class="viz-container" style="overflow: hidden;">
+            <div class="viz-node" style="z-index: 10; border-color: var(--secondary-color);"><i class="fa-solid fa-mobile-screen"></i></div>
+            <div class="signal-pulse" style="border-color: var(--secondary-color);"></div>
+            <div class="signal-pulse" style="border-color: var(--secondary-color); animation-delay: 1s;"></div>
+            
+            <div class="viz-node found-node" style="position: absolute; top: 20%; left: 20%; opacity: 0.3; border-color: gray;"><i class="fa-solid fa-mobile"></i></div>
+            <div class="viz-node found-node" style="position: absolute; bottom: 20%; right: 20%; opacity: 0.3; border-color: gray;"><i class="fa-solid fa-mobile"></i></div>
+        </div>
+    `;
+    
+    // Auto-discovery effect
+    activeVizInterval = setInterval(() => {
+        const nodes = document.querySelectorAll('.found-node');
+        nodes.forEach(n => {
+            n.style.opacity = '1';
+            n.style.borderColor = 'var(--secondary-color)';
+            n.style.transition = 'all 1s ease';
+        });
+        setTimeout(() => {
+            nodes.forEach(n => {
+                n.style.opacity = '0.3';
+                n.style.borderColor = 'gray';
+            });
+        }, 2000);
+    }, 3000);
+}
+
+function renderRoutingViz() {
+    deepDiveContent.innerHTML = `
+        <h3 style="color: #FFD700;">Mesh Routing: Adaptive Pathfinding</h3>
+        <p style="text-align: center; color: var(--text-dim); max-width: 600px;">
+            Messages hop through multiple nodes to extend range beyond a single jump.
+        </p>
+        <div class="viz-container" id="routing-viz">
+            <!-- Nodes will be injected here -->
+        </div>
+        <div id="routing-status" style="color: #FFD700; font-weight: 600;">Optimal Path: A -> B -> D</div>
+    `;
+    
+    const container = document.getElementById('routing-viz');
+    const nodes = [
+        { id: 'A', x: 10, y: 50, label: 'YOU' },
+        { id: 'B', x: 40, y: 30, label: 'Node B' },
+        { id: 'C', x: 40, y: 70, label: 'Node C' },
+        { id: 'D', x: 80, y: 50, label: 'BOB' }
+    ];
+    
+    nodes.forEach(n => {
+        const nodeEl = document.createElement('div');
+        nodeEl.className = 'viz-node';
+        nodeEl.style.position = 'absolute';
+        nodeEl.style.left = n.x + '%';
+        nodeEl.style.top = n.y + '%';
+        nodeEl.innerHTML = `<span style="font-size: 0.7rem;">${n.label}</span>`;
+        if (n.id === 'D') nodeEl.style.borderColor = '#FFD700';
+        container.appendChild(nodeEl);
+    });
+
+    const packet = document.createElement('div');
+    packet.className = 'viz-packet';
+    packet.style.background = '#FFD700';
+    packet.style.boxShadow = '0 0 15px #FFD700';
+    container.appendChild(packet);
+
+    let step = 0;
+    const path = [nodes[0], nodes[1], nodes[3]]; // A -> B -> D
+    
+    activeVizInterval = setInterval(() => {
+        const target = path[step];
+        packet.style.transition = 'all 1s linear';
+        packet.style.left = (target.x + 4) + '%';
+        packet.style.top = (target.y + 4) + '%';
+        
+        step = (step + 1) % path.length;
+    }, 1500);
+}

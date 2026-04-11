@@ -237,27 +237,47 @@
                 <p style="color: var(--text-dim);">Leveraging the best protocols for ultra-secure P2P communication.</p>
             </div>
             <div class="tech-grid">
-                <div class="tech-card glass" data-reveal>
+                <div class="tech-card glass" id="tech-signal" data-reveal style="cursor: pointer;">
                     <div style="color: var(--primary-color); font-size: 2rem; margin-bottom: 1rem;"><i
                             class="fa-solid fa-fingerprint"></i></div>
                     <h4>Signal Protocol</h4>
                     <p>Utilizing X3DH and Double Ratchet algorithms to provide forward secrecy and post-compromise
                         security.</p>
+                    <div class="click-hint" style="font-size: 0.7rem; color: var(--primary-color); margin-top: 1rem; opacity: 0.6;">
+                        <i class="fa-solid fa-mouse-pointer"></i> Click for Deep Dive
+                    </div>
                 </div>
-                <div class="tech-card glass" data-reveal>
+                <div class="tech-card glass" id="tech-nearby" data-reveal style="cursor: pointer;">
                     <div style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 1rem;"><i
                             class="fa-solid fa-tower-broadcast"></i></div>
                     <h4>Nearby Connections</h4>
                     <p>High-bandwidth, low-latency communication using fully offline P2P technologies.</p>
+                    <div class="click-hint" style="font-size: 0.7rem; color: var(--secondary-color); margin-top: 1rem; opacity: 0.6;">
+                        <i class="fa-solid fa-mouse-pointer"></i> Click for Deep Dive
+                    </div>
                 </div>
-                <div class="tech-card glass" data-reveal>
+                <div class="tech-card glass" id="tech-routing" data-reveal style="cursor: pointer;">
                     <div style="color: #FFD700; font-size: 2rem; margin-bottom: 1rem;"><i
                             class="fa-solid fa-code-branch"></i></div>
                     <h4>Mesh Routing</h4>
                     <p>Intelligent, decentralized routing that finds the optimal path through the network dynamically.
                     </p>
+                    <div class="click-hint" style="font-size: 0.7rem; color: #FFD700; margin-top: 1rem; opacity: 0.6;">
+                        <i class="fa-solid fa-mouse-pointer"></i> Click for Deep Dive
+                    </div>
                 </div>
             </div>
+
+            <!-- Tech Deep Dive Container -->
+            <div id="tech-deep-dive" class="glass" style="margin-top: 3rem; display: none; min-height: 400px; padding: 3rem; position: relative; border-color: rgba(0, 242, 255, 0.2);">
+                <button id="close-deep-dive" class="glass" style="position: absolute; top: 1rem; right: 1rem; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; border: 1px solid var(--glass-border); color: white; background: rgba(255,255,255,0.05);">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+                <div id="deep-dive-content" style="display: flex; flex-direction: column; align-items: center; gap: 2rem;">
+                    <!-- Content will be injected by JS -->
+                </div>
+            </div>
+
         </div>
     </section>
 

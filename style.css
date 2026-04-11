@@ -1025,3 +1025,110 @@ footer {
     opacity: 1;
     transform: translateY(0);
 }
+/* Interactive Tech Deep-Dive Styles */
+#tech-deep-dive {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(20px);
+    opacity: 0;
+}
+
+#tech-deep-dive.active {
+    display: block !important;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.click-hint {
+    animation: pulseHint 2s infinite;
+}
+
+@keyframes pulseHint {
+    0% { opacity: 0.4; transform: translateX(0); }
+    50% { opacity: 1; transform: translateX(5px); }
+    100% { opacity: 0.4; transform: translateX(0); }
+}
+
+/* Visualization Components */
+.viz-container {
+    width: 100%;
+    max-width: 600px;
+    height: 300px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.viz-node {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--surface-color);
+    border: 2px solid var(--primary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    z-index: 2;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+}
+
+.viz-packet {
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 3;
+    box-shadow: 0 0 15px white;
+}
+
+.viz-line {
+    position: absolute;
+    background: var(--glass-border);
+    height: 2px;
+    transform-origin: left center;
+    z-index: 1;
+}
+
+.rotating-key {
+    font-size: 3rem;
+    color: #FFD700;
+    animation: rotateKey 4s linear infinite;
+}
+
+@keyframes rotateKey {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.signal-pulse {
+    position: absolute;
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: pulseSignal 3s infinite;
+    opacity: 0;
+}
+
+@keyframes pulseSignal {
+    0% { width: 0; height: 0; opacity: 0.8; }
+    100% { width: 400px; height: 400px; opacity: 0; }
+}
+
+.encryption-text {
+    font-family: monospace;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    height: 24px;
+    overflow: hidden;
+}
+
+/* Responsive Deep Dive */
+@media (max-width: 768px) {
+    #tech-deep-dive {
+        padding: 1.5rem;
+    }
+    .viz-container {
+        height: 200px;
+    }
+}
