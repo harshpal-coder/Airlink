@@ -785,6 +785,7 @@ const trackContainers = {
 
 // State to store supporters for each track
 const supportersByTrack = { 1: [], 2: [], 3: [], 4: [] };
+const trackStates = { 1: '', 2: '', 3: '', 4: '' }; // Tracks DOM state to prevent flicker
 let lastProcessedCount = 0;
 
 function createSupporterCard(name, tier) {
@@ -803,14 +804,21 @@ function renderTrack(trackId, tier) {
     if (!container) return;
 
     const list = supportersByTrack[trackId];
-    if (list.length === 0) return;
+    
+    // Flicker-free Check: Only update if the data has actually changed
+    const listState = JSON.stringify(list);
+    if (trackStates[trackId] === listState) return;
+    trackStates[trackId] = listState;
+
+    if (list.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
 
     // Clear and re-fill
     container.innerHTML = '';
     
     // To create a seamless loop, we need at least enough items to fill the width
-    // If the list is very short (1-2 items), we show them without the loop animation gap
-    // or we repeat them if they are the only ones.
     const itemsToRender = list.length < 3 ? [...list] : [...list, ...list];
     
     itemsToRender.forEach(name => {

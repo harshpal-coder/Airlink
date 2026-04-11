@@ -676,19 +676,29 @@ footer {
     flex-direction: row;
     gap: 2rem;
     padding-right: 2rem;
-    animation: scrollHorizontal 40s linear infinite; /* Slightly slower for 4 tracks */
+    animation: scrollHorizontal 40s linear infinite;
     white-space: nowrap;
+    will-change: transform;
+    cursor: grab;
+}
+
+.scroll-content.horizontal:hover {
+    animation-play-state: paused;
+}
+
+.scroll-content.horizontal:active {
+    cursor: grabbing;
 }
 
 /* Varying speeds and directions for each track (Inverse to Contribution) */
-.track-1 .scroll-content.horizontal { animation-duration: 60s; } /* Slowest (₹50+) */
-.track-2 .scroll-content.horizontal { animation-duration: 50s; animation-direction: reverse; }
-.track-3 .scroll-content.horizontal { animation-duration: 40s; }
-.track-4 .scroll-content.horizontal { animation-duration: 30s; animation-direction: reverse; } /* Fastest (₹1-10) */
+.track-1 .scroll-content.horizontal { animation-duration: 60s; animation-delay: -5s; } /* Slowest (₹50+) */
+.track-2 .scroll-content.horizontal { animation-duration: 50s; animation-direction: reverse; animation-delay: -15s; }
+.track-3 .scroll-content.horizontal { animation-duration: 40s; animation-delay: -8s; }
+.track-4 .scroll-content.horizontal { animation-duration: 30s; animation-direction: reverse; animation-delay: -25s; } /* Fastest (₹1-10) */
 
 @keyframes scrollHorizontal {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
 }
 
 .supporter-card {
