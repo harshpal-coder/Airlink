@@ -46,14 +46,26 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 
-<body>
+<body class="intro-active">
+    <div id="video-intro">
+        <video id="intro-video" muted playsinline preload="auto">
+            <source src="assets/veo.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <button id="skip-intro" class="glass" aria-label="Skip Intro">
+            <span>Skip Intro</span>
+            <i class="fa-solid fa-forward-step"></i>
+        </button>
+        <div class="video-overlay"></div>
+    </div>
+
     <canvas id="canvas-mesh"></canvas>
 
     <nav id="navbar">
         <div class="container nav-content">
             <a href="#" class="logo">
                 <img src="assets/logo.png" alt="Airlink Logo">
-                Airlink
+                AirLink
             </a>
             <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
                 <i class="fa-solid fa-bars"></i>
@@ -74,7 +86,7 @@
         <div class="container">
             <div class="hero-content" data-reveal>
                 <h1>Stay Connected <br><span class="gradient-text">Anywhere, Anytime.</span></h1>
-                <p>Airlink is a revolutionary peer-to-peer messaging app that works without internet or cellular
+                <p>AirLink is a revolutionary peer-to-peer messaging app that works without internet or cellular
                     networks. Communicate securely using mesh technology.</p>
                 <div class="cta-group">
                     <a href="#download" class="btn btn-primary">Download APK</a>
@@ -83,12 +95,28 @@
                     </a>
                 </div>
             </div>
-            <!-- Mockup Placeholder inside decorative element -->
+            <!-- Premium 3D Triple Mockup Stack -->
             <div class="hero-image" data-reveal>
-                <div class="info-visual glass">
-                    <img src="assets/logo.png"
-                        style="width: 200px; opacity: 0.8; filter: drop-shadow(0 0 20px var(--primary-color));"
-                        alt="Airlink Logo">
+                <div class="mockup-container">
+                    <!-- Left Phone (Secondary) -->
+                    <div class="phone-frame side left">
+                        <div class="phone-screen">
+                            <img src="assets/discovery.jpeg" alt="Discovery Screen">
+                        </div>
+                    </div>
+                    
+                    <!-- Center Phone (Main Carousel) -->
+                    <div class="phone-frame center">
+                        <div class="phone-screen">
+                            <img src="assets/splash.jpeg" alt="Splash Screen" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                    </div>
+                    <!-- Right Phone (Secondary) -->
+                    <div class="phone-frame side right">
+                        <div class="phone-screen">
+                            <img src="assets/chat screen.jpeg" alt="Chat Screen Detail">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -97,7 +125,7 @@
     <section id="features">
         <div class="container">
             <div style="text-align: center; margin-bottom: 4rem;" data-reveal>
-                <h2 style="font-size: 2.5rem;">Why Airlink?</h2>
+                <h2 style="font-size: 2.5rem;">Why AirLink?</h2>
                 <p style="color: var(--text-dim);">Built for privacy, resilience, and true decentralization.</p>
             </div>
 
@@ -160,7 +188,7 @@
     <section id="how-it-works" class="glass-section">
         <div class="container">
             <div style="text-align: center; margin-bottom: 4rem;" data-reveal>
-                <h2 style="font-size: 2.5rem;">How Airlink Works</h2>
+                <h2 style="font-size: 2.5rem;">How AirLink Works</h2>
                 <p style="color: var(--text-dim);">The journey of a message in a decentralized world.</p>
             </div>
             <div class="infographic-grid">
@@ -523,7 +551,7 @@
         <div class="container">
             <div class="logo footer-logo" style="justify-content: center;">
                 <img src="assets/logo.png" alt="Airlink Logo">
-                Airlink
+                AirLink
             </div>
             <div class="footer-links">
                 <a href="#features">Features</a>
@@ -532,7 +560,7 @@
                 <a href="terms.html">Terms & Conditions</a>
                 <a href="mailto:contact@airlink.app">Support</a>
             </div>
-            <p style="color: var(--text-dim); font-size: 0.9rem;">&copy; 2026 Airlink Project. Developed by Harshpal.
+            <p style="color: var(--text-dim); font-size: 0.9rem;">&copy; 2026 AirLink Project. Developed by Harshpal.
                 Open Source under MIT License.</p>
         </div>
     </footer>

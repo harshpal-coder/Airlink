@@ -107,6 +107,9 @@ const observerOptions = {
 };
 
 const observer = new IntersectionObserver((entries) => {
+    // Don't reveal elements while intro is playing
+    if (document.body.classList.contains('intro-active')) return;
+
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('visible');
@@ -1078,4 +1081,63 @@ function renderRoutingViz() {
         
         step = (step + 1) % path.length;
     }, 1500);
+}
+
+// --- CINEMATIC VIDEO INTRO CONTROLLER ---
+const videoIntro = document.getElementById('video-intro');
+const introVideo = document.getElementById('intro-video');
+const skipBtn = document.getElementById('skip-intro');
+
+function revealWebsite() {
+    if (videoIntro.classList.contains('fade-out')) return;
+
+    videoIntro.classList.add('fade-out');
+    document.body.classList.remove('intro-active');
+    document.body.classList.add('intro-revealed');
+
+    // Trigger reveal for items already in view after intro fades
+    setTimeout(() => {
+        document.querySelectorAll('[data-reveal]').forEach(el => {
+            // Re-trigger observer for visible elements
+            observer.unobserve(el);
+            observer.observe(el);
+        });
+    }, 500);
+
+    // Remove from DOM after transition
+    setTimeout(() => {
+        videoIntro.remove();
+    }, 1000);
+}
+
+if (videoIntro && introVideo) {
+    // Start playback
+    introVideo.play().catch(error => {
+        console.log("Autoplay prevented, showing skip button immediately.");
+        videoIntro.classList.add('ready');
+    });
+
+    introVideo.onplay = () => {
+        videoIntro.classList.add('ready');
+        introVideo.classList.add('ready');
+    };
+
+    introVideo.addEventListener('ended', revealWebsite);
+    skipBtn.addEventListener('click', revealWebsite);
+
+    // Smooth Scroll Parallax for Hero Mockup
+    window.addEventListener('scroll', () => {
+        const mockup = document.querySelector('.mockup-container');
+        if (mockup && window.innerWidth > 768) {
+            const scrollValue = window.scrollY;
+            mockup.style.transform = `scale(0.75) translateY(${scrollValue * 0.1}px)`;
+        }
+    });
+
+    // Fallback: If video fails/stalls, allow reveal after 5s anyway
+    setTimeout(() => {
+        if (!videoIntro.classList.contains('fade-out')) {
+            videoIntro.classList.add('ready');
+        }
+    }, 5000);
 }
