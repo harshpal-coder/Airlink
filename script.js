@@ -38,7 +38,7 @@ class Particle {
         if (mouse.x && mouse.y) {
             let dx = mouse.x - this.x;
             let dy = mouse.y - this.y;
-            let dist = Math.sqrt(dx*dx + dy*dy);
+            let dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < 100) {
                 this.x -= dx / 10;
                 this.y -= dy / 10;
@@ -64,7 +64,7 @@ const particles = Array.from({ length: 80 }, () => new Particle());
 
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     particles.forEach((p, i) => {
         p.update();
         p.draw();
@@ -136,7 +136,7 @@ if (menuToggle && navLinks) {
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        
+
         // Close mobile menu if open
         if (navLinks.classList.contains('active')) {
             navLinks.classList.remove('active');
@@ -174,7 +174,7 @@ tiltElements.forEach(el => {
         const rotateY = (x - centerX) / 10;
         el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
     });
-    
+
     el.addEventListener('mouseleave', () => {
         el.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
     });
@@ -198,7 +198,7 @@ if (labSection) {
     window.addEventListener('resize', resizeLab);
 
     let meshMode = 'random'; // 'random' or 'shape'
-    
+
     class Node {
         constructor(x, y) {
             this.x = x || Math.random() * labCanvas.width;
@@ -228,8 +228,8 @@ if (labSection) {
                 } else {
                     const dx = this.targetX - this.x;
                     const dy = this.targetY - this.y;
-                    const d = Math.sqrt(dx*dx + dy*dy);
-                    
+                    const d = Math.sqrt(dx * dx + dy * dy);
+
                     if (d < 0.5) {
                         this.x = this.targetX;
                         this.y = this.targetY;
@@ -250,7 +250,7 @@ if (labSection) {
             const isShape = meshMode !== 'random';
             let r = (isShape ? 3 : 6) + Math.sin(this.pulse) * (isShape ? 1 : 2);
             if (this.flash > 0) r += this.flash * 8;
-            
+
             lctx.beginPath();
             lctx.arc(this.x, this.y, r, 0, Math.PI * 2);
             lctx.fillStyle = this.flash > 0 ? `rgba(0, 242, 255, ${0.5 + this.flash})` : '#00F2FF';
@@ -262,9 +262,9 @@ if (labSection) {
     }
 
     // --- SHAPE GENERATION ---
-    window.setMeshShape = function(shape) {
+    window.setMeshShape = function (shape) {
         meshMode = shape;
-        
+
         // --- MODE-SPECIFIC NODE COUNTS ---
         const targetCount = shape === 'random' ? 30 : 50;
         if (labNodes.length < targetCount) {
@@ -275,15 +275,15 @@ if (labSection) {
         }
 
         if (shape === 'random') return;
-        
+
         const centerX = labCanvas.width / 2;
         const centerY = labCanvas.height / 2;
         const size = 180;
-        
+
         labNodes.forEach((node, i) => {
             const t = (i / labNodes.length) * Math.PI * 2;
             let tx, ty;
-            
+
             if (shape === 'heart') {
                 tx = 16 * Math.pow(Math.sin(t), 3);
                 ty = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
@@ -341,14 +341,14 @@ if (labSection) {
                 const pointP = p * numPoints;
                 const pointIndex = Math.floor(pointP);
                 const localP = pointP - pointIndex;
-                
+
                 const outerRadius = size * 1.2;
                 const innerRadius = size * 0.5;
-                
+
                 const angle1 = (pointIndex / numPoints) * Math.PI * 2 - Math.PI / 2;
                 const angleHalf = ((pointIndex + 0.5) / numPoints) * Math.PI * 2 - Math.PI / 2;
                 const angle2 = ((pointIndex + 1) / numPoints) * Math.PI * 2 - Math.PI / 2;
-                
+
                 if (localP < 0.5) {
                     const subP = localP * 2;
                     const x1 = Math.cos(angle1) * outerRadius;
@@ -373,7 +373,7 @@ if (labSection) {
     const textCanvas = document.createElement('canvas');
     const tctx = textCanvas.getContext('2d');
 
-    window.setMeshText = function() {
+    window.setMeshText = function () {
         const input = document.getElementById('mesh-text-input');
         const text = input.value.trim() || 'AIRLINK';
         meshMode = 'text'; // Use distinct mode for faster formation
@@ -381,14 +381,14 @@ if (labSection) {
         // Use a font stack that prioritizes clean emojis
         tctx.font = 'bold 80px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Outfit", sans-serif';
         const textWidth = tctx.measureText(text.toUpperCase()).width;
-        
+
         // Resize sampling canvas dynamically (Allow extra width for wider emojis)
         textCanvas.width = Math.max(textWidth + 150, 600);
         textCanvas.height = 180;
-        
+
         tctx.clearRect(0, 0, textCanvas.width, textCanvas.height);
         tctx.fillStyle = 'white';
-        tctx.font = 'bold 80px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Outfit", sans-serif'; 
+        tctx.font = 'bold 80px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Outfit", sans-serif';
         tctx.textAlign = 'center';
         tctx.textBaseline = 'middle';
         const cx = textCanvas.width / 2;
@@ -397,7 +397,7 @@ if (labSection) {
 
         const imageData = tctx.getImageData(0, 0, textCanvas.width, textCanvas.height).data;
         const points = [];
-        const gap = 5; 
+        const gap = 5;
 
         // Sample COLUMN-WISE for better formation sequence
         for (let x = 0; x < textCanvas.width; x += gap) {
@@ -419,11 +419,11 @@ if (labSection) {
 
         const availableWidth = labCanvas.width * 0.85;
         const availableHeight = labCanvas.height * 0.7;
-        
+
         let scaleX = availableWidth / textWidth;
         let scaleY = availableHeight / 100;
         let finalScale = Math.min(scaleX, scaleY, 2.5);
-        
+
         const centerX = labCanvas.width / 2;
         const centerY = labCanvas.height / 2;
 
@@ -432,12 +432,12 @@ if (labSection) {
             const oldTargetX = node.targetX;
             node.targetX = centerX + (pt.x - cx) * finalScale;
             node.targetY = centerY + (pt.y - cy) * finalScale * 1.5;
-            
+
             // Only reset delay if it's a new point or target moved significantly
             // This makes live typing feel "continuous"
             if (Math.abs(oldTargetX - node.targetX) > 20) {
-                const normX = (node.targetX - (centerX - availableWidth/2)) / availableWidth;
-                node.delay = normX * 800; 
+                const normX = (node.targetX - (centerX - availableWidth / 2)) / availableWidth;
+                node.delay = normX * 800;
             }
         });
     };
@@ -463,7 +463,7 @@ if (labSection) {
             const [end, start] = this.path[this.segmentIndex];
             const x = start.x + (end.x - start.x) * this.progress;
             const y = start.y + (end.y - start.y) * this.progress;
-            
+
             lctx.beginPath();
             lctx.arc(x, y, 5, 0, Math.PI * 2);
             lctx.fillStyle = '#FFFFFF';
@@ -487,7 +487,7 @@ if (labSection) {
     }, 1000);
 
     // Initial nodes
-    for(let i=0; i<20; i++) labNodes.push(new Node());
+    for (let i = 0; i < 20; i++) labNodes.push(new Node());
 
     // Auto-generate nodes up to a limit
     setInterval(() => {
@@ -506,22 +506,22 @@ if (labSection) {
         if (nodes.length < 2) return null;
         const start = nodes[0];
         const end = nodes[nodes.length - 1];
-        
+
         const distances = new Map();
         const prev = new Map();
         const queue = [...nodes];
-        
+
         nodes.forEach(n => distances.set(n, Infinity));
         distances.set(start, 0);
-        
+
         while (queue.length > 0) {
             queue.sort((a, b) => distances.get(a) - distances.get(b));
             const u = queue.shift();
             if (u === end) break;
             if (distances.get(u) === Infinity) break;
-            
+
             nodes.forEach(v => {
-                const dist = Math.sqrt((u.x - v.x)**2 + (u.y - v.y)**2);
+                const dist = Math.sqrt((u.x - v.x) ** 2 + (u.y - v.y) ** 2);
                 if (dist < 180) {
                     const alt = distances.get(u) + dist;
                     if (alt < distances.get(v)) {
@@ -531,7 +531,7 @@ if (labSection) {
                 }
             });
         }
-        
+
         let path = [];
         let curr = end;
         while (prev.has(curr)) {
@@ -545,10 +545,10 @@ if (labSection) {
         document.getElementById('stat-nodes').innerText = labNodes.length;
         document.getElementById('stat-hops').innerText = path ? path.length : '0';
         if (path && path.length > 0) {
-            const directDist = Math.sqrt((labNodes[0].x - labNodes[labNodes.length-1].x)**2 + (labNodes[0].y - labNodes[labNodes.length-1].y)**2);
+            const directDist = Math.sqrt((labNodes[0].x - labNodes[labNodes.length - 1].x) ** 2 + (labNodes[0].y - labNodes[labNodes.length - 1].y) ** 2);
             let pathDist = 0;
             path.forEach(([u, v]) => {
-                pathDist += Math.sqrt((u.x - v.x)**2 + (u.y - v.y)**2);
+                pathDist += Math.sqrt((u.x - v.x) ** 2 + (u.y - v.y) ** 2);
             });
             const efficiency = Math.round((directDist / pathDist) * 100);
             document.getElementById('stat-eff').innerText = efficiency + '%';
@@ -559,7 +559,7 @@ if (labSection) {
 
     function animateLab() {
         lctx.clearRect(0, 0, labCanvas.width, labCanvas.height);
-        
+
         const isShape = meshMode !== 'random';
         labNodes.forEach(n => n.update());
 
@@ -569,7 +569,7 @@ if (labSection) {
 
         for (let i = 0; i < labNodes.length; i++) {
             for (let j = i + 1; j < labNodes.length; j++) {
-                const dist = Math.sqrt((labNodes[i].x - labNodes[j].x)**2 + (labNodes[i].y - labNodes[j].y)**2);
+                const dist = Math.sqrt((labNodes[i].x - labNodes[j].x) ** 2 + (labNodes[i].y - labNodes[j].y) ** 2);
                 if (dist < connectionDist) {
                     lctx.beginPath();
                     lctx.moveTo(labNodes[i].x, labNodes[i].y);
@@ -588,7 +588,7 @@ if (labSection) {
             lctx.strokeStyle = 'rgba(112, 0, 255, 0.2)';
             lctx.beginPath();
             lctx.moveTo(labNodes[0].x, labNodes[0].y);
-            lctx.lineTo(labNodes[labNodes.length-1].x, labNodes[labNodes.length-1].y);
+            lctx.lineTo(labNodes[labNodes.length - 1].x, labNodes[labNodes.length - 1].y);
             lctx.stroke();
             lctx.restore();
         }
@@ -614,7 +614,7 @@ if (labSection) {
 
         labNodes.forEach((node, idx) => {
             node.draw();
-            if(idx === 0 || idx === labNodes.length-1) {
+            if (idx === 0 || idx === labNodes.length - 1) {
                 lctx.beginPath();
                 lctx.arc(node.x, node.y, 12, 0, Math.PI * 2);
                 lctx.strokeStyle = idx === 0 ? '#00F2FF' : '#7000FF';
@@ -630,10 +630,10 @@ if (labSection) {
 
 
 // --- EMAILJS INTEGRATION ---
-(function() {
+(function () {
     // Replace with your actual Public Key from EmailJS Account > Settings
     emailjs.init({
-      publicKey: "EcX4qrCdou0WD2P5u",
+        publicKey: "EcX4qrCdou0WD2P5u",
     });
 })();
 
@@ -642,15 +642,15 @@ const submitBtn = document.getElementById('submit-btn');
 const formStatus = document.getElementById('form-status');
 
 if (contactForm) {
-    contactForm.addEventListener('submit', function(event) {
+    contactForm.addEventListener('submit', function (event) {
         event.preventDefault();
-        
+
         // UI Feedback: Loading state
         submitBtn.classList.add('loading');
         submitBtn.disabled = true;
         const originalBtnText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<span>Sending...</span> <i class="fa-solid fa-spinner fa-spin" style="margin-left: 10px;"></i>';
-        
+
         formStatus.className = 'form-status';
         formStatus.innerText = '';
 
@@ -663,11 +663,11 @@ if (contactForm) {
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnText;
-                
+
                 formStatus.classList.add('success');
                 formStatus.innerText = 'Message sent successfully! We will get back to you soon.';
                 contactForm.reset();
-                
+
                 // Hide status after 5 seconds
                 setTimeout(() => {
                     formStatus.style.display = 'none';
@@ -676,7 +676,7 @@ if (contactForm) {
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnText;
-                
+
                 formStatus.classList.add('error');
                 formStatus.innerText = 'Oops! Something went wrong. Please try again later.';
                 console.error('EmailJS Error:', err);
@@ -691,12 +691,12 @@ const meshView = document.getElementById('mesh-view');
 
 if (compareContainer) {
     let isDragging = false;
-    
+
     const handleSlider = (e) => {
         const rect = compareContainer.getBoundingClientRect();
         const x = (e.clientX || e.touches[0].clientX) - rect.left;
         const percent = Math.min(Math.max((x / rect.width) * 100, 0), 100);
-        
+
         meshView.style.width = percent + '%';
         sliderHandle.style.left = percent + '%';
     };
@@ -704,39 +704,39 @@ if (compareContainer) {
     sliderHandle.addEventListener('mousedown', () => isDragging = true);
     window.addEventListener('mouseup', () => isDragging = false);
     window.addEventListener('mousemove', (e) => { if (isDragging) handleSlider(e); });
-    
+
     // Canvas Logic for Comparison
     const cCanvas = document.getElementById('canvas-centralized');
     const mCanvas = document.getElementById('canvas-mesh-simple');
-    
+
     function initCompCanvas(canvas, mode) {
         const ctx = canvas.getContext('2d');
         canvas.width = compareContainer.offsetWidth;
         canvas.height = 500;
-        
+
         let nodes = Array.from({ length: 15 }, () => ({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
             vx: (Math.random() - 0.5) * 1,
             vy: (Math.random() - 0.5) * 1
         }));
-        
-        const server = { x: canvas.width/2, y: canvas.height/2 };
+
+        const server = { x: canvas.width / 2, y: canvas.height / 2 };
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             nodes.forEach(n => {
                 n.x += n.vx;
                 n.y += n.vy;
                 if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
                 if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
-                
+
                 ctx.beginPath();
                 ctx.arc(n.x, n.y, 4, 0, Math.PI * 2);
                 ctx.fillStyle = '#00F2FF';
                 ctx.fill();
-                
+
                 if (mode === 'centralized') {
                     ctx.beginPath();
                     ctx.moveTo(n.x, n.y);
@@ -745,7 +745,7 @@ if (compareContainer) {
                     ctx.stroke();
                 } else {
                     nodes.forEach(n2 => {
-                        const dist = Math.sqrt((n.x-n2.x)**2 + (n.y-n2.y)**2);
+                        const dist = Math.sqrt((n.x - n2.x) ** 2 + (n.y - n2.y) ** 2);
                         if (dist < 150) {
                             ctx.beginPath();
                             ctx.moveTo(n.x, n.y);
@@ -756,7 +756,7 @@ if (compareContainer) {
                     });
                 }
             });
-            
+
             if (mode === 'centralized') {
                 ctx.beginPath();
                 ctx.arc(server.x, server.y, 10, 0, Math.PI * 2);
@@ -771,7 +771,7 @@ if (compareContainer) {
         }
         draw();
     }
-    
+
     initCompCanvas(cCanvas, 'centralized');
     initCompCanvas(mCanvas, 'mesh');
 }
@@ -807,7 +807,7 @@ function renderTrack(trackId, tier) {
     if (!container) return;
 
     const list = supportersByTrack[trackId];
-    
+
     // Flicker-free Check: Only update if the data has actually changed
     const listState = JSON.stringify(list);
     if (trackStates[trackId] === listState) return;
@@ -820,10 +820,10 @@ function renderTrack(trackId, tier) {
 
     // Clear and re-fill
     container.innerHTML = '';
-    
+
     // To create a seamless loop, we need at least enough items to fill the width
     const itemsToRender = list.length < 3 ? [...list] : [...list, ...list];
-    
+
     itemsToRender.forEach(name => {
         container.appendChild(createSupporterCard(name, tier));
     });
@@ -842,8 +842,8 @@ async function fetchSupporters() {
 
     try {
         const response = await fetch(GOOGLE_SCRIPT_URL);
-        const currentJsonString = await response.text(); 
-        
+        const currentJsonString = await response.text();
+
         // Only update if the data has actually changed (add, edit, or delete)
         if (currentJsonString !== lastJsonString) {
             const supporters = JSON.parse(currentJsonString);
@@ -851,14 +851,14 @@ async function fetchSupporters() {
 
             // Reset state for a fresh sync
             for (let id in supportersByTrack) supportersByTrack[id] = [];
-            
+
             let totalCollected = 0;
 
             // Sort everything back into tracks
             supporters.forEach(supporter => {
                 const amount = parseFloat(supporter.amount) || 0;
                 totalCollected += amount;
-                
+
                 let trackId;
 
                 if (amount === 101) trackId = 1;
@@ -869,7 +869,7 @@ async function fetchSupporters() {
 
                 supportersByTrack[trackId].unshift(supporter.name);
             });
-            
+
             // Update the live total money UI
             const totalMoneyEl = document.getElementById('total-money-amount');
             if (totalMoneyEl) {
@@ -924,7 +924,7 @@ function openDeepDive(type) {
         // Scroll to the deep-dive area
         techDeepDive.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 10);
-    
+
     if (type === 'signal') renderSignalViz();
     else if (type === 'nearby') renderNearbyViz();
     else if (type === 'routing') renderRoutingViz();
@@ -967,20 +967,20 @@ function renderSignalViz() {
     `;
 }
 
-window.startSignalSimulation = function() {
+window.startSignalSimulation = function () {
     const packet = document.getElementById('signal-message');
     const status = document.getElementById('cipher-status');
     const key = document.getElementById('encryption-key');
-    
+
     let pos = 15;
     let encrypted = false;
-    
+
     if (activeVizInterval) clearInterval(activeVizInterval);
-    
+
     activeVizInterval = setInterval(() => {
         pos += 1;
         packet.style.left = pos + '%';
-        
+
         if (pos > 45 && !encrypted) {
             encrypted = true;
             status.innerHTML = 'CIPHERTEXT: <span style="color: #FF4444;">xK9$pL2!m...</span>';
@@ -988,7 +988,7 @@ window.startSignalSimulation = function() {
             packet.style.boxShadow = '0 0 15px #FF4444';
             key.style.color = '#00FF88';
         }
-        
+
         if (pos >= 85) {
             pos = 15;
             encrypted = false;
@@ -1015,7 +1015,7 @@ function renderNearbyViz() {
             <div class="viz-node found-node" style="position: absolute; bottom: 20%; right: 20%; opacity: 0.3; border-color: gray;"><i class="fa-solid fa-mobile"></i></div>
         </div>
     `;
-    
+
     // Auto-discovery effect
     activeVizInterval = setInterval(() => {
         const nodes = document.querySelectorAll('.found-node');
@@ -1044,7 +1044,7 @@ function renderRoutingViz() {
         </div>
         <div id="routing-status" style="color: #FFD700; font-weight: 600;">Optimal Path: A -> B -> D</div>
     `;
-    
+
     const container = document.getElementById('routing-viz');
     const nodes = [
         { id: 'A', x: 10, y: 50, label: 'YOU' },
@@ -1052,7 +1052,7 @@ function renderRoutingViz() {
         { id: 'C', x: 40, y: 70, label: 'Node C' },
         { id: 'D', x: 80, y: 50, label: 'BOB' }
     ];
-    
+
     nodes.forEach(n => {
         const nodeEl = document.createElement('div');
         nodeEl.className = 'viz-node';
@@ -1072,13 +1072,13 @@ function renderRoutingViz() {
 
     let step = 0;
     const path = [nodes[0], nodes[1], nodes[3]]; // A -> B -> D
-    
+
     activeVizInterval = setInterval(() => {
         const target = path[step];
         packet.style.transition = 'all 1s linear';
         packet.style.left = (target.x + 4) + '%';
         packet.style.top = (target.y + 4) + '%';
-        
+
         step = (step + 1) % path.length;
     }, 1500);
 }
@@ -1107,7 +1107,12 @@ function revealWebsite() {
     // Remove from DOM after transition
     setTimeout(() => {
         videoIntro.remove();
-    }, 1000);
+        // Start mockup carousel after intro is gone for maximum impact
+        if (typeof initMockupCarousel === 'function') {
+            const startCarousel = initMockupCarousel();
+            if (typeof startCarousel === 'function') startCarousel();
+        }
+    }, 3000);
 }
 
 if (videoIntro && introVideo) {
@@ -1152,18 +1157,21 @@ function initMockupCarousel() {
 
     // Available screen images pool
     const screenImages = [
-        'assets/splash.jpeg',
-        'assets/discovery.jpeg',
-        'assets/chat screen.jpeg',
-        'assets/chat list.jpeg',
-        'assets/group .jpeg',
-        'assets/profile.jpeg',
-        'assets/secert.jpeg'
+        'assets/splash.jpeg',      // 0
+        'assets/discovery.jpeg',   // 1
+        'assets/chat screen.jpeg', // 2
+        'assets/chat list.jpeg',   // 3
+        'assets/group .jpeg',      // 4
+        'assets/profile.jpeg',     // 5
+        'assets/secert.jpeg'       // 6
     ];
 
-    // Track which image each phone is showing
-    // Phone 0: 0, Phone 1: 1, Phone 2: 2
-    let phoneImageIndices = [0, 1, 2];
+    // Initial state matching HTML exactly:
+    // Phone 0 (Left): Discovery
+    // Phone 1 (Center): Splash
+    // Phone 2 (Right): Chat Screen
+
+    // nextImageIndex = 3 because 0, 1, 2 are effectively in the HTML
     let nextImageIndex = 3;
 
     // The states in order: 0=Left, 1=Center, 2=Right
@@ -1173,50 +1181,54 @@ function initMockupCarousel() {
         ['side', 'right']
     ];
 
-    let currentState = [0, 1, 2]; // Index of state for phone 0, 1, 2
+    let currentState = [0, 1, 2]; // Index of state for phone 0(L), 1(C), 2(R)
 
     // To prevent rotating while hovering
     let isHovering = false;
     mockupContainer.addEventListener('mouseenter', () => isHovering = true);
     mockupContainer.addEventListener('mouseleave', () => isHovering = false);
 
-    setInterval(() => {
-        if (isHovering) return; // Pause on hover
+    // Return a function to start the interval
+    return function start() {
+        setInterval(() => {
+            if (isHovering) return; // Pause on hover
 
-        // Shift array left to rotate states
-        // If currentState was [0, 1, 2], it becomes [1, 2, 0]
-        // Phone 0 goes from Left -> Center
-        // Phone 1 goes from Center -> Right
-        // Phone 2 goes from Right -> Left (the swap)
-        currentState.push(currentState.shift());
+            // Shift array left to rotate states
+            // Phone 0 (Left) -> Center
+            // Phone 1 (Center) -> Right
+            // Phone 2 (Right) -> Left
+            currentState.push(currentState.shift());
 
-        // Apply new states and update images
-        phones.forEach((phone, index) => {
-            const prevStateIndex = currentState[(index + 2) % 3]; // previous state index
-            const newStateIndex = currentState[index];
-            
-            // Remove existing position classes
-            phone.classList.remove('side', 'left', 'right', 'center');
-            
-            // Add new classes based on current state
-            const stateClasses = states[newStateIndex];
-            phone.classList.add(...stateClasses);
-            
-            // IMAGE SWAP LOGIC:
-            // When a phone moves to the 'right' or 'left' (out of focus), 
-            // check if it's "behind" the others to swap the image.
-            // Specifically, if it just moved into the 'left' position from 'right', 
-            // it's the perfect time to change the image since it's blurred/small.
-            if (newStateIndex === 0) { // Moving to Left
-                const img = phone.querySelector('img');
-                if (img) {
-                    img.src = screenImages[nextImageIndex];
-                    nextImageIndex = (nextImageIndex + 1) % screenImages.length;
+            // Apply new states and update images
+            phones.forEach((phone, index) => {
+                const newStateIndex = currentState[index];
+
+                // Remove existing position classes
+                phone.classList.remove('side', 'left', 'right', 'center');
+
+                // Add new classes based on current state
+                const stateClasses = states[newStateIndex];
+                phone.classList.add(...stateClasses);
+
+                // IMAGE SWAP LOGIC:
+                // Update image when phone moves to Left (out of focus)
+                if (newStateIndex === 0) {
+                    const img = phone.querySelector('img');
+                    if (img) {
+                        img.src = screenImages[nextImageIndex];
+                        nextImageIndex = (nextImageIndex + 1) % screenImages.length;
+                    }
                 }
-            }
-        });
-    }, 3000); // Rotate every 3 seconds
+            });
+        }, 3000);
+    };
 }
 
-// Initialize the carousel
-document.addEventListener('DOMContentLoaded', initMockupCarousel);
+// Initialization is now handled by revealWebsite for perfect timing
+// Fallback if intro was skipped/removed manually
+document.addEventListener('DOMContentLoaded', () => {
+    if (!document.getElementById('video-intro')) {
+        const startCarousel = initMockupCarousel();
+        if (startCarousel) startCarousel();
+    }
+});
