@@ -1138,7 +1138,7 @@ body.intro-revealed .hero-image {
     justify-content: center;
     align-items: center;
     perspective: 2000px;
-    transform: scale(0.75); /* Scaled down further to fit all screens comfortably */
+    transform: scale(0.88); /* Slightly larger for better visual presence */
     margin-top: 0px; /* Shifted further down per user request */
 }
 
