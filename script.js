@@ -1141,3 +1141,82 @@ if (videoIntro && introVideo) {
         }
     }, 5000);
 }
+
+// --- 3D Mockup Carousel Rotation ---
+function initMockupCarousel() {
+    const mockupContainer = document.querySelector('.mockup-container');
+    if (!mockupContainer) return;
+
+    const phones = mockupContainer.querySelectorAll('.phone-frame');
+    if (phones.length !== 3) return;
+
+    // Available screen images pool
+    const screenImages = [
+        'assets/splash.jpeg',
+        'assets/discovery.jpeg',
+        'assets/chat screen.jpeg',
+        'assets/chat list.jpeg',
+        'assets/group .jpeg',
+        'assets/profile.jpeg',
+        'assets/secert.jpeg'
+    ];
+
+    // Track which image each phone is showing
+    // Phone 0: 0, Phone 1: 1, Phone 2: 2
+    let phoneImageIndices = [0, 1, 2];
+    let nextImageIndex = 3;
+
+    // The states in order: 0=Left, 1=Center, 2=Right
+    const states = [
+        ['side', 'left'],
+        ['center'],
+        ['side', 'right']
+    ];
+
+    let currentState = [0, 1, 2]; // Index of state for phone 0, 1, 2
+
+    // To prevent rotating while hovering
+    let isHovering = false;
+    mockupContainer.addEventListener('mouseenter', () => isHovering = true);
+    mockupContainer.addEventListener('mouseleave', () => isHovering = false);
+
+    setInterval(() => {
+        if (isHovering) return; // Pause on hover
+
+        // Shift array left to rotate states
+        // If currentState was [0, 1, 2], it becomes [1, 2, 0]
+        // Phone 0 goes from Left -> Center
+        // Phone 1 goes from Center -> Right
+        // Phone 2 goes from Right -> Left (the swap)
+        currentState.push(currentState.shift());
+
+        // Apply new states and update images
+        phones.forEach((phone, index) => {
+            const prevStateIndex = currentState[(index + 2) % 3]; // previous state index
+            const newStateIndex = currentState[index];
+            
+            // Remove existing position classes
+            phone.classList.remove('side', 'left', 'right', 'center');
+            
+            // Add new classes based on current state
+            const stateClasses = states[newStateIndex];
+            phone.classList.add(...stateClasses);
+            
+            // IMAGE SWAP LOGIC:
+            // When a phone moves to the 'right' or 'left' (out of focus), 
+            // check if it's "behind" the others to swap the image.
+            // Specifically, if it just moved into the 'left' position from 'right', 
+            // it's the perfect time to change the image since it's blurred/small.
+            if (newStateIndex === 0) { // Moving to Left
+                const img = phone.querySelector('img');
+                if (img) {
+                    img.src = screenImages[nextImageIndex];
+                    nextImageIndex = (nextImageIndex + 1) % screenImages.length;
+                }
+            }
+        });
+    }, 3000); // Rotate every 3 seconds
+}
+
+// Initialize the carousel
+document.addEventListener('DOMContentLoaded', initMockupCarousel);

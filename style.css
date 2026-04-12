@@ -1181,11 +1181,11 @@ body.intro-revealed .hero-image {
 }
 
 .phone-frame.left {
-    transform: translateX(-160px) rotateY(-20deg) rotateX(5deg) scale(0.85); /* Tighter spread */
+    transform: translateX(-160px) translateZ(-50px) rotateY(-20deg) rotateX(5deg) scale(0.85); /* Tighter spread & pushed back */
 }
 
 .phone-frame.right {
-    transform: translateX(160px) rotateY(20deg) rotateX(5deg) scale(0.85); /* Tighter spread */
+    transform: translateX(160px) translateZ(-50px) rotateY(20deg) rotateX(5deg) scale(0.85); /* Tighter spread & pushed back */
 }
 
 .phone-frame.center {
