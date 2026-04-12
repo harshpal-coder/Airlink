@@ -61,8 +61,13 @@ class Particle {
 }
 
 const particles = Array.from({ length: 80 }, () => new Particle());
+let isCanvasPaused = false;
 
 function animate() {
+    if (isCanvasPaused) {
+        requestAnimationFrame(animate);
+        return;
+    }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     particles.forEach((p, i) => {
@@ -1088,31 +1093,67 @@ const videoIntro = document.getElementById('video-intro');
 const introVideo = document.getElementById('intro-video');
 const skipBtn = document.getElementById('skip-intro');
 
+function createRevealShards() {
+    const shardCount = 3; // Reduced for performance
+    const container = document.body;
+    
+    for (let i = 0; i < shardCount; i++) {
+        const shard = document.createElement('div');
+        shard.className = 'reveal-shard';
+        
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        
+        shard.style.left = `calc(${x}% - 50px)`;
+        shard.style.top = `calc(${y}% - 50px)`;
+        
+        container.appendChild(shard);
+        
+        requestAnimationFrame(() => {
+            shard.classList.add('active');
+        });
+        
+        setTimeout(() => shard.remove(), 1200);
+    }
+}
+
 function revealWebsite() {
     if (videoIntro.classList.contains('fade-out')) return;
 
-    videoIntro.classList.add('fade-out');
-    document.body.classList.remove('intro-active');
-    document.body.classList.add('intro-revealed');
+    // Phase 1: Heavy performance optimizations
+    isCanvasPaused = true; // Stop main background animation
+    if (introVideo) {
+        introVideo.pause(); // Stop video decoding
+    }
 
-    // Trigger reveal for items already in view after intro fades
+    // Phase 2: Start cinematic transitions (using only scale/opacity)
+    videoIntro.classList.add('fade-out');
+    
+    // Phase 3: Transition body states
+    // Delay slightly to let the browser settle after pausing the video/canvas
     setTimeout(() => {
-        document.querySelectorAll('[data-reveal]').forEach(el => {
-            // Re-trigger observer for visible elements
+        document.body.classList.remove('intro-active');
+        document.body.classList.add('intro-revealed');
+        
+        // Trigger reveal for items (Simplified)
+        document.querySelectorAll('[data-reveal]').forEach((el) => {
             observer.unobserve(el);
             observer.observe(el);
         });
-    }, 500);
+    }, 100);
 
-    // Remove from DOM after transition
+    // Phase 4: Final cleanup
     setTimeout(() => {
         videoIntro.remove();
-        // Start mockup carousel after intro is gone for maximum impact
+        isCanvasPaused = false; // Resume background animation
+        
         if (typeof initMockupCarousel === 'function') {
             const startCarousel = initMockupCarousel();
-            if (typeof startCarousel === 'function') startCarousel();
+            if (typeof startCarousel === 'function') {
+                setTimeout(startCarousel, 100);
+            }
         }
-    }, 3000);
+    }, 1200);
 }
 
 if (videoIntro && introVideo) {

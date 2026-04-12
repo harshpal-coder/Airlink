@@ -1303,8 +1303,9 @@ body.intro-revealed .hero-image {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+    will-change: opacity;
 }
 
 #intro-video {
@@ -1315,7 +1316,9 @@ body.intro-revealed .hero-image {
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    transition: opacity 1.5s ease;
+    transition: opacity 1.5s ease, transform 2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform: scale(1);
+    will-change: transform, opacity;
 }
 
 #intro-video.ready {
@@ -1366,7 +1369,12 @@ body.intro-revealed .hero-image {
 
 #video-intro.fade-out {
     opacity: 0;
-    visibility: hidden;
+    pointer-events: none;
+    transform: scale(1.1); /* Subtle scale-out of the container */
+}
+
+#video-intro.fade-out #intro-video {
+    transform: scale(1.05); /* Very subtle scale for smoothness */
 }
 
 /* Prevent interaction with background while intro is active */
@@ -1376,22 +1384,45 @@ body.intro-active {
 }
 
 body.intro-active #navbar,
-body.intro-active main,
 body.intro-active header,
 body.intro-active section,
 body.intro-active footer {
     pointer-events: none;
-    filter: blur(10px);
     opacity: 0;
-    transition: opacity 1s ease, filter 1.5s ease;
+    transform: scale(0.98); /* Less aggressive scale */
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: opacity, transform;
 }
 
 body.intro-revealed #navbar,
-body.intro-revealed main,
 body.intro-revealed header,
 body.intro-revealed section,
 body.intro-revealed footer {
     pointer-events: auto;
-    filter: blur(0);
+    filter: none;
     opacity: 1;
+    transform: scale(1);
+}
+
+/* Staggered entry for hero content */
+body.intro-revealed .hero-content {
+    animation: slideUpReveal 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: 0.2s;
+    opacity: 0;
+}
+
+body.intro-revealed .mockup-container {
+    animation: zoomInReveal 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: 0.4s;
+    opacity: 0;
+}
+
+@keyframes slideUpReveal {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes zoomInReveal {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(0.75); opacity: 1; } /* Scale 0.75 matches the scroll parallax base */
 }
