@@ -783,7 +783,7 @@ if (compareContainer) {
 
 
 // --- LIVE SUPPORTERS FEED (REAL GOOGLE SHEET LINK) ---
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuhbmF-r7L7WKnAwaaltFc-ge8Fzb7PcjlQLyF_lj-aoOOKnsNELVkAUQMuxDND_jFIg/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnBtZtb4O_gTipIQRdbCQyAz0c7djTpBVPZ5PwWdtHv1AybtAiY57o2cbX77y0pQdlDg/exec';
 const trackContainers = {
     1: document.getElementById('track-1-content'),
     2: document.getElementById('track-2-content'),
@@ -841,7 +841,7 @@ function renderTrack(trackId, tier) {
 let lastJsonString = "";
 
 async function fetchSupporters() {
-    if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyuhbmF-r7L7WKnAwaaltFc-ge8Fzb7PcjlQLyF_lj-aoOOKnsNELVkAUQMuxDND_jFIg/exec' || GOOGLE_SCRIPT_URL.includes('macros/s/')) {
+    if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbwnBtZtb4O_gTipIQRdbCQyAz0c7djTpBVPZ5PwWdtHv1AybtAiY57o2cbX77y0pQdlDg/exec' || GOOGLE_SCRIPT_URL.includes('macros/s/')) {
         // Run if we have a valid URL
     } else return;
 
@@ -862,6 +862,7 @@ async function fetchSupporters() {
             // Sort everything back into tracks
             supporters.forEach(supporter => {
                 const amount = parseFloat(supporter.amount) || 0;
+                // supporter.email is also available here if needed for verification
                 totalCollected += amount;
 
                 let trackId;
