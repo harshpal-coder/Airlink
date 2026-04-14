@@ -49,6 +49,7 @@ function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('🚀 AirLink Tools')
     .addItem('Send Pending Emails (with PDF)', 'sendPendingEmails')
+    .addItem('Send Email to Selected Row', 'sendEmailToSelectedRow')
     .addToUi();
 }
 
@@ -75,6 +76,49 @@ function sendPendingEmails() {
         Logger.log('Error sending to ' + email + ': ' + e);
       }
     }
+  }
+}
+
+/**
+ * Sends email only to the currently selected row(s) in the sheet
+ */
+function sendEmailToSelectedRow() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  const activeRange = sheet.getActiveRange();
+  const startRow = activeRange.getRow();
+  const numRows = activeRange.getNumRows();
+  const data = sheet.getDataRange().getValues();
+
+  let sentCount = 0;
+
+  for (let i = 0; i < numRows; i++) {
+    const currentRowIndex = startRow + i;
+    if (currentRowIndex === 1) continue; // Skip header row
+
+    const rowData = data[currentRowIndex - 1];
+    if (!rowData) continue;
+
+    const name = rowData[1];
+    const amount = rowData[2];
+    const email = rowData[3];
+    const rank = currentRowIndex - 1;
+
+    if (email && email.includes('@')) {
+      try {
+        sendThankYouEmail(email, name, amount, rank);
+        sheet.getRange(currentRowIndex, 5).setValue('Sent');
+        sentCount++;
+      } catch (e) {
+        Logger.log('Error sending to ' + email + ': ' + e);
+      }
+    }
+  }
+  
+  if (sentCount > 0) {
+    SpreadsheetApp.flush();
+    SpreadsheetApp.getUi().alert('Successfully sent ' + sentCount + ' email(s).');
+  } else {
+    SpreadsheetApp.getUi().alert('No emails sent. Please select a row with a valid email address.');
   }
 }
 
@@ -136,13 +180,27 @@ function generateCertificatePDF(name, rank) {
           <div style="position: absolute; top: 0; left: 0; width: 120px; height: 120px; border-top: 6px solid #7000ff; border-left: 6px solid #7000ff; z-index: 1;"></div>
           <div style="position: absolute; bottom: 0; right: 0; width: 120px; height: 120px; border-bottom: 6px solid #7000ff; border-right: 6px solid #7000ff; z-index: 1;"></div>
 
-          <div style="text-align: center; margin-top: 30px; position: relative; z-index: 2;">
+          <!-- Official Stamp -->
+          <div style="position: absolute; top: 35px; right: 45px; width: 120px; height: 120px; border-radius: 50%; border: 3px dashed #00f2ff; text-align: center; transform: rotate(12deg); opacity: 0.9; z-index: 1; border-top-color: #7000ff; border-left-color: rgba(0, 242, 255, 0.3); background-color: rgba(0, 242, 255, 0.03);">
+            <div style="width: 104px; height: 104px; border-radius: 50%; border: 2px solid #00f2ff; margin: 6px auto; position: relative;">
+              <div style="width: 96px; height: 96px; border-radius: 50%; border: 1px dotted rgba(0, 242, 255, 0.5); margin: 3px auto; position: relative; background: radial-gradient(circle, rgba(0,242,255,0.15) 0%, rgba(0,0,0,0) 70%);">
+                <div style="position: absolute; top: 50%; left: 0; right: 0; margin-top: -22px;">
+                  <p style="font-size: 8px; color: #7000ff; margin: 0; font-weight: bold; letter-spacing: 3px;">&#9733; 100% &#9733;</p>
+                  <p style="font-size: 11px; color: #00f2ff; margin: 2px 0 0 0; font-weight: bold; letter-spacing: 2px;">AUTHENTIC</p>
+                  <div style="height: 1px; width: 80px; background: #00f2ff; margin: 3px auto;"></div>
+                  <p style="font-size: 16px; color: #ffffff; margin: 0; font-style: italic; letter-spacing: 1px; font-family: serif; font-weight: bold;">AirLink</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 10px; position: relative; z-index: 2;">
             <h3 style="color: #00f2ff; letter-spacing: 5px; margin: 0;">OFFICIAL AIRLINK SUPPORTER</h3>
-            <h1 style="font-size: 60px; margin: 20px 0; color: #ffffff;">CERTIFICATE</h1>
+            <h1 style="font-size: 60px; margin: 5px 0; color: #ffffff;">CERTIFICATE</h1>
             <p style="font-size: 20px; color: #8e8e8e; margin: 0;">OF APPRECIATION</p>
           </div>
 
-          <div style="text-align: center; margin-top: 45px; position: relative; z-index: 2;">
+          <div style="text-align: center; margin-top: 15px; position: relative; z-index: 2;">
             <p style="font-size: 22px; color: #d0d0d0; margin: 0;">This certificate is proudly presented to</p>
             <h2 style="font-size: 55px; color: #00f2ff; margin: 15px 0; border-bottom: 2px solid rgba(255,255,255,0.1); display: inline-block; padding: 0 50px;">
               ${name}
@@ -154,26 +212,29 @@ function generateCertificatePDF(name, rank) {
           </div>
 
           <!-- Bottom Info -->
-          <div style="margin-top: 35px; position: relative; z-index: 2;">
+          <div style="margin-top: 15px; position: relative; z-index: 2;">
             <table width="100%" style="color: #ffffff;">
               <tr>
-                <td width="33%" align="left">
+                <td width="33%" align="left" valign="bottom">
+                  <img src="https://quickchart.io/qr?text=https://myairlink.vercel.app&dark=00f2ff&light=050a10&size=65&margin=0" style="margin-bottom: 12px; border: 1px solid rgba(0, 242, 255, 0.3); padding: 4px; border-radius: 4px;" alt="QR Code" />
                   <p style="color: #00f2ff; font-size: 12px; margin: 0;">CERTIFICATE ID</p>
                   <p style="color: #ffffff; font-size: 20px; font-weight: bold; margin: 5px 0;">${certID}</p>
                 </td>
-                <td width="33%" align="center">
+                <td width="33%" align="center" valign="bottom">
                   <p style="color: #8e8e8e; font-size: 12px; margin: 0;">DATE OF ISSUE</p>
                   <p style="color: #ffffff; font-size: 16px; margin: 5px 0;">${issueDate}</p>
                 </td>
-                <td width="33%" align="right">
-                  <p style="color: #8e8e8e; font-size: 12px; margin-bottom: 5px;">Founder Signature</p>
-                  <p style="color: #ffffff; font-size: 24px; font-family: serif; font-style: italic; margin: 0;">Harshpal</p>
-                  <div style="width: 150px; height: 1px; background: #00f2ff; margin-top: 5px; float: right;"></div>
+                <td width="33%" align="right" valign="bottom">
+                  <div style="display: inline-block; text-align: center;">
+                    <img src="https://myairlink.vercel.app/assets/signature.png" style="height: 90px; width: auto; opacity: 0.9; margin-bottom: -35px; position: relative; z-index: 10;" alt="Harshpal" />
+                    <div style="width: 150px; height: 1px; background: #00f2ff; margin: 0 auto 5px auto; position: relative; z-index: 5;"></div>
+                    <p style="color: #8e8e8e; font-size: 10px; margin: 0 0 5px 0; letter-spacing: 1px; padding-top: 15px;">FOUNDER SIGNATURE</p>
+                  </div>
                 </td>
               </tr>
             </table>
 
-            <div style="text-align: center; margin-top: 30px;">
+            <div style="text-align: center; margin-top: 15px;">
               <p style="font-size: 10px; color: #555555; margin: 0; letter-spacing: 1px;">VERIFIED BY AIRLINK NETWORK PROTOCOL &bull; 2026</p>
             </div>
           </div>
@@ -267,7 +328,8 @@ function sendThankYouEmail(email, name, amount, rank) {
     to: email,
     subject: subject,
     htmlBody: htmlBody,
-    attachments: [pdfBlob]
+    attachments: [pdfBlob],
+    name: "AirLink"
   });
 }
 ```
