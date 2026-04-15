@@ -783,7 +783,7 @@ if (compareContainer) {
 
 
 // --- LIVE SUPPORTERS FEED (REAL GOOGLE SHEET LINK) ---
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw4tK87yU5_L3OqoJ_owEmLuB51T9qRq2gZg4UUsSKCZbGeeHXYG9J6Pm6VDj-mwpfL/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyGn1clCehjU3sy6Ew3XETcdWh_UilXW8n57PBELWegMhDZovRaHD9JyfdvB1K2fOdljg/exec';
 const trackContainers = {
     1: document.getElementById('track-1-content'),
     2: document.getElementById('track-2-content'),
@@ -1089,105 +1089,16 @@ function renderRoutingViz() {
     }, 1500);
 }
 
-// --- CINEMATIC VIDEO INTRO CONTROLLER ---
-const videoIntro = document.getElementById('video-intro');
-const introVideo = document.getElementById('intro-video');
-const skipBtn = document.getElementById('skip-intro');
 
-function createRevealShards() {
-    const shardCount = 3; // Reduced for performance
-    const container = document.body;
-    
-    for (let i = 0; i < shardCount; i++) {
-        const shard = document.createElement('div');
-        shard.className = 'reveal-shard';
-        
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
-        
-        shard.style.left = `calc(${x}% - 50px)`;
-        shard.style.top = `calc(${y}% - 50px)`;
-        
-        container.appendChild(shard);
-        
-        requestAnimationFrame(() => {
-            shard.classList.add('active');
-        });
-        
-        setTimeout(() => shard.remove(), 1200);
+
+// --- Scroll Parallax for Hero Mockup ---
+window.addEventListener('scroll', () => {
+    const mockup = document.querySelector('.mockup-container');
+    if (mockup && window.innerWidth > 768) {
+        const scrollValue = window.scrollY;
+        mockup.style.transform = `scale(0.75) translateY(${scrollValue * 0.1}px)`;
     }
-}
-
-function revealWebsite() {
-    if (videoIntro.classList.contains('fade-out')) return;
-
-    // Phase 1: Heavy performance optimizations
-    isCanvasPaused = true; // Stop main background animation
-    if (introVideo) {
-        introVideo.pause(); // Stop video decoding
-    }
-
-    // Phase 2: Start cinematic transitions (using only scale/opacity)
-    videoIntro.classList.add('fade-out');
-    
-    // Phase 3: Transition body states
-    // Delay slightly to let the browser settle after pausing the video/canvas
-    setTimeout(() => {
-        document.body.classList.remove('intro-active');
-        document.body.classList.add('intro-revealed');
-        
-        // Trigger reveal for items (Simplified)
-        document.querySelectorAll('[data-reveal]').forEach((el) => {
-            observer.unobserve(el);
-            observer.observe(el);
-        });
-    }, 100);
-
-    // Phase 4: Final cleanup
-    setTimeout(() => {
-        videoIntro.remove();
-        isCanvasPaused = false; // Resume background animation
-        
-        if (typeof initMockupCarousel === 'function') {
-            const startCarousel = initMockupCarousel();
-            if (typeof startCarousel === 'function') {
-                setTimeout(startCarousel, 100);
-            }
-        }
-    }, 1200);
-}
-
-if (videoIntro && introVideo) {
-    // Start playback
-    introVideo.play().catch(error => {
-        console.log("Autoplay prevented, showing skip button immediately.");
-        videoIntro.classList.add('ready');
-    });
-
-    introVideo.onplay = () => {
-        videoIntro.classList.add('ready');
-        introVideo.classList.add('ready');
-    };
-
-    introVideo.addEventListener('ended', revealWebsite);
-    skipBtn.addEventListener('click', revealWebsite);
-
-    // Smooth Scroll Parallax for Hero Mockup
-    window.addEventListener('scroll', () => {
-        const mockup = document.querySelector('.mockup-container');
-        if (mockup && window.innerWidth > 768) {
-            const scrollValue = window.scrollY;
-            mockup.style.transform = `scale(0.75) translateY(${scrollValue * 0.1}px)`;
-        }
-    });
-
-    // Fallback: If video fails/stalls, allow reveal after 5s anyway
-    setTimeout(() => {
-        if (!videoIntro.classList.contains('fade-out')) {
-            videoIntro.classList.add('ready');
-        }
-    }, 5000);
-}
+});
 
 // --- 3D Mockup Carousel Rotation ---
 function initMockupCarousel() {

@@ -149,6 +149,22 @@ function generateCertificatePDF(name, rank) {
   const issueDate = monthNames[dateObj.getMonth()] + " " + dateObj.getDate() + ", " + dateObj.getFullYear();
   const certID = "AL-" + dateObj.getFullYear() + "-" + String(rank).padStart(4, '0');
 
+  // Helper function to fetch image and convert to Base64
+  const getImageBase64 = (url) => {
+    try {
+      const resp = UrlFetchApp.fetch(url);
+      const encoded = Utilities.base64Encode(resp.getContent());
+      const type = resp.getHeaders()['Content-Type'] || 'image/png';
+      return `data:${type};base64,${encoded}`;
+    } catch (e) {
+      Logger.log("Error fetching image " + url + ": " + e);
+      return url; // Fallback to URL if fetch fails
+    }
+  };
+
+  const qrCodeBase64 = getImageBase64(`https://quickchart.io/qr?text=https://myairlink.vercel.app&dark=00f2ff&light=050a10&size=100&margin=0`);
+  const signatureBase64 = getImageBase64(`https://myairlink.vercel.app/assets/signature.png`);
+
   const html = `
     <html>
       <head>
@@ -181,14 +197,14 @@ function generateCertificatePDF(name, rank) {
           <div style="position: absolute; bottom: 0; right: 0; width: 120px; height: 120px; border-bottom: 6px solid #7000ff; border-right: 6px solid #7000ff; z-index: 1;"></div>
 
           <!-- Official Stamp -->
-          <div style="position: absolute; top: 35px; right: 45px; width: 120px; height: 120px; border-radius: 50%; border: 3px dashed #00f2ff; text-align: center; transform: rotate(12deg); opacity: 0.9; z-index: 1; border-top-color: #7000ff; border-left-color: rgba(0, 242, 255, 0.3); background-color: rgba(0, 242, 255, 0.03);">
-            <div style="width: 104px; height: 104px; border-radius: 50%; border: 2px solid #00f2ff; margin: 6px auto; position: relative;">
-              <div style="width: 96px; height: 96px; border-radius: 50%; border: 1px dotted rgba(0, 242, 255, 0.5); margin: 3px auto; position: relative; background: radial-gradient(circle, rgba(0,242,255,0.15) 0%, rgba(0,0,0,0) 70%);">
+          <div style="position: absolute; top: 35px; right: 45px; width: 110px; height: 110px; border-radius: 50%; border: 3px solid #00f2ff; text-align: center; opacity: 0.9; z-index: 1; background-color: rgba(0, 242, 255, 0.05);">
+            <div style="width: 90px; height: 90px; border-radius: 50%; border: 2px solid #00f2ff; margin: 8px auto; position: relative;">
+              <div style="width: 80px; height: 80px; border-radius: 50%; border: 1px solid rgba(0, 242, 255, 0.5); margin: 4px auto; position: relative;">
                 <div style="position: absolute; top: 50%; left: 0; right: 0; margin-top: -22px;">
-                  <p style="font-size: 8px; color: #7000ff; margin: 0; font-weight: bold; letter-spacing: 3px;">&#9733; 100% &#9733;</p>
-                  <p style="font-size: 11px; color: #00f2ff; margin: 2px 0 0 0; font-weight: bold; letter-spacing: 2px;">AUTHENTIC</p>
-                  <div style="height: 1px; width: 80px; background: #00f2ff; margin: 3px auto;"></div>
-                  <p style="font-size: 16px; color: #ffffff; margin: 0; font-style: italic; letter-spacing: 1px; font-family: serif; font-weight: bold;">AirLink</p>
+                  <p style="font-size: 8px; color: #7000ff; margin: 0; font-weight: bold; letter-spacing: 2px;">★ 100% ★</p>
+                  <p style="font-size: 10px; color: #00f2ff; margin: 2px 0 0 0; font-weight: bold; letter-spacing: 1px;">AUTHENTIC</p>
+                  <div style="height: 1px; width: 60px; background: #00f2ff; margin: 3px auto;"></div>
+                  <p style="font-size: 14px; color: #ffffff; margin: 0; font-style: italic; font-weight: bold;">AirLink</p>
                 </div>
               </div>
             </div>
@@ -196,17 +212,17 @@ function generateCertificatePDF(name, rank) {
 
           <div style="text-align: center; margin-top: 10px; position: relative; z-index: 2;">
             <h3 style="color: #00f2ff; letter-spacing: 5px; margin: 0;">OFFICIAL AIRLINK SUPPORTER</h3>
-            <h1 style="font-size: 60px; margin: 5px 0; color: #ffffff;">CERTIFICATE</h1>
-            <p style="font-size: 20px; color: #8e8e8e; margin: 0;">OF APPRECIATION</p>
+            <h1 style="font-size: 80px; margin: 10px 0; color: #ffffff; letter-spacing: 2px;">CERTIFICATE</h1>
+            <p style="font-size: 22px; color: #8e8e8e; margin: 0; letter-spacing: 8px;">OF APPRECIATION</p>
           </div>
 
-          <div style="text-align: center; margin-top: 15px; position: relative; z-index: 2;">
-            <p style="font-size: 22px; color: #d0d0d0; margin: 0;">This certificate is proudly presented to</p>
-            <h2 style="font-size: 55px; color: #00f2ff; margin: 15px 0; border-bottom: 2px solid rgba(255,255,255,0.1); display: inline-block; padding: 0 50px;">
+          <div style="text-align: center; margin-top: 25px; position: relative; z-index: 2;">
+            <p style="font-size: 24px; color: #d0d0d0; margin: 0;">This certificate is proudly presented to</p>
+            <h2 style="font-size: 70px; color: #00f2ff; margin: 20px 0; border-bottom: 3px solid rgba(0, 242, 255, 0.2); display: inline-block; padding: 0 60px; font-weight: bold;">
               ${name}
             </h2>
             <br>
-            <p style="font-size: 18px; color: #a0a0a0; margin-top: 20px; max-width: 700px; display: inline-block; line-height: 1.6;">
+            <p style="font-size: 20px; color: #a0a0a0; margin-top: 25px; max-width: 800px; display: inline-block; line-height: 1.6;">
               In recognition of their instrumental support and contribution towards building a decentralized, secure, and connected world.
             </p>
           </div>
@@ -216,17 +232,25 @@ function generateCertificatePDF(name, rank) {
             <table width="100%" style="color: #ffffff;">
               <tr>
                 <td width="33%" align="left" valign="bottom">
-                  <img src="https://quickchart.io/qr?text=https://myairlink.vercel.app&dark=00f2ff&light=050a10&size=65&margin=0" style="margin-bottom: 12px; border: 1px solid rgba(0, 242, 255, 0.3); padding: 4px; border-radius: 4px;" alt="QR Code" />
+                  <img src="${qrCodeBase64}" style="margin-bottom: 12px; border: 1px solid rgba(0, 242, 255, 0.3); padding: 4px; border-radius: 4px;" width="65" height="65" alt="QR Code" />
                   <p style="color: #00f2ff; font-size: 12px; margin: 0;">CERTIFICATE ID</p>
                   <p style="color: #ffffff; font-size: 20px; font-weight: bold; margin: 5px 0;">${certID}</p>
                 </td>
-                <td width="33%" align="center" valign="bottom">
-                  <p style="color: #8e8e8e; font-size: 12px; margin: 0;">DATE OF ISSUE</p>
-                  <p style="color: #ffffff; font-size: 16px; margin: 5px 0;">${issueDate}</p>
+                <td width="33%" align="center" valign="bottom" style="padding-bottom: 10px;">
+                  <!-- Mesh Waveform / Pulse -->
+                  <div style="margin-bottom: 25px; opacity: 0.5;">
+                    <div style="display: inline-block; width: 4px; height: 15px; background: #00f2ff; margin: 0 2px; border-radius: 2px;"></div>
+                    <div style="display: inline-block; width: 4px; height: 25px; background: #7000ff; margin: 0 2px; border-radius: 2px;"></div>
+                    <div style="display: inline-block; width: 4px; height: 40px; background: #00f2ff; margin: 0 2px; border-radius: 2px;"></div>
+                    <div style="display: inline-block; width: 4px; height: 20px; background: #7000ff; margin: 0 2px; border-radius: 2px;"></div>
+                    <div style="display: inline-block; width: 4px; height: 35px; background: #00f2ff; margin: 0 2px; border-radius: 2px;"></div>
+                  </div>
+                  <p style="color: #8e8e8e; font-size: 11px; margin: 0; letter-spacing: 2px;">DATE OF ISSUE</p>
+                  <p style="color: #ffffff; font-size: 18px; margin: 5px 0; font-weight: bold;">${issueDate}</p>
                 </td>
                 <td width="33%" align="right" valign="bottom">
                   <div style="display: inline-block; text-align: center;">
-                    <img src="https://myairlink.vercel.app/assets/signature.png" style="height: 90px; width: auto; opacity: 0.9; margin-bottom: -35px; position: relative; z-index: 10;" alt="Harshpal" />
+                    <img src="${signatureBase64}" style="height: 90px; width: auto; opacity: 0.9; margin-bottom: -35px; position: relative; z-index: 10;" alt="Harshpal" />
                     <div style="width: 150px; height: 1px; background: #00f2ff; margin: 0 auto 5px auto; position: relative; z-index: 5;"></div>
                     <p style="color: #8e8e8e; font-size: 10px; margin: 0 0 5px 0; letter-spacing: 1px; padding-top: 15px;">FOUNDER SIGNATURE</p>
                   </div>
