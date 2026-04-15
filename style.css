@@ -780,6 +780,7 @@ footer {
 .track-2 .scroll-content.horizontal { animation-duration: 50s; animation-direction: reverse; animation-delay: -15s; }
 .track-3 .scroll-content.horizontal { animation-duration: 40s; animation-delay: -8s; }
 .track-4 .scroll-content.horizontal { animation-duration: 30s; animation-direction: reverse; animation-delay: -25s; } /* Fastest (₹1-10) */
+.track-5 .scroll-content.horizontal { animation-duration: 45s; animation-delay: -12s; } /* Custom Tier */
 
 @keyframes scrollHorizontal {
     0% { transform: translate3d(0, 0, 0); }
@@ -852,12 +853,55 @@ footer {
     font-size: 0.8rem;
 }
 
+/* Track 5: Custom (Special Tier) */
+.supporter-card.tier-custom {
+    min-width: 240px;
+    padding: 0 1.8rem;
+    border-color: rgba(155, 89, 182, 0.3);
+    box-shadow: 0 0 20px rgba(155, 89, 182, 0.1);
+}
+
+.supporter-card.tier-custom .supporter-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+}
+
 .supporter-card:hover {
     background: var(--surface-hover);
     border-color: var(--primary-color);
     transform: scale(1.05);
     opacity: 1;
     z-index: 20;
+}
+
+/* Tooltip for donation amount on hover - Only for Custom Tier */
+.supporter-card.tier-custom::after {
+    content: attr(data-amount);
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--surface-color);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 100;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.supporter-card.tier-custom:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
 }
 
 .supporter-avatar {

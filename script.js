@@ -802,17 +802,21 @@ const trackContainers = {
     1: document.getElementById('track-1-content'),
     2: document.getElementById('track-2-content'),
     3: document.getElementById('track-3-content'),
-    4: document.getElementById('track-4-content')
+    4: document.getElementById('track-4-content'),
+    5: document.getElementById('track-5-content')
 };
 
 // State to store supporters for each track
-const supportersByTrack = { 1: [], 2: [], 3: [], 4: [] };
-const trackStates = { 1: '', 2: '', 3: '', 4: '' }; // Tracks DOM state to prevent flicker
+const supportersByTrack = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+const trackStates = { 1: '', 2: '', 3: '', 4: '', 5: '' }; // Tracks DOM state to prevent flicker
 let lastProcessedCount = 0;
 
-function createSupporterCard(name, tier) {
+function createSupporterCard(name, amount, tier) {
     const card = document.createElement('div');
     card.className = `supporter-card glass ${tier}`;
+    if (tier === 'tier-custom') {
+        card.setAttribute('data-amount', `₹${amount}`);
+    }
     const init = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
     card.innerHTML = `
         <div class="supporter-avatar">${init}</div>
@@ -843,8 +847,8 @@ function renderTrack(trackId, tier) {
     // To create a seamless loop, we need at least enough items to fill the width
     const itemsToRender = list.length < 3 ? [...list] : [...list, ...list];
 
-    itemsToRender.forEach(name => {
-        container.appendChild(createSupporterCard(name, tier));
+    itemsToRender.forEach(item => {
+        container.appendChild(createSupporterCard(item.name, item.amount, tier));
     });
 
     // Toggle animation and centering based on content length
@@ -885,9 +889,9 @@ async function fetchSupporters() {
                 else if (amount === 51) trackId = 2;
                 else if (amount === 21) trackId = 3;
                 else if (amount === 11) trackId = 4;
-                else return;
+                else trackId = 5; // Custom amount automatically goes to track 5
 
-                supportersByTrack[trackId].unshift(supporter.name);
+                supportersByTrack[trackId].unshift({ name: supporter.name, amount: amount });
             });
 
             // Update the live total money UI
@@ -902,8 +906,14 @@ async function fetchSupporters() {
                 totalSupportersEl.innerText = supporters.length;
             }
 
-            // Re-render all 4 tracks to reflect the current sheet state
-            const tiers = { 1: 'tier-platinum', 2: 'tier-gold', 3: 'tier-silver', 4: 'tier-community' };
+            // Re-render all tracks to reflect the current sheet state
+            const tiers = { 
+                1: 'tier-platinum', 
+                2: 'tier-gold', 
+                3: 'tier-silver', 
+                4: 'tier-community',
+                5: 'tier-custom' 
+            };
             for (let id in supportersByTrack) {
                 renderTrack(id, tiers[id]);
             }
