@@ -896,6 +896,12 @@ async function fetchSupporters() {
                 totalMoneyEl.innerText = `₹${totalCollected}`;
             }
 
+            // Update total supporters count
+            const totalSupportersEl = document.getElementById('total-supporters-count');
+            if (totalSupportersEl) {
+                totalSupportersEl.innerText = supporters.length;
+            }
+
             // Re-render all 4 tracks to reflect the current sheet state
             const tiers = { 1: 'tier-platinum', 2: 'tier-gold', 3: 'tier-silver', 4: 'tier-community' };
             for (let id in supportersByTrack) {
