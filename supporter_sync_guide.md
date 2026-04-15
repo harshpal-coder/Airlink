@@ -9,7 +9,9 @@ Follow these steps to replace the "fake" data with your real Google Form submiss
    - **Amount**: (Number)
    - **Email**: (Short answer)
 3. Go to the **Settings** tab and ensure responses are collected.
-4. **Mandatory**: Open the linked Google Sheet and add a header **"Status"** in Column E (to track sent emails).
+4. **Mandatory**: Open the linked Google Sheet and add headers: 
+   - **"Status"** in Column E (to track sent emails).
+   - **"Opened"** in Column F (to track email opens).
 
 ### Step 2: Link to a Google Sheet
 1. Click the **Responses** tab in your Google Form.
@@ -22,12 +24,29 @@ Follow these steps to replace the "fake" data with your real Google Form submiss
 
 ```javascript
 /**
- * AIRLINK SUPPORTER MASTER SCRIPT (v2.0 - PDF Cert Edition)
- * Features: Auto-Ranking, Premium HTML Email, PDF Certificate Attachment
+ * AIRLINK SUPPORTER MASTER SCRIPT (v3.0 - Pixel Tracking Edition)
+ * Features: Auto-Ranking, HTML Email, PDF Certificate, Open Tracking
  */
 
-function doGet() {
+// ⚠️ PASTE YOUR WEB APP URL HERE AFTER DEPLOYMENT (For Tracking to work)
+const WEB_APP_URL = "YOUR_WEB_APP_URL_HERE";
+
+function doGet(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  
+  // -- PIXEL TRACKING LOGIC --
+  if (e && e.parameter.action === 'track') {
+    const rank = parseInt(e.parameter.rank);
+    if (rank > 0) {
+      const currentStatus = sheet.getRange(rank + 1, 6).getValue();
+      if (!currentStatus) { // Only log the first time they open it
+        sheet.getRange(rank + 1, 6).setValue('Opened: ' + new Date().toLocaleString());
+      }
+    }
+    return ContentService.createTextOutput(""); 
+  }
+  
+  // -- NORMAL API LOGIC --
   const data = sheet.getDataRange().getValues();
   const supporters = [];
   
@@ -274,6 +293,10 @@ function generateCertificatePDF(name, rank) {
  * Sends a premium HTML email with PDF attachment
  */
 function sendThankYouEmail(email, name, amount, rank) {
+  if (WEB_APP_URL === "YOUR_WEB_APP_URL_HERE") {
+    Logger.log("WARNING: Please set your WEB_APP_URL at the top of the script for tracking to work!");
+  }
+
   const subject = "Official AirLink Supporter Certificate - #" + rank + " 🚀";
   const websiteUrl = "https://myairlink.vercel.app/"; 
   const githubUrl = "https://github.com/harshpal-coder/Airlink-App";
@@ -281,7 +304,11 @@ function sendThankYouEmail(email, name, amount, rank) {
   
   const pdfBlob = generateCertificatePDF(name, rank);
   
+  // Injects an invisible 1x1 tracking pixel image
+  const trackingPixel = `<img src="${WEB_APP_URL}?action=track&rank=${rank}" width="1" height="1" style="display:none; border:0; outline:none; text-decoration:none;" alt="" />`;
+  
   const htmlBody = `
+    ${trackingPixel}
     <div style="background-color: #050a10; padding: 40px 20px; font-family: sans-serif; color: #ffffff; line-height: 1.6;">
       <div style="max-width: 700px; margin: 0 auto; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 242, 255, 0.1); border-radius: 24px; padding: 50px;">
         
@@ -367,8 +394,10 @@ function sendThankYouEmail(email, name, amount, rank) {
 6. Click **Deploy** and **Authorize Access**.
 7. **Copy the Web App URL**.
 
-### Step 5: Update the Website
-1. Provide the **Web App URL** to me, and I will update the website's code to start pulling live data!
+### Step 5: Update the Website & Script with URL
+1. **Copy the Web App URL** from the deployment.
+2. Go back to the Apps Script editor, and replace `"YOUR_WEB_APP_URL_HERE"` at the very top of the code with your actual URL. **Save it**. (This is required for Email Open Tracking to work!)
+3. Provide the same **Web App URL** to me, and I will update the website's code to start pulling live data!
 
 ### Step 6: Enable Auto-Thank You Email
 To make the "Thank You" email work automatically for NEW submissions, you must set up a **Trigger**:
