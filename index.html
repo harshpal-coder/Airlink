@@ -407,6 +407,13 @@
                     <span id="total-money-amount" style="color: var(--primary-color); font-size: 1.1rem;">₹0</span>
                 </div>
                 <p style="color: var(--text-dim); margin-top: 1rem;">Powering the future of decentralized communication.</p>
+                <div style="margin-top: 1.5rem;">
+                    <button id="open-payment-modal-btn" class="btn-become-supporter">
+                        <i class="fa-solid fa-heart"></i>
+                        <span>Become a Supporter</span>
+                        <div class="btn-glow-ring"></div>
+                    </button>
+                </div>
             </div>
 
             <div class="supporters-scroll-container horizontal">
@@ -445,8 +452,166 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </section>
+
+    <!-- ===== PAYMENT MODAL ===== -->
+    <div id="payment-modal" class="payment-modal-overlay" aria-hidden="true">
+        <div class="payment-modal-box glass">
+
+            <!-- Modal Header -->
+            <div class="payment-modal-header">
+                <div class="payment-modal-logo">
+                    <i class="fa-solid fa-heart" style="color: #FF6B8A;"></i>
+                    <span>Support AirLink</span>
+                </div>
+                <button id="close-payment-modal-btn" class="modal-close-btn" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Step Indicator -->
+            <div class="payment-steps-indicator">
+                <div class="step-dot active" id="step-dot-1"></div>
+                <div class="step-line"></div>
+                <div class="step-dot" id="step-dot-2"></div>
+                <div class="step-line"></div>
+                <div class="step-dot" id="step-dot-3"></div>
+                <div class="step-line"></div>
+                <div class="step-dot" id="step-dot-4"></div>
+            </div>
+
+            <!-- STEP 1: Details -->
+            <div class="payment-step" id="payment-step-1">
+                <h3 class="step-title">Your Details</h3>
+                <p class="step-subtitle">Your name will appear on our supporters wall!</p>
+                <div class="form-group">
+                    <label for="supporter-name"><i class="fa-solid fa-user"></i> Full Name</label>
+                    <input type="text" id="supporter-name" placeholder="e.g. Harsh Pal" autocomplete="name" />
+                </div>
+                <div class="form-group">
+                    <label for="supporter-email"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                    <div class="email-otp-row">
+                        <input type="email" id="supporter-email" placeholder="e.g. you@example.com" autocomplete="email" />
+                        <button id="send-otp-btn" class="btn-send-otp">Send OTP</button>
+                    </div>
+                </div>
+                <!-- OTP Section — hidden until OTP is sent -->
+                <div id="otp-section" class="otp-section hidden">
+                    <div class="form-group">
+                        <label for="otp-input"><i class="fa-solid fa-shield-halved"></i> Enter OTP</label>
+                        <input type="text" id="otp-input" placeholder="6-digit OTP" maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
+                        <span style="font-size:0.78rem; color: var(--text-dim); margin-top:0.3rem; display:block;">
+                            <i class="fa-solid fa-circle-info" style="color:var(--primary-color);"></i>
+                            Check your email inbox for the OTP
+                        </span>
+                    </div>
+                    <div id="otp-status" class="submission-status"></div>
+                    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+                        <span style="font-size:0.82rem; color:var(--text-dim);">Didn't receive it?</span>
+                        <button id="resend-otp-btn" class="btn-resend-otp" disabled>Resend in <span id="resend-timer">30</span>s</button>
+                    </div>
+                </div>
+                <button class="btn-step-next" id="step1-next" disabled style="opacity:0.5; cursor:not-allowed;">Verify & Continue <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+
+
+            <!-- STEP 2: Amount -->
+            <div class="payment-step hidden" id="payment-step-2">
+                <h3 class="step-title">Choose Your Tier</h3>
+                <p class="step-subtitle">Select a preset amount or enter your own.</p>
+                <div class="tier-chips">
+                    <button class="tier-chip" data-amount="11">
+                        <span class="tier-amount">₹11</span>
+                        <span class="tier-label">Community</span>
+                    </button>
+                    <button class="tier-chip" data-amount="21">
+                        <span class="tier-amount">₹21</span>
+                        <span class="tier-label">Silver</span>
+                    </button>
+                    <button class="tier-chip" data-amount="51">
+                        <span class="tier-amount">₹51</span>
+                        <span class="tier-label">Gold</span>
+                    </button>
+                    <button class="tier-chip tier-chip-platinum" data-amount="101">
+                        <span class="tier-amount">₹101</span>
+                        <span class="tier-label">Platinum ✨</span>
+                    </button>
+                </div>
+                <div class="custom-amount-wrapper">
+                    <div class="form-group">
+                        <label for="custom-amount"><i class="fa-solid fa-pen"></i> Or Enter Custom Amount (₹)</label>
+                        <input type="number" id="custom-amount" placeholder="e.g. 75" min="1" />
+                    </div>
+                </div>
+                <div style="display:flex; gap: 0.75rem; margin-top: 1.5rem;">
+                    <button class="btn-step-back" id="step2-back"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    <button class="btn-step-next" id="step2-next">Generate QR <i
+                            class="fa-solid fa-qrcode"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Payment QR -->
+            <div class="payment-step hidden" id="payment-step-3">
+                <h3 class="step-title">Scan & Pay</h3>
+                <p class="step-subtitle">Scan the QR code with any UPI app.</p>
+                <div class="qr-display-area">
+                    <div class="qr-frame">
+                        <img id="qr-code-img" src="" alt="UPI QR Code" />
+                    </div>
+                    <div class="qr-amount-badge">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                        <span id="qr-amount-display">0</span>
+                    </div>
+                </div>
+                <a id="upi-deeplink-btn" href="#" class="btn-upi-app">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    Pay via UPI App
+                </a>
+                <p class="upi-id-display">UPI ID: <strong>8577026386@sbi</strong></p>
+                <div style="display:flex; gap: 0.75rem; margin-top: 1rem;">
+                    <button class="btn-step-back" id="step3-back"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    <button class="btn-step-next" id="step3-next">I've Paid <i class="fa-solid fa-check"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 4: Confirmation -->
+            <div class="payment-step hidden" id="payment-step-4">
+                <h3 class="step-title">Confirm Payment</h3>
+                <p class="step-subtitle">Enter your UPI Transaction ID to confirm.</p>
+                <div class="form-group">
+                    <label for="transaction-id"><i class="fa-solid fa-receipt"></i> Transaction ID (UTR)</label>
+                    <input type="text" id="transaction-id" placeholder="e.g. 503842716294"
+                        inputmode="numeric" pattern="[0-9]{12}" maxlength="12" autocomplete="off" />
+                    <span style="font-size:0.78rem; color: var(--text-dim); margin-top: 0.3rem; display:block;">
+                        <i class="fa-solid fa-circle-info" style="color: var(--primary-color);"></i>
+                        12-digit number shown in your UPI app after payment
+                    </span>
+                </div>
+                <div id="submission-status" class="submission-status"></div>
+                <div style="display:flex; gap: 0.75rem; margin-top: 1.5rem;">
+                    <button class="btn-step-back" id="step4-back"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    <button class="btn-submit-payment" id="submit-payment-btn">
+                        <span id="submit-btn-text">Confirm & Submit <i class="fa-solid fa-paper-plane"></i></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 5: Success -->
+            <div class="payment-step hidden" id="payment-step-5">
+                <div class="success-state">
+                    <div class="success-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <h3>Thank You! 💙</h3>
+                    <p>You're now an official AirLink Supporter.<br>Your name will appear on the wall shortly.</p>
+                    <button class="btn-step-next" id="step5-done" style="margin-top:1.5rem;">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
     <section id="download">
         <div class="container links-section">

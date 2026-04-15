@@ -797,7 +797,7 @@ if (compareContainer) {
 
 
 // --- LIVE SUPPORTERS FEED (REAL GOOGLE SHEET LINK) ---
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyGn1clCehjU3sy6Ew3XETcdWh_UilXW8n57PBELWegMhDZovRaHD9JyfdvB1K2fOdljg/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylc8RPs2RTLE2IQdtgG9wXibZY3IJ1nbyb1xzAV_jRoM7cs728xpCIMqtchoDLEajKrA/exec';
 const trackContainers = {
     1: document.getElementById('track-1-content'),
     2: document.getElementById('track-2-content'),
@@ -926,6 +926,328 @@ async function fetchSupporters() {
 // Sync with Google Sheets every 10 seconds
 setInterval(fetchSupporters, 10000);
 fetchSupporters(); // Initial sync on load
+
+// =============================================
+// PAYMENT MODAL LOGIC
+// =============================================
+(function () {
+    // --- Constants ---
+    const UPI_ID = '8577026386@sbi';
+    const PAYEE_NAME = 'Airlink project';
+
+    // --- Element refs ---
+    const modal = document.getElementById('payment-modal');
+    const openBtn = document.getElementById('open-payment-modal-btn');
+    const closeBtn = document.getElementById('close-payment-modal-btn');
+
+    const steps = [1, 2, 3, 4, 5].map(n => document.getElementById(`payment-step-${n}`));
+    const stepDots = [1, 2, 3, 4].map(n => document.getElementById(`step-dot-${n}`));
+
+    // Step 1
+    const nameInput = document.getElementById('supporter-name');
+    const emailInput = document.getElementById('supporter-email');
+    const step1Next = document.getElementById('step1-next');
+    const sendOtpBtn = document.getElementById('send-otp-btn');
+    const otpSection = document.getElementById('otp-section');
+    const otpInput = document.getElementById('otp-input');
+    const otpStatus = document.getElementById('otp-status');
+    const resendOtpBtn = document.getElementById('resend-otp-btn');
+    const resendTimer = document.getElementById('resend-timer');
+
+    // Step 2
+    const tierChips = document.querySelectorAll('.tier-chip');
+    const customAmountInput = document.getElementById('custom-amount');
+    const step2Back = document.getElementById('step2-back');
+    const step2Next = document.getElementById('step2-next');
+
+    // Step 3
+    const qrImg = document.getElementById('qr-code-img');
+    const qrAmountDisplay = document.getElementById('qr-amount-display');
+    const upiDeeplink = document.getElementById('upi-deeplink-btn');
+    const step3Back = document.getElementById('step3-back');
+    const step3Next = document.getElementById('step3-next');
+
+    // Step 4
+    const txnIdInput = document.getElementById('transaction-id');
+    const submitBtn = document.getElementById('submit-payment-btn');
+    const submissionStatus = document.getElementById('submission-status');
+    const step4Back = document.getElementById('step4-back');
+
+    // Step 5
+    const step5Done = document.getElementById('step5-done');
+
+    // --- State ---
+    let currentStep = 1;
+    let selectedAmount = 0;
+    let generatedOtp = '';
+    let emailVerified = false;
+    let resendInterval = null;
+
+    // --- Helpers ---
+    function goToStep(n) {
+        steps.forEach((s, i) => {
+            if (s) s.classList.toggle('hidden', i !== n - 1);
+        });
+        stepDots.forEach((dot, i) => {
+            if (!dot) return;
+            dot.classList.remove('active', 'completed');
+            if (i + 1 < n) dot.classList.add('completed');
+            else if (i + 1 === n) dot.classList.add('active');
+        });
+        currentStep = n;
+    }
+
+    function openModal() {
+        resetModal();
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    function resetModal() {
+        nameInput.value = '';
+        emailInput.value = '';
+        if (otpInput) otpInput.value = '';
+        if (otpSection) otpSection.classList.add('hidden');
+        if (otpStatus) { otpStatus.textContent = ''; otpStatus.className = 'submission-status'; }
+        if (sendOtpBtn) { sendOtpBtn.textContent = 'Send OTP'; sendOtpBtn.disabled = false; sendOtpBtn.classList.remove('sent'); }
+        if (step1Next) { step1Next.disabled = true; step1Next.style.opacity = '0.5'; step1Next.style.cursor = 'not-allowed'; }
+        if (resendOtpBtn) { resendOtpBtn.disabled = true; resendOtpBtn.textContent = 'Resend'; }
+        if (resendInterval) clearInterval(resendInterval);
+        generatedOtp = '';
+        emailVerified = false;
+        customAmountInput.value = '';
+        txnIdInput.value = '';
+        submissionStatus.textContent = '';
+        submissionStatus.className = 'submission-status';
+        tierChips.forEach(c => c.classList.remove('selected'));
+        selectedAmount = 0;
+        goToStep(1);
+    }
+
+    function buildQrUrl(amount) {
+        const upiPayload = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent('AirLink Support')}`;
+        return `https://quickchart.io/qr?text=${encodeURIComponent(upiPayload)}&size=200&margin=1`;
+    }
+
+    function updateQr(amount) {
+        selectedAmount = amount;
+        qrImg.src = buildQrUrl(amount);
+        qrAmountDisplay.textContent = amount;
+        // Update UPI deep-link for mobile
+        upiDeeplink.href = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent('AirLink Support')}`;
+    }
+
+    // --- OTP Helpers ---
+    function generateOtp() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    function startResendTimer() {
+        let secs = 30;
+        if (resendTimer) resendTimer.textContent = secs;
+        if (resendOtpBtn) { resendOtpBtn.disabled = true; resendOtpBtn.innerHTML = `Resend in <span id="resend-timer">${secs}</span>s`; }
+        if (resendInterval) clearInterval(resendInterval);
+        resendInterval = setInterval(() => {
+            secs--;
+            const timerEl = document.getElementById('resend-timer');
+            if (timerEl) timerEl.textContent = secs;
+            if (secs <= 0) {
+                clearInterval(resendInterval);
+                if (resendOtpBtn) { resendOtpBtn.disabled = false; resendOtpBtn.textContent = 'Resend OTP'; }
+            }
+        }, 1000);
+    }
+
+    async function sendOtp(email) {
+        generatedOtp = generateOtp();
+        const params = new URLSearchParams({
+            action: 'sendOTP',
+            email: email,
+            otp: generatedOtp,
+        });
+        fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' }).catch(() => {});
+    }
+
+    // --- Step 1: Send OTP ---
+    sendOtpBtn && sendOtpBtn.addEventListener('click', async () => {
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        if (!name) { nameInput.focus(); nameInput.style.borderColor = 'var(--error-color)'; return; }
+        nameInput.style.borderColor = '';
+        if (!email || !email.includes('@') || !email.includes('.')) {
+            emailInput.focus(); emailInput.style.borderColor = 'var(--error-color)';
+            return;
+        }
+        emailInput.style.borderColor = '';
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.textContent = 'Sending…';
+        await sendOtp(email);
+        sendOtpBtn.textContent = '✓ Sent';
+        sendOtpBtn.classList.add('sent');
+        otpSection.classList.remove('hidden');
+        otpInput.focus();
+        otpStatus.textContent = `OTP sent to ${email}`;
+        otpStatus.className = 'submission-status otp-status-success';
+        startResendTimer();
+    });
+
+    // --- Step 1: Resend OTP ---
+    resendOtpBtn && resendOtpBtn.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        resendOtpBtn.disabled = true;
+        otpStatus.textContent = 'Resending OTP…';
+        otpStatus.className = 'submission-status loading';
+        await sendOtp(email);
+        otpInput.value = '';
+        emailVerified = false;
+        step1Next.disabled = true;
+        step1Next.style.opacity = '0.5';
+        otpStatus.textContent = `New OTP sent to ${email}`;
+        otpStatus.className = 'submission-status otp-status-success';
+        startResendTimer();
+    });
+
+    // --- Step 1: Verify OTP on input ---
+    otpInput && otpInput.addEventListener('input', () => {
+        const entered = otpInput.value.trim();
+        if (entered.length === 6) {
+            if (entered === generatedOtp) {
+                emailVerified = true;
+                otpStatus.textContent = '✅ Email verified!';
+                otpStatus.className = 'submission-status otp-status-success';
+                otpInput.style.borderColor = 'var(--success-color)';
+                step1Next.disabled = false;
+                step1Next.style.opacity = '1';
+                step1Next.style.cursor = 'pointer';
+            } else {
+                emailVerified = false;
+                otpStatus.textContent = '❌ Incorrect OTP. Please try again.';
+                otpStatus.className = 'submission-status error';
+                otpInput.style.borderColor = 'var(--error-color)';
+                step1Next.disabled = true;
+                step1Next.style.opacity = '0.5';
+            }
+        } else {
+            otpInput.style.borderColor = '';
+        }
+    });
+
+    // --- Step 1: Continue (only if verified) ---
+    step1Next && step1Next.addEventListener('click', () => {
+        if (!emailVerified) return;
+        goToStep(2);
+    });
+
+    // --- Step 2 ---
+    tierChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            tierChips.forEach(c => c.classList.remove('selected'));
+            chip.classList.add('selected');
+            customAmountInput.value = ''; // Clear custom when tier selected
+        });
+    });
+
+    customAmountInput && customAmountInput.addEventListener('input', () => {
+        if (customAmountInput.value) {
+            tierChips.forEach(c => c.classList.remove('selected'));
+        }
+    });
+
+    step2Back && step2Back.addEventListener('click', () => goToStep(1));
+    step2Next && step2Next.addEventListener('click', () => {
+        const selected = document.querySelector('.tier-chip.selected');
+        const customVal = parseInt(customAmountInput.value);
+
+        if (selected) {
+            updateQr(parseInt(selected.dataset.amount));
+        } else if (customVal && customVal >= 1) {
+            updateQr(customVal);
+        } else {
+            customAmountInput.focus();
+            customAmountInput.style.borderColor = 'var(--error-color)';
+            return;
+        }
+        customAmountInput.style.borderColor = '';
+        goToStep(3);
+    });
+
+    // --- Step 3 ---
+    step3Back && step3Back.addEventListener('click', () => goToStep(2));
+    step3Next && step3Next.addEventListener('click', () => goToStep(4));
+
+    // --- Step 4 ---
+    step4Back && step4Back.addEventListener('click', () => goToStep(3));
+    submitBtn && submitBtn.addEventListener('click', async () => {
+        const txnId = txnIdInput.value.trim();
+        const txnIdValid = /^\d{12}$/.test(txnId);
+        if (!txnIdValid) {
+            txnIdInput.focus();
+            txnIdInput.style.borderColor = 'var(--error-color)';
+            submissionStatus.textContent = '⚠️ Please enter a valid 12-digit Transaction ID.';
+            submissionStatus.className = 'submission-status error';
+            return;
+        }
+        txnIdInput.style.borderColor = '';
+
+        // Disable and show loading
+        submitBtn.disabled = true;
+        submissionStatus.textContent = '⏳ Submitting your details…';
+        submissionStatus.className = 'submission-status loading';
+
+        const payload = {
+            name: nameInput.value.trim(),
+            email: emailInput.value.trim(),
+            amount: selectedAmount,
+            txnId: txnId,
+        };
+
+        try {
+            // Single GET request with URL params — reliable for Google Apps Script
+            const params = new URLSearchParams({
+                action: 'addSupporter',
+                name: payload.name,
+                email: payload.email,
+                amount: payload.amount,
+                txnId: payload.txnId,
+            });
+            const submitUrl = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+
+            // Fire exactly ONE request then advance to success
+            fetch(submitUrl, { mode: 'no-cors' }).catch(() => {});
+            // Wait 2s then show success (can't read response in no-cors)
+            setTimeout(() => goToStep(5), 2000);
+        } catch (err) {
+            submissionStatus.textContent = '❌ Submission failed. Please try again.';
+            submissionStatus.className = 'submission-status error';
+            submitBtn.disabled = false;
+        }
+    });
+
+    // --- Step 5 ---
+    step5Done && step5Done.addEventListener('click', closeModal);
+
+    // --- Open / Close ---
+    openBtn && openBtn.addEventListener('click', openModal);
+    closeBtn && closeBtn.addEventListener('click', closeModal);
+
+    // Close on overlay click
+    modal && modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+    });
+})();
+
 
 // FAQ Toggles
 document.querySelectorAll('.faq-question').forEach(q => {
