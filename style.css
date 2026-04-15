@@ -52,6 +52,99 @@ h1, h2, h3 {
     letter-spacing: -0.02em;
 }
 
+/* Preloader */
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-color);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.loader-logo {
+    width: 80px;
+    height: auto;
+    animation: pulseLogo 2s infinite ease-in-out;
+}
+
+@keyframes pulseLogo {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px var(--accent-glow)); }
+    50% { transform: scale(1.1); filter: drop-shadow(0 0 25px var(--primary-color)); }
+}
+
+.mesh-loader {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    animation: spinMesh 4s linear infinite;
+}
+
+.mesh-loader .circle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.mesh-loader .circle:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
+.mesh-loader .circle:nth-child(2) { bottom: 0; left: 0; }
+.mesh-loader .circle:nth-child(3) { bottom: 0; right: 0; }
+
+.mesh-loader .line {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    border: 2px solid transparent;
+    border-top-color: var(--secondary-color);
+    border-radius: 50%;
+    animation: spinLine 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes spinMesh {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes spinLine {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.loader-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    animation: pulseText 1.5s infinite;
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
 /* Glassmorphism Utility */
 .glass {
     background: var(--surface-color);

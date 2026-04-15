@@ -1,3 +1,17 @@
+// Preloader Logic
+window.addEventListener('load', () => {
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        // Add a slight delay for aesthetic purposes so the smooth animation is seen
+        setTimeout(() => {
+            preloader.classList.add('hidden');
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 600); // Wait for transition to finish
+        }, 500); 
+    }
+});
+
 const canvas = document.getElementById('canvas-mesh');
 const ctx = canvas.getContext('2d');
 const navbar = document.getElementById('navbar');
