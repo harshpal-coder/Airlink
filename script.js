@@ -198,7 +198,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // 3D Tilt Effect Logic
-const tiltElements = document.querySelectorAll('.hero-image, .feature-card, .tech-card, .supporter-tier');
+const tiltElements = document.querySelectorAll('.feature-card, .tech-card, .supporter-tier');
 tiltElements.forEach(el => {
     el.addEventListener('mousemove', (e) => {
         const rect = el.getBoundingClientRect();
