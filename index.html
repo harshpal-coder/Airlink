@@ -756,6 +756,75 @@
         </div>
     </footer>
 
+    <!-- Disaster Mode Vignette Overlay -->
+    <div class="disaster-overlay"></div>
+
+    <!-- CRT Scanlines Overlay -->
+    <div class="scanlines-overlay"></div>
+
+    <!-- Disaster Mode FAB -->
+    <button id="disaster-toggle" class="disaster-fab" title="Simulate Internet Shutdown">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+    </button>
+
+    <!-- Emergency HUD (Enhanced) -->
+    <div id="emergency-hud" class="emergency-hud">
+        <div class="hud-content">
+            <!-- Typewriter warning bar -->
+            <div class="hud-warning-bar">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span id="hud-typewriter" class="hud-typewriter-text"></span>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <!-- Live stats row -->
+            <div class="hud-stats-row">
+                <div class="hud-stat">
+                    <div class="hud-stat-label">INTERNET</div>
+                    <div class="hud-stat-value offline">OFFLINE</div>
+                </div>
+                <div class="hud-stat-divider"></div>
+                <div class="hud-stat">
+                    <div class="hud-stat-label">AIRLINK MESH</div>
+                    <div class="hud-stat-value online">ACTIVE</div>
+                </div>
+                <div class="hud-stat-divider"></div>
+                <div class="hud-stat">
+                    <div class="hud-stat-label">MESH UPTIME</div>
+                    <div class="hud-stat-value uptime" id="hud-uptime">00:00:00</div>
+                </div>
+                <div class="hud-stat-divider"></div>
+                <div class="hud-stat">
+                    <div class="hud-stat-label">NODES LIVE</div>
+                    <div class="hud-stat-value online" id="hud-nodes">--</div>
+                </div>
+            </div>
+            <!-- Status bar -->
+            <div class="hud-status">
+                <span class="status-pulse"></span>
+                <span id="hud-led" class="hud-led" title="Transmission LED"></span>
+                AirLink Mesh Network: <span class="status-active">BROADCASTING &amp; ENCRYPTED</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Ticker Tape -->
+    <div id="emergency-ticker" class="emergency-ticker">
+        <div class="ticker-inner">
+            <span>&#9888; INTERNET SHUTDOWN DETECTED &nbsp;&nbsp;&nbsp; &#9642; ALL CENTRALIZED APPS: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; WHATSAPP: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; TELEGRAM: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; SIGNAL: OFFLINE &nbsp;&nbsp;&nbsp; &#9888; AIRLINK P2P MESH: ACTIVE &amp; ENCRYPTED &nbsp;&nbsp;&nbsp; &#9642; COMMUNICATE WITHOUT INTERNET &nbsp;&nbsp;&nbsp; &#9642; MESH NODES ROUTING MESSAGES &nbsp;&nbsp;&nbsp; &#9642; ZERO DEPENDENCY ON INTERNET PROVIDERS &nbsp;&nbsp;&nbsp; &#9888; STAY CONNECTED WITH AIRLINK &nbsp;&nbsp;&nbsp;</span>
+            <span aria-hidden="true">&#9888; INTERNET SHUTDOWN DETECTED &nbsp;&nbsp;&nbsp; &#9642; ALL CENTRALIZED APPS: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; WHATSAPP: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; TELEGRAM: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; SIGNAL: OFFLINE &nbsp;&nbsp;&nbsp; &#9888; AIRLINK P2P MESH: ACTIVE &amp; ENCRYPTED &nbsp;&nbsp;&nbsp; &#9642; COMMUNICATE WITHOUT INTERNET &nbsp;&nbsp;&nbsp; &#9642; MESH NODES ROUTING MESSAGES &nbsp;&nbsp;&nbsp; &#9642; ZERO DEPENDENCY ON INTERNET PROVIDERS &nbsp;&nbsp;&nbsp; &#9888; STAY CONNECTED WITH AIRLINK &nbsp;&nbsp;&nbsp;</span>
+        </div>
+    </div>
+
+    <!-- Disaster Terminal Overlay -->
+    <div id="disaster-terminal" class="disaster-terminal">
+        <div class="terminal-header">
+            <span class="terminal-dots"><span></span><span></span><span></span></span>
+            <span class="terminal-title">airlink-mesh-proto.sh</span>
+        </div>
+        <div id="terminal-body" class="terminal-body"></div>
+        <div class="terminal-scanline"></div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 

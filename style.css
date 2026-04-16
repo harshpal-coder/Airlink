@@ -1979,3 +1979,616 @@ body.intro-revealed .hero-image {
 
 
 
+
+/* ============================================
+   DISASTER MODE SIMULATOR — ENHANCED
+   ============================================ */
+
+/* 1. Global Variable Overrides */
+body.disaster-mode {
+    --primary-color: #FF3131;
+    --secondary-color: #8B0000;
+    --accent-glow: rgba(255, 49, 49, 0.4);
+    --bg-color: #0F0202;
+}
+
+/* 2. Floating Action Button */
+.disaster-fab {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 65px;
+    height: 65px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 2px solid #00F2FF;
+    border-radius: 50%;
+    color: #00F2FF;
+    font-size: 1.4rem;
+    cursor: pointer;
+    z-index: 3000;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+}
+
+.disaster-fab:hover {
+    transform: scale(1.15) rotate(15deg);
+    background: #00F2FF;
+    color: #0B0E14;
+    box-shadow: 0 0 35px rgba(0, 242, 255, 0.6);
+}
+
+.disaster-mode .disaster-fab {
+    background: #FF3131;
+    color: #FFF;
+    border-color: rgba(255, 255, 255, 0.7);
+    animation: fab-alarm 0.8s infinite alternate ease-in-out;
+}
+
+.disaster-mode .disaster-fab:hover {
+    background: #cc0000;
+    color: #FFF;
+}
+
+@keyframes fab-alarm {
+    0%   { transform: scale(1);    box-shadow: 0 0 15px #FF3131, 0 0 30px rgba(255,49,49,0.3); }
+    100% { transform: scale(1.12); box-shadow: 0 0 40px #FF3131, 0 0 80px rgba(255,49,49,0.5); }
+}
+
+/* 3. Red Vignette Overlay */
+.disaster-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(255, 0, 0, 0.12) 100%);
+    pointer-events: none;
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+.disaster-mode .disaster-overlay {
+    opacity: 1;
+    animation: vignette-pulse 2.5s infinite ease-in-out;
+}
+
+@keyframes vignette-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* 4. CRT Scanlines */
+.scanlines-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.07) 2px,
+        rgba(0, 0, 0, 0.07) 4px
+    );
+}
+
+.disaster-mode .scanlines-overlay {
+    opacity: 1;
+}
+
+/* 5. Emergency HUD - Vertical Console Mode */
+.emergency-hud {
+    position: fixed;
+    top: 85px;
+    left: 20px;
+    width: 300px;
+    height: calc(100vh - 180px);
+    z-index: 2500;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: translateX(-50px);
+}
+
+.disaster-mode .emergency-hud {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Page Layout Shift - Prevents HUD from hiding content */
+body.disaster-mode #navbar,
+body.disaster-mode header,
+body.disaster-mode section,
+body.disaster-mode footer {
+    margin-left: 320px; /* Width of HUD (300px) + spacing */
+    width: calc(100% - 320px);
+    transition: margin-left 0.5s ease, width 0.5s ease;
+}
+
+/* Ensure smooth transition back to normal */
+#navbar, header, section, footer {
+    transition: margin-left 0.5s ease, width 0.5s ease;
+}
+
+.hud-content {
+    background: rgba(10, 1, 1, 0.96);
+    border: 3px solid #FF3131;
+    border-radius: 8px;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 50px rgba(255, 49, 49, 0.3), inset 0 0 100px rgba(0, 0, 0, 0.95);
+    animation: border-glitch 5s infinite;
+}
+
+@keyframes border-glitch {
+    0%, 93%, 100% { border-color: #FF3131; box-shadow: 0 0 50px rgba(255, 49, 49, 0.3); }
+    94% { border-color: #00F2FF; box-shadow: 0 0 80px rgba(0, 242, 255, 0.4); }
+    96% { border-color: #FF3131; }
+    97% { border-color: #FFF; }
+}
+
+.hud-warning-bar {
+    background: #FF3131;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    border-bottom: 2px solid rgba(0,0,0,0.3);
+}
+
+.hud-stats-row {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    gap: 1.2rem;
+    justify-content: flex-start;
+}
+
+.hud-stat {
+    text-align: left;
+    border-left: 3px solid rgba(255, 49, 49, 0.4);
+    padding: 0.8rem 1.2rem;
+    background: rgba(255, 49, 49, 0.03);
+    border-radius: 0 8px 8px 0;
+    transition: all 0.3s;
+}
+
+.hud-stat:hover {
+    background: rgba(255, 49, 49, 0.08);
+    border-left-color: #FF3131;
+}
+
+.hud-status {
+    padding: 1.2rem;
+    background: rgba(0, 0, 0, 0.4);
+    border-top: 1px solid rgba(255, 49, 49, 0.2);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hud-stat-divider {
+    display: none; /* Hidden in grid layout */
+}
+
+.hud-stat-label {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.hud-stat-value {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.hud-stat-value.offline {
+    color: #FF3131;
+    text-shadow: 0 0 10px rgba(255,49,49,0.6);
+    animation: offline-flicker 3s infinite;
+}
+
+.hud-stat-value.online {
+    color: #00F2FF;
+    text-shadow: 0 0 10px rgba(0,242,255,0.6);
+}
+
+.hud-stat-value.uptime {
+    color: #FFD700;
+    text-shadow: 0 0 10px rgba(255,215,0,0.5);
+    font-family: 'Courier New', monospace;
+}
+
+@keyframes offline-flicker {
+    0%, 90%, 100% { opacity: 1; }
+    91% { opacity: 0.1; }
+    92% { opacity: 1; }
+    93% { opacity: 0.05; }
+    94% { opacity: 1; }
+}
+
+.hud-stat-divider {
+    width: 1px;
+    background: rgba(255, 49, 49, 0.3);
+    margin: 0 0.5rem;
+    flex-shrink: 0;
+}
+
+/* HUD Status Row */
+.hud-status {
+    border-top: 1px solid rgba(255, 49, 49, 0.25);
+    padding: 0.7rem 1.5rem;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.status-pulse {
+    width: 8px;
+    height: 8px;
+    background: #00F2FF;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #00F2FF;
+    flex-shrink: 0;
+    animation: status-pulse-anim 1s infinite alternate;
+}
+
+@keyframes status-pulse-anim {
+    from { opacity: 0.4; transform: scale(0.85); box-shadow: 0 0 4px #00F2FF; }
+    to   { opacity: 1;   transform: scale(1.2);  box-shadow: 0 0 14px #00F2FF; }
+}
+
+.status-active {
+    color: #00F2FF;
+    font-weight: 700;
+}
+
+/* 6. Emergency Ticker Tape */
+.emergency-ticker {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 42px;
+    background: #FF3131;
+    z-index: 2500;
+    overflow: hidden;
+    display: none;
+    align-items: center;
+    border-top: 2px solid rgba(255,255,255,0.3);
+}
+
+.disaster-mode .emergency-ticker {
+    display: flex;
+    animation: ticker-reveal 0.4s ease forwards;
+}
+
+@keyframes ticker-reveal {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+
+.ticker-inner {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker-scroll 35s linear infinite;
+}
+
+.ticker-inner span {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #FFF;
+    letter-spacing: 1.5px;
+    padding: 0 1rem;
+    text-transform: uppercase;
+}
+
+@keyframes ticker-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* 7. Page content flicker on activate (brief flash) */
+body.disaster-flicker section,
+body.disaster-flicker header,
+body.disaster-flicker nav {
+    animation: content-flicker 0.4s ease forwards;
+}
+
+@keyframes content-flicker {
+    0%  { filter: brightness(1); }
+    15% { filter: brightness(0.2) saturate(0); }
+    30% { filter: brightness(1.4); }
+    50% { filter: brightness(0.1) saturate(0); }
+    65% { filter: brightness(1.2); }
+    80% { filter: brightness(0.6) saturate(0); }
+    100%{ filter: brightness(1); }
+}
+
+
+/* 8. Disaster Terminal (Bootup Sequence) */
+.disaster-terminal {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    font-family: 'Courier New', Courier, monospace;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    overflow: hidden;
+}
+
+.disaster-terminal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+    margin-bottom: 1.5rem;
+}
+
+.terminal-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.terminal-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #333;
+}
+
+.terminal-title {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.terminal-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 1rem;
+    line-height: 1.4;
+    overflow-y: auto;
+}
+
+.terminal-line {
+    display: flex;
+    gap: 10px;
+}
+
+.terminal-line.system { color: #FFF; }
+.terminal-line.warning { color: #FFD700; }
+.terminal-line.error { color: #FF3131; }
+.terminal-line.success { color: #00FF41; }
+.terminal-line.airlink { color: #00F2FF; }
+
+.terminal-timestamp {
+    color: rgba(255, 255, 255, 0.3);
+    user-select: none;
+}
+
+/* CRT Effects for Terminal */
+.terminal-scanline {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(18, 16, 16, 0) 50%,
+        rgba(0, 0, 0, 0.1) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    animation: scanline-scroll 10s linear infinite;
+}
+
+@keyframes scanline-scroll {
+    from { background-position: 0 0; }
+    to { background-position: 0 100%; }
+}
+
+.disaster-terminal::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(18, 16, 16, 0.1);
+    opacity: 0;
+    z-index: 5001;
+    pointer-events: none;
+    animation: flicker-terminal 0.15s infinite;
+}
+
+@keyframes flicker-terminal {
+    0% { opacity: 0.27861; }
+    5% { opacity: 0.34769; }
+    10% { opacity: 0.23604; }
+    15% { opacity: 0.90626; }
+    20% { opacity: 0.18128; }
+    25% { opacity: 0.83891; }
+    30% { opacity: 0.65583; }
+    35% { opacity: 0.57807; }
+    40% { opacity: 0.26559; }
+    45% { opacity: 0.84693; }
+    50% { opacity: 0.96019; }
+    55% { opacity: 0.08594; }
+    60% { opacity: 0.20313; }
+    65% { opacity: 0.71988; }
+    70% { opacity: 0.53455; }
+    75% { opacity: 0.37288; }
+    80% { opacity: 0.71428; }
+    85% { opacity: 0.70419; }
+    90% { opacity: 0.7003; }
+    95% { opacity: 0.36108; }
+    100% { opacity: 0.24387; }
+}
+
+/* 9. Section Glitches (Network Instability) */
+.disaster-mode section:not(#mesh-lab), 
+.disaster-mode header, 
+.disaster-mode footer {
+    animation: network-glitch 8s infinite;
+    position: relative;
+}
+
+@keyframes network-glitch {
+    0%, 93%, 100% { transform: none; filter: none; }
+    94% { 
+        transform: skew(1deg); 
+        filter: brightness(1.3) contrast(1.2);
+    }
+    95% { 
+        transform: skew(-1deg) translateX(4px); 
+        filter: hue-rotate(90deg) brightness(0.8);
+    }
+    96% { 
+        transform: none; 
+        filter: none;
+    }
+    97% { 
+        transform: scale(1.01) translateY(-2px);
+        filter: invert(0.05);
+    }
+    98% { 
+        transform: none; 
+        filter: brightness(1.5);
+    }
+}
+
+/* Subtle "tear" effect on background images/containers */
+.disaster-mode .glass-section,
+.disaster-mode .hero-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.disaster-mode .glass-section::before,
+.disaster-mode .hero-image::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.disaster-mode .glass-section:nth-child(even) {
+    animation-delay: 2s;
+}
+
+.disaster-mode header {
+    animation-delay: 4.5s;
+}
+
+
+.disaster-mode footer {
+    animation-delay: 1.2s;
+}
+
+/* 10. Offline Stamps (Visual Narrative) */
+.disaster-mode .cta-group a[href*="github"],
+.disaster-mode .btn-become-supporter,
+.disaster-mode footer a[href*="discord"],
+.disaster-mode .tier-chips button {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+    filter: grayscale(0.5) contrast(0.8);
+}
+
+.disaster-mode .cta-group a[href*="github"]::after,
+.disaster-mode .btn-become-supporter::after,
+.disaster-mode footer a[href*="discord"]::after {
+    content: "OFFLINE";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    background: #FF3131;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    border: 2px solid white;
+    box-shadow: 0 0 15px rgba(255, 49, 49, 0.8);
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 100;
+    border-radius: 4px;
+    animation: stamp-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes stamp-pop {
+    from { transform: translate(-50%, -50%) scale(2) rotate(-15deg); opacity: 0; }
+    to { transform: translate(-50%, -50%) scale(1) rotate(-15deg); opacity: 1; }
+}
+
+/* 11. Morse Code LED */
+.hud-led {
+    width: 10px;
+    height: 10px;
+    background: #331111;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 8px;
+    border: 1px solid rgba(255, 49, 49, 0.3);
+    transition: background 0.2s;
+}
+
+.disaster-mode .hud-led {
+    background: #FF3131;
+    box-shadow: 0 0 8px #FF3131;
+    animation: morse-airlink 12s infinite;
+}
+
+/* 
+   A (.-) I (..) R (.-.) L (.-..) I (..) N (-.) K (-.-) 
+   Simulated as a sequence of glows 
+*/
+@keyframes morse-airlink {
+    0%, 2%, 4%, 8%, 10%, 12%, 14%, 18%, 20%, 22%, 26%, 28%, 30%, 32%, 36%, 38%, 40%, 41%, 46%, 48%, 52%, 54%, 56%, 58%, 100% { 
+        background: #440000; box-shadow: none; 
+    }
+    1%, 3%, 5%, 6%, 7%, 9%, 11%, 13%, 15%, 16%, 17%, 19%, 21%, 23%, 24%, 25%, 27%, 29%, 31%, 33%, 34%, 35%, 37%, 39%, 42%, 43%, 44%, 45%, 47%, 49%, 50%, 51%, 53%, 55%, 57% { 
+        background: #FF3131; box-shadow: 0 0 8px #FF3131; 
+    }
+}

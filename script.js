@@ -67,10 +67,16 @@ class Particle {
     }
 
     draw() {
+        const disaster = window.isDisasterMode;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 242, 255, 0.5)';
+        ctx.arc(this.x, this.y, disaster ? this.size * 1.8 : this.size, 0, Math.PI * 2);
+        ctx.fillStyle = disaster ? 'rgba(0, 242, 255, 0.95)' : 'rgba(0, 242, 255, 0.5)';
+        if (disaster) {
+            ctx.shadowBlur = 18;
+            ctx.shadowColor = '#00F2FF';
+        }
         ctx.fill();
+        ctx.shadowBlur = 0;
     }
 }
 
@@ -96,11 +102,22 @@ function animate() {
             const dist = Math.sqrt(dx * dx + dy * dy);
 
             if (dist < 150) {
+                const disaster = window.isDisasterMode;
+                const alpha = disaster ? 0.45 * (1 - dist / 150) : 0.15 * (1 - dist / 150);
                 ctx.beginPath();
                 ctx.moveTo(p.x, p.y);
                 ctx.lineTo(p2.x, p2.y);
-                ctx.strokeStyle = `rgba(0, 242, 255, ${0.15 * (1 - dist / 150)})`;
+                ctx.strokeStyle = `rgba(0, 242, 255, ${alpha})`;
+                if (disaster) {
+                    ctx.lineWidth = 1.5;
+                    ctx.shadowBlur = 6;
+                    ctx.shadowColor = '#00F2FF';
+                } else {
+                    ctx.lineWidth = 1;
+                }
                 ctx.stroke();
+                ctx.shadowBlur = 0;
+                ctx.lineWidth = 1;
             }
         }
     });
@@ -267,16 +284,23 @@ if (labSection) {
         draw() {
             this.pulse += 0.05;
             const isShape = meshMode !== 'random';
+            const disaster = window.isDisasterMode;
             let r = (isShape ? 3 : 6) + Math.sin(this.pulse) * (isShape ? 1 : 2);
             if (this.flash > 0) r += this.flash * 8;
+            if (disaster) r *= 1.6; // Nodes grow in disaster mode — they're alive!
 
             lctx.beginPath();
             lctx.arc(this.x, this.y, r, 0, Math.PI * 2);
             lctx.fillStyle = this.flash > 0 ? `rgba(0, 242, 255, ${0.5 + this.flash})` : '#00F2FF';
+            if (disaster) {
+                lctx.shadowBlur = 25;
+                lctx.shadowColor = '#00F2FF';
+            }
             lctx.fill();
-            lctx.strokeStyle = `rgba(0, 242, 255, ${isShape ? 0.1 : 0.2})`;
-            lctx.lineWidth = isShape ? 3 : 8;
+            lctx.strokeStyle = `rgba(0, 242, 255, ${disaster ? 0.6 : (isShape ? 0.1 : 0.2)})`;
+            lctx.lineWidth = disaster ? 12 : (isShape ? 3 : 8);
             lctx.stroke();
+            lctx.shadowBlur = 0;
         }
     }
 
@@ -1537,3 +1561,194 @@ document.addEventListener('DOMContentLoaded', () => {
         if (startCarousel) startCarousel();
     }
 });
+
+
+
+// =============================================
+// --- DISASTER MODE SIMULATOR — ENHANCED ---
+// =============================================
+
+(function () {
+    const btn = document.getElementById('disaster-toggle');
+    if (!btn) return;
+
+    let isDisasterMode = false;
+    let uptimeInterval = null;
+    let nodeInterval = null;
+    let uptimeSeconds = 0;
+    
+    // --- Audio Assets ---
+    const siren = new Audio('assets/siren.mp3');
+    siren.loop = true;
+
+    window.isDisasterMode = false;
+
+    // --- Typewriter Effect ---
+    const TYPEWRITER_MSG = 'INTERNET CONNECTION TERMINATED';
+    function runTypewriter() {
+        const el = document.getElementById('hud-typewriter');
+        if (!el) return;
+        el.textContent = '';
+        let i = 0;
+        const iv = setInterval(() => {
+            if (!window.isDisasterMode) { clearInterval(iv); el.textContent = ''; return; }
+            if (i < TYPEWRITER_MSG.length) {
+                el.textContent += TYPEWRITER_MSG[i++];
+            } else {
+                clearInterval(iv);
+            }
+        }, 55);
+    }
+
+    // --- Live Uptime Counter ---
+    function startUptime() {
+        uptimeSeconds = 0;
+        const el = document.getElementById('hud-uptime');
+        uptimeInterval = setInterval(() => {
+            if (!el) return;
+            uptimeSeconds++;
+            const h = String(Math.floor(uptimeSeconds / 3600)).padStart(2, '0');
+            const m = String(Math.floor((uptimeSeconds % 3600) / 60)).padStart(2, '0');
+            const s = String(uptimeSeconds % 60).padStart(2, '0');
+            el.textContent = `${h}:${m}:${s}`;
+        }, 1000);
+    }
+
+    function stopUptime() {
+        clearInterval(uptimeInterval);
+        const el = document.getElementById('hud-uptime');
+        if (el) el.textContent = '00:00:00';
+    }
+
+    // --- Live Node Count (reads from Mesh Lab) ---
+    function startNodeCount() {
+        const el = document.getElementById('hud-nodes');
+        nodeInterval = setInterval(() => {
+            if (!el) return;
+            // Try to read from the lab's stat, with a small random jitter for realism
+            const statNodes = document.getElementById('stat-nodes');
+            const count = statNodes ? parseInt(statNodes.textContent) || 0 : 0;
+            el.textContent = count + Math.floor(Math.random() * 3); // slight jitter
+        }, 800);
+    }
+
+    function stopNodeCount() {
+        clearInterval(nodeInterval);
+        const el = document.getElementById('hud-nodes');
+        if (el) el.textContent = '--';
+    }
+
+    // --- Content Flicker on Activation ---
+    function triggerFlicker() {
+        document.body.classList.add('disaster-flicker');
+        setTimeout(() => document.body.classList.remove('disaster-flicker'), 450);
+    }
+
+    // --- Screen Shake ---
+    function triggerShake() {
+        const shakeTarget = document.querySelector('main') || document.body;
+        shakeTarget.style.animation = 'none';
+        void shakeTarget.offsetWidth;
+        shakeTarget.style.animation = 'screen-shake 0.5s ease';
+        setTimeout(() => { shakeTarget.style.animation = ''; }, 550);
+    }
+
+    // --- Terminal Sequence Logic ---
+    async function runTerminalSequence() {
+        const terminal = document.getElementById('disaster-terminal');
+        const body = document.getElementById('terminal-body');
+        if (!terminal || !body) return;
+
+        terminal.classList.add('active');
+        body.innerHTML = '';
+
+        const logs = [
+            { text: "INITIALIZING airlink-mesh-protocol v2.4.0-STABLE", type: "system" },
+            { text: "HARDWARE: Allocating mesh-buffer [1024MB]... [OK]", type: "system" },
+            { text: "HARDWARE: Detecting Bluetooth Low Energy (BLE) Radio... Found.", type: "system" },
+            { text: "HARDWARE: Initializing Wi-Fi Direct (P2P-GO) Stack... Found.", type: "system" },
+            { text: "CHECKING: Global Internet Connectivity...", type: "system" },
+            { text: "ERROR: Gateway [192.168.1.1] unreachable.", type: "error" },
+            { text: "ERROR: DNS resolve timeout (8.8.8.8).", type: "error" },
+            { text: "CRITICAL: Global Wide Area Network (WAN) lost.", type: "error" },
+            { text: "SYSTEM: Switching to Emergency AirLink Mesh Mode...", type: "warning" },
+            { text: "NETWORK: Scanning peer discovery channels 1, 6, 11...", type: "system" },
+            { text: "P2P: Discovery beacon sent [PID: 88102]", type: "system" },
+            { text: "PEER FOUND: [N-8821] - Latency: 4ms - SNR: 18dB", type: "airlink" },
+            { text: "PEER FOUND: [N-4493] - Latency: 12ms - SNR: 14dB", type: "airlink" },
+            { text: "PEER FOUND: [N-0012] - Latency: 7ms - SNR: 22dB", type: "airlink" },
+            { text: "CRYPTO: Generating ephemeral Signal Identity Keys...", type: "system" },
+            { text: "CRYPTO: Initializing Double Ratchet encryption... [SECURE]", type: "success" },
+            { text: "DATABASE: Syncing local offline messages... [14 queued]", type: "system" },
+            { text: "ROUTING: Recalculating Dijkstra topology paths...", type: "system" },
+            { text: "ROUTING: Found 3 alternate relay paths to Master Hub.", type: "success" },
+            { text: "SUCCESS: AirLink P2P Mesh Network fully synchronized.", type: "success" },
+            { text: "BOOT: Disaster Console Active. Monitoring Mesh Traffic...", type: "system" }
+        ];
+
+        for (const log of logs) {
+            if (!window.isDisasterMode) break; // Abort if turned off during sequence
+            
+            const line = document.createElement('div');
+            line.className = `terminal-line ${log.type}`;
+            const ts = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            line.innerHTML = `<span class="terminal-timestamp">[${ts}]</span> <span class="terminal-text">${log.text}</span>`;
+            body.appendChild(line);
+            body.scrollTop = body.scrollHeight;
+            
+            await new Promise(r => setTimeout(r, 180 + Math.random() * 200));
+        }
+
+        if (window.isDisasterMode) {
+            await new Promise(r => setTimeout(r, 500));
+            terminal.classList.remove('active');
+        }
+    }
+
+    // --- MAIN TOGGLE ---
+    btn.addEventListener('click', async () => {
+        isDisasterMode = !isDisasterMode;
+        window.isDisasterMode = isDisasterMode;
+
+        if (isDisasterMode) {
+            // Step 1: Show Terminal Bootup
+            btn.classList.add('loading'); // Optional loading state for button
+            await runTerminalSequence();
+            
+            if (!window.isDisasterMode) return; // In case they toggled it off fast
+
+            // Step 2: Apply Red Theme & Effects
+            document.body.classList.add('disaster-mode');
+            btn.title = 'Restore Internet Connection';
+            btn.innerHTML = '<i class="fa-solid fa-power-off"></i>';
+
+            siren.play().catch(e => console.log("Audio play blocked:", e));
+            
+            triggerShake();
+            setTimeout(triggerFlicker, 100);
+            setTimeout(runTypewriter, 400);
+            setTimeout(startUptime, 200);
+            setTimeout(startNodeCount, 200);
+
+        } else {
+            // Deactivate immediately
+            document.body.classList.remove('disaster-mode');
+            const terminal = document.getElementById('disaster-terminal');
+            if (terminal) terminal.classList.remove('active');
+
+            siren.pause();
+            siren.currentTime = 0;
+
+            btn.title = 'Simulate Internet Shutdown';
+            btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+
+            stopUptime();
+            stopNodeCount();
+
+            // Clear typewriter text
+            const twEl = document.getElementById('hud-typewriter');
+            if (twEl) twEl.textContent = '';
+        }
+    });
+
+})();
