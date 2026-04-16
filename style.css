@@ -713,6 +713,91 @@ footer {
     padding: 0;
 }
 
+/* --- SUPPORTERS SECTION HEADER --- */
+.supporters-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.supporters-header h2.section-title {
+    font-size: 2.75rem;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.supporters-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+}
+
+.stat-pill {
+    padding: 0.6rem 1.4rem;
+    border-radius: 50px;
+    border-color: rgba(0, 242, 255, 0.2);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.stat-pill:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 242, 255, 0.5);
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.15);
+}
+
+.stat-pill i {
+    font-size: 1rem;
+    filter: drop-shadow(0 0 5px rgba(0, 242, 255, 0.3));
+}
+
+.stat-pill .label {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stat-pill .value {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+#total-money-container i {
+    color: #FFD700;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
+}
+
+#total-supporters-container i {
+    color: var(--primary-color);
+    filter: drop-shadow(0 0 5px rgba(0, 242, 255, 0.3));
+}
+
+.section-subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.supporters-cta {
+    margin-top: 0.5rem;
+}
+
 /* Supporters Section - 4-Track Horizontal Mesh */
 .supporters-scroll-container.horizontal {
     width: 100vw;
@@ -1042,6 +1127,21 @@ footer {
 
     .hero h1 {
         font-size: 2.75rem;
+    }
+
+    /* Supporters Header Responsive */
+    .supporters-header h2.section-title {
+        font-size: 2.25rem !important;
+    }
+    .supporters-stats {
+        gap: 0.8rem;
+    }
+    .stat-pill {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    .stat-pill .value {
+        font-size: 1.1rem;
     }
 
     .features-grid, .infographic-grid, .tech-grid, .use-cases-grid {
