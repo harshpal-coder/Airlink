@@ -973,10 +973,11 @@ fetchSupporters(); // Initial sync on load
     const step1Next = document.getElementById('step1-next');
     const sendOtpBtn = document.getElementById('send-otp-btn');
     const otpSection = document.getElementById('otp-section');
-    const otpInput = document.getElementById('otp-input');
+    const otpInputs = document.querySelectorAll('.otp-input');
     const otpStatus = document.getElementById('otp-status');
     const resendOtpBtn = document.getElementById('resend-otp-btn');
     const resendTimer = document.getElementById('resend-timer');
+    const changeEmailBtn = document.getElementById('change-email-btn');
 
     // Step 2
     const tierChips = document.querySelectorAll('.tier-chip');
@@ -1037,7 +1038,7 @@ fetchSupporters(); // Initial sync on load
     function resetModal() {
         nameInput.value = '';
         emailInput.value = '';
-        if (otpInput) otpInput.value = '';
+        otpInputs.forEach(input => input.value = '');
         if (otpSection) otpSection.classList.add('hidden');
         if (otpStatus) { otpStatus.textContent = ''; otpStatus.className = 'submission-status'; }
         if (sendOtpBtn) { sendOtpBtn.textContent = 'Send OTP'; sendOtpBtn.disabled = false; sendOtpBtn.classList.remove('sent'); }
@@ -1075,18 +1076,45 @@ fetchSupporters(); // Initial sync on load
 
     function startResendTimer() {
         let secs = 30;
-        if (resendTimer) resendTimer.textContent = secs;
-        if (resendOtpBtn) { resendOtpBtn.disabled = true; resendOtpBtn.innerHTML = `Resend in <span id="resend-timer">${secs}</span>s`; }
+        const totalSecs = 30;
+        const progressEl = document.getElementById('resend-progress');
+        const timerText = document.getElementById('resend-timer');
+        const dashArray = 88; // 2 * PI * 14
+
+        if (timerText) timerText.textContent = secs;
+        if (resendOtpBtn) {
+            resendOtpBtn.disabled = true;
+            const timerContainer = document.getElementById('resend-timer-text');
+            if (timerContainer) timerContainer.innerHTML = `Resend in <span id="resend-timer">${secs}</span>s`;
+        }
+        
+        if (progressEl) progressEl.style.strokeDashoffset = dashArray;
+        
         if (resendInterval) clearInterval(resendInterval);
         resendInterval = setInterval(() => {
             secs--;
             const timerEl = document.getElementById('resend-timer');
             if (timerEl) timerEl.textContent = secs;
+            
+            if (progressEl) {
+                const offset = dashArray - (dashArray * (totalSecs - secs) / totalSecs);
+                progressEl.style.strokeDashoffset = offset;
+            }
+
             if (secs <= 0) {
                 clearInterval(resendInterval);
-                if (resendOtpBtn) { resendOtpBtn.disabled = false; resendOtpBtn.textContent = 'Resend OTP'; }
+                if (resendOtpBtn) {
+                    resendOtpBtn.disabled = false;
+                    resendOtpBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Resend OTP';
+                }
             }
         }, 1000);
+    }
+
+    function triggerHaptic(type) {
+        if (!navigator.vibrate) return;
+        if (type === 'success') navigator.vibrate([100]);
+        if (type === 'error') navigator.vibrate([100, 50, 100]);
     }
 
     async function sendOtp(email) {
@@ -1098,6 +1126,41 @@ fetchSupporters(); // Initial sync on load
         });
         fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' }).catch(() => {});
     }
+
+    // --- Email Ghost Autocomplete Logic ---
+    const emailGhost = document.getElementById('email-ghost');
+    const commonDomains = ['gmail.com', 'outlook.com', 'yahoo.com', 'hotmail.com', 'icloud.com'];
+
+    emailInput && emailInput.addEventListener('input', (e) => {
+        const value = e.target.value;
+        if (!value.includes('@') || value.endsWith('@')) {
+            emailGhost.textContent = '';
+            return;
+        }
+
+        const [local, partialDomain] = value.split('@');
+        const match = commonDomains.find(d => d.startsWith(partialDomain));
+
+        if (match && partialDomain) {
+            // We use opaque text for the typed part to ensure perfect alignment
+            // then append the rest of the suggestion
+            const suggestionPart = match.substring(partialDomain.length);
+            emailGhost.innerHTML = `<span style="opacity:0">${value}</span>${suggestionPart}`;
+        } else {
+            emailGhost.textContent = '';
+        }
+    });
+
+    emailInput && emailInput.addEventListener('keydown', (e) => {
+        if ((e.key === 'Tab' || e.key === 'ArrowRight' || e.key === 'Enter') && emailGhost.textContent) {
+            const ghostContent = emailGhost.textContent;
+            if (ghostContent) {
+                e.preventDefault();
+                emailInput.value = ghostContent;
+                emailGhost.textContent = '';
+            }
+        }
+    });
 
     // --- Step 1: Send OTP ---
     sendOtpBtn && sendOtpBtn.addEventListener('click', async () => {
@@ -1116,10 +1179,29 @@ fetchSupporters(); // Initial sync on load
         sendOtpBtn.textContent = '✓ Sent';
         sendOtpBtn.classList.add('sent');
         otpSection.classList.remove('hidden');
-        otpInput.focus();
+        if (otpInputs[0]) otpInputs[0].focus();
         otpStatus.textContent = `OTP sent to ${email}`;
         otpStatus.className = 'submission-status otp-status-success';
+        changeEmailBtn && changeEmailBtn.classList.remove('hidden');
         startResendTimer();
+    });
+
+    changeEmailBtn && changeEmailBtn.addEventListener('click', () => {
+        otpSection.classList.add('hidden');
+        changeEmailBtn.classList.add('hidden');
+        emailInput.disabled = false;
+        sendOtpBtn.disabled = false;
+        sendOtpBtn.textContent = 'Send OTP';
+        sendOtpBtn.classList.remove('sent');
+        otpStatus.textContent = '';
+        otpStatus.className = 'submission-status';
+        
+        if (typeof resendInterval !== 'undefined' && resendInterval) {
+            clearInterval(resendInterval);
+        }
+        resendOtpBtn.disabled = true;
+        
+        emailInput.focus();
     });
 
     // --- Step 1: Resend OTP ---
@@ -1129,8 +1211,10 @@ fetchSupporters(); // Initial sync on load
         otpStatus.textContent = 'Resending OTP…';
         otpStatus.className = 'submission-status loading';
         await sendOtp(email);
-        otpInput.value = '';
-        emailVerified = false;
+        otpInputs.forEach(input => {
+            input.value = '';
+            input.classList.remove('verified');
+        });
         step1Next.disabled = true;
         step1Next.style.opacity = '0.5';
         otpStatus.textContent = `New OTP sent to ${email}`;
@@ -1138,30 +1222,92 @@ fetchSupporters(); // Initial sync on load
         startResendTimer();
     });
 
-    // --- Step 1: Verify OTP on input ---
-    otpInput && otpInput.addEventListener('input', () => {
-        const entered = otpInput.value.trim();
-        if (entered.length === 6) {
-            if (entered === generatedOtp) {
-                emailVerified = true;
-                otpStatus.textContent = '✅ Email verified!';
-                otpStatus.className = 'submission-status otp-status-success';
-                otpInput.style.borderColor = 'var(--success-color)';
-                step1Next.disabled = false;
-                step1Next.style.opacity = '1';
-                step1Next.style.cursor = 'pointer';
-            } else {
-                emailVerified = false;
-                otpStatus.textContent = '❌ Incorrect OTP. Please try again.';
-                otpStatus.className = 'submission-status error';
-                otpInput.style.borderColor = 'var(--error-color)';
-                step1Next.disabled = true;
-                step1Next.style.opacity = '0.5';
+    // --- Step 1: Enhanced OTP Input Logic ---
+    otpInputs.forEach((input, index) => {
+        // Handle numeric input & auto-focus
+        input.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val.length > 0) {
+                // Keep only last char if somehow more entered
+                e.target.value = val.slice(-1);
+                
+                // Move to next if digit
+                if (/[0-9]/.test(e.target.value)) {
+                    if (index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+                } else {
+                    e.target.value = '';
+                }
             }
-        } else {
-            otpInput.style.borderColor = '';
-        }
+            checkAllOtpInputs();
+        });
+
+        // Handle Backspace
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+
+        // Handle Paste
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const data = e.clipboardData.getData('text').trim();
+            if (/^\d{6}$/.test(data)) {
+                data.split('').forEach((digit, i) => {
+                    if (otpInputs[i]) otpInputs[i].value = digit;
+                });
+                otpInputs[5].focus();
+                checkAllOtpInputs();
+            }
+        });
     });
+
+    function checkAllOtpInputs() {
+        const otpValues = Array.from(otpInputs).map(i => i.value).join('');
+        const section = document.getElementById('otp-section');
+        
+        if (otpValues.length === 6) {
+            // Add verifying state
+            section.classList.add('verifying');
+            otpStatus.textContent = 'Verifying code...';
+            otpStatus.className = 'submission-status loading';
+
+            setTimeout(() => {
+                section.classList.remove('verifying');
+                if (otpValues === generatedOtp) {
+                    emailVerified = true;
+                    otpStatus.textContent = '✅ Email verified!';
+                    otpStatus.className = 'submission-status otp-status-success';
+                    triggerHaptic('success');
+                    
+                    otpInputs.forEach(input => {
+                        input.classList.add('verified');
+                        input.disabled = true;
+                    });
+                    
+                    // Auto-submit: Transition directly to Step 2 ("Choose Your Tier")
+                    setTimeout(() => {
+                        goToStep(2);
+                    }, 800);
+                } else {
+                    emailVerified = false;
+                    otpStatus.textContent = '❌ Incorrect OTP. Please try again.';
+                    otpStatus.className = 'submission-status error';
+                    triggerHaptic('error');
+                    
+                    // Shake animation
+                    const inputsContainer = document.getElementById('otp-inputs-container');
+                    inputsContainer.classList.add('shake');
+                    setTimeout(() => inputsContainer.classList.remove('shake'), 400);
+                }
+            }, 1000); // 1-second "Checking" delay for premium feel
+        } else {
+            emailVerified = false;
+            otpStatus.textContent = '';
+        }
+    }
 
     // --- Step 1: Continue (only if verified) ---
     step1Next && step1Next.addEventListener('click', () => {
