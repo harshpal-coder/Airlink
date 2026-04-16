@@ -2100,12 +2100,12 @@ body.disaster-mode {
     transform: translateX(0);
 }
 
-/* Page Layout Shift - Prevents HUD from hiding content */
+/* Page Layout Shift - Prevents HUD from hiding content (Desktop) */
 body.disaster-mode #navbar,
 body.disaster-mode header,
 body.disaster-mode section,
 body.disaster-mode footer {
-    margin-left: 320px; /* Width of HUD (300px) + spacing */
+    margin-left: 320px;
     width: calc(100% - 320px);
     transition: margin-left 0.5s ease, width 0.5s ease;
 }
@@ -2113,6 +2113,21 @@ body.disaster-mode footer {
 /* Ensure smooth transition back to normal */
 #navbar, header, section, footer {
     transition: margin-left 0.5s ease, width 0.5s ease;
+}
+
+/* REMOVE HUD COMPLETELY FOR MOBILE */
+@media (max-width: 768px) {
+    .emergency-hud {
+        display: none !important;
+    }
+    
+    body.disaster-mode #navbar,
+    body.disaster-mode header,
+    body.disaster-mode section,
+    body.disaster-mode footer {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
 }
 
 .hud-content {
