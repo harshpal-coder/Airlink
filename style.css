@@ -716,7 +716,7 @@ footer {
 /* --- SUPPORTERS SECTION HEADER --- */
 .supporters-header {
     text-align: center;
-    margin-bottom: 4rem;
+    margin-bottom: 1.5rem;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -809,9 +809,9 @@ footer {
     height: auto;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* Tighter gap for 4 rows */
+    gap: 0.8rem; /* Tighter gap for multiple rows to ensure they fit in view */
     overflow: hidden;
-    padding: 3rem 0;
+    padding: 1rem 0 2rem 0;
 }
 
 /* Horizontal Fade Masks */
