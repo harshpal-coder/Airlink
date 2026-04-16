@@ -797,7 +797,7 @@ if (compareContainer) {
 
 
 // --- LIVE SUPPORTERS FEED (REAL GOOGLE SHEET LINK) ---
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylc8RPs2RTLE2IQdtgG9wXibZY3IJ1nbyb1xzAV_jRoM7cs728xpCIMqtchoDLEajKrA/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx3whVfqrwwkvLpufTZMBUaj7vHU_79l43wZ-fX92mAZiv-H7cW1T0jbxaJv_OJE8-sWw/exec';
 const trackContainers = {
     1: document.getElementById('track-1-content'),
     2: document.getElementById('track-2-content'),
@@ -859,7 +859,7 @@ function renderTrack(trackId, tier) {
 let lastJsonString = "";
 
 async function fetchSupporters() {
-    if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbxFpAbmgEK-Mn435L6aH2J6zaEta70ohzrsDc5ItwrFcmnuNtFwMyN1lBsUOcKf_XcJgw/exec' || GOOGLE_SCRIPT_URL.includes('macros/s/')) {
+    if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbx3whVfqrwwkvLpufTZMBUaj7vHU_79l43wZ-fX92mAZiv-H7cW1T0jbxaJv_OJE8-sWw/exec' || GOOGLE_SCRIPT_URL.includes('macros/s/')) {
         // Run if we have a valid URL
     } else return;
 
