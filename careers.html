@@ -18,9 +18,300 @@
 
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="assets/logo.png">
+
+    <style>
+        .job-filters {
+            margin-top: 2.5rem;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .filter-btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-dim);
+            font-family: var(--font-family);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+        /* Fix apply-btn <button> elements to look like btn-secondary */
+        button.apply-btn {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            font-family: var(--font-family);
+            font-size: 0.95rem;
+        }
+        button.apply-btn:hover {
+            background: var(--surface-hover);
+            transform: translateY(-3px);
+        }
+    </style>
+
+    <style>
+        /* ===== JOB MODAL ===== */
+        #job-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 7, 12, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 5000;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 4rem 1.5rem 2rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+            overflow-y: auto;
+        }
+        #job-modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        #job-modal {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 28px;
+            width: 100%;
+            max-width: 760px;
+            padding: 3rem;
+            position: relative;
+            transform: translateY(40px) scale(0.97);
+            transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        #job-modal-overlay.open #job-modal {
+            transform: translateY(0) scale(1);
+        }
+        #modal-close {
+            position: absolute;
+            top: 1.4rem;
+            right: 1.4rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        #modal-close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+        #modal-category-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--bg-color);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            margin-bottom: 1.2rem;
+        }
+        #modal-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        #modal-meta {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        #modal-meta span i { margin-right: 0.4rem; color: var(--primary-color); }
+        .modal-section { margin-bottom: 2rem; }
+        .modal-section h4 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--primary-color);
+            margin-bottom: 0.9rem;
+        }
+        .modal-section ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+        .modal-section ul li::before {
+            content: '→';
+            margin-right: 0.6rem;
+            color: var(--primary-color);
+        }
+        .modal-section ul li { color: var(--text-dim); font-size: 0.97rem; }
+        .modal-divider {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            margin: 2rem 0;
+        }
+        /* Application Form inside modal */
+        #modal-form h4 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .modal-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        @media(max-width: 560px) { .modal-form-row { grid-template-columns: 1fr; } }
+        .mf-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            margin-bottom: 1rem;
+        }
+        .mf-group label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+        }
+        .mf-group input,
+        .mf-group textarea {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 0.85rem 1.1rem;
+            color: var(--text-main);
+            font-family: var(--font-family);
+            font-size: 0.97rem;
+            transition: border-color 0.3s ease;
+            outline: none;
+            width: 100%;
+        }
+        .mf-group input:focus,
+        .mf-group textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0,242,255,0.08);
+        }
+        .mf-group textarea { resize: vertical; min-height: 100px; }
+        #modal-submit {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 50px;
+            background: var(--primary-color);
+            color: var(--bg-color);
+            font-family: var(--font-family);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            box-shadow: 0 0 20px var(--accent-glow);
+            transition: all 0.3s ease;
+        }
+        #modal-submit:hover { transform: translateY(-2px); box-shadow: 0 0 32px var(--accent-glow); }
+        #modal-form-status {
+            text-align: center;
+            padding: 0.8rem;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-top: 1rem;
+            display: none;
+        }
+        #modal-form-status.success { background: rgba(0,255,136,0.1); color: #00FF88; display: block; }
+        #modal-form-status.error   { background: rgba(255,77,77,0.1);  color: #FF4D4D; display: block; }
+    </style>
 </head>
 
 <body class="careers-page">
+
+    <!-- ===== JOB DETAIL MODAL ===== -->
+    <div id="job-modal-overlay">
+        <div id="job-modal">
+            <button id="modal-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+            <span id="modal-category-tag">Engineering</span>
+            <h2 id="modal-title">Job Title</h2>
+            <div id="modal-meta">
+                <span><i class="fa-solid fa-location-dot"></i><span id="modal-location">Remote</span></span>
+                <span><i class="fa-solid fa-briefcase"></i><span id="modal-type">Full-time</span></span>
+                <span><i class="fa-solid fa-clock"></i><span id="modal-posted">Posted recently</span></span>
+            </div>
+
+            <div class="modal-section">
+                <h4>About the Role</h4>
+                <p id="modal-about" style="color:var(--text-dim);line-height:1.75;"></p>
+            </div>
+
+            <div class="modal-section">
+                <h4>Responsibilities</h4>
+                <ul id="modal-responsibilities"></ul>
+            </div>
+
+            <div class="modal-section">
+                <h4>Requirements</h4>
+                <ul id="modal-requirements"></ul>
+            </div>
+
+            <hr class="modal-divider">
+
+            <!-- Application Form -->
+            <div id="modal-form">
+                <h4>Apply for this Role</h4>
+                <div class="modal-form-row">
+                    <div class="mf-group">
+                        <label for="mf-name">Full Name *</label>
+                        <input type="text" id="mf-name" placeholder="e.g. John Doe" required>
+                    </div>
+                    <div class="mf-group">
+                        <label for="mf-email">Email Address *</label>
+                        <input type="email" id="mf-email" placeholder="you@example.com" required>
+                    </div>
+                </div>
+                <div class="modal-form-row">
+                    <div class="mf-group">
+                        <label for="mf-linkedin">LinkedIn / GitHub URL</label>
+                        <input type="url" id="mf-linkedin" placeholder="https://linkedin.com/in/yourprofile">
+                    </div>
+                    <div class="mf-group">
+                        <label for="mf-portfolio">Portfolio / Website</label>
+                        <input type="url" id="mf-portfolio" placeholder="https://yoursite.com">
+                    </div>
+                </div>
+                <div class="mf-group">
+                    <label for="mf-cover">Why do you want to join AirLink? *</label>
+                    <textarea id="mf-cover" placeholder="Tell us a bit about yourself and why this role excites you..."></textarea>
+                </div>
+                <button id="modal-submit">Submit Application <i class="fa-solid fa-paper-plane" style="margin-left:8px;"></i></button>
+                <div id="modal-form-status"></div>
+            </div>
+        </div>
+    </div>
+    <!-- ===== END MODAL ===== -->
 
     <canvas id="canvas-mesh"></canvas>
 
@@ -90,62 +381,302 @@
         <div class="container">
             <div style="text-align: center; margin-bottom: 5rem;" data-reveal>
                 <h2 style="font-size: 2.5rem;">Current <span class="gradient-text">Openings</span></h2>
-                <p style="color: var(--text-dim);">Find your place in the mesh.</p>
-            </div>
-
-            <div class="roles-container">
-                <!-- Role 1 -->
-                <div class="role-card glass" data-reveal>
-                    <div class="role-header">
-                        <h3>Senior Mesh Network Engineer</h3>
-                        <span class="role-tag">Engineering</span>
-                    </div>
-                    <p>Optimize our decentralized routing algorithms and improve network efficiency across diverse P2P links.</p>
-                    <div class="role-footer">
-                        <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote / Global</span>
-                        <a href="mailto:careers@airlink.app?subject=Application: Senior Mesh Network Engineer" class="btn btn-secondary">Apply Now</a>
-                    </div>
-                </div>
-
-                <!-- Role 2 -->
-                <div class="role-card glass" data-reveal>
-                    <div class="role-header">
-                        <h3>P2P Security Specialist</h3>
-                        <span class="role-tag">Security</span>
-                    </div>
-                    <p>Implement and audit end-to-end encryption protocols using the Signal Protocol library in a P2P environment.</p>
-                    <div class="role-footer">
-                        <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote</span>
-                        <a href="mailto:careers@airlink.app?subject=Application: P2P Security Specialist" class="btn btn-secondary">Apply Now</a>
-                    </div>
-                </div>
-
-                <!-- Role 3 -->
-                <div class="role-card glass" data-reveal>
-                    <div class="role-header">
-                        <h3>Mobile App Developer (Flutter)</h3>
-                        <span class="role-tag">Frontend</span>
-                    </div>
-                    <p>Craft beautiful, intuitive interfaces for the AirLink app. Focus on responsiveness and offline-first UX.</p>
-                    <div class="role-footer">
-                        <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote</span>
-                        <a href="mailto:careers@airlink.app?subject=Application: Mobile App Developer (Flutter)" class="btn btn-secondary">Apply Now</a>
-                    </div>
-                </div>
-
-                <!-- Role 4 -->
-                <div class="role-card glass" data-reveal>
-                    <div class="role-header">
-                        <h3>UI/UX Designer</h3>
-                        <span class="role-tag">Design</span>
-                    </div>
-                    <p>Design a seamless experience for users discovering and connecting with peers in a decentralized world.</p>
-                    <div class="role-footer">
-                        <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote / India</span>
-                        <a href="mailto:careers@airlink.app?subject=Application: UI/UX Designer" class="btn btn-secondary">Apply Now</a>
-                    </div>
+                <p style="color: var(--text-dim);">Find your place in the mesh across various domains.</p>
+                
+                <!-- Job Filters -->
+                <div class="job-filters">
+                    <button class="filter-btn active" data-filter="all">All Roles</button>
+                    <button class="filter-btn" data-filter="software">Software</button>
+                    <button class="filter-btn" data-filter="app">App Dev</button>
+                    <button class="filter-btn" data-filter="web">Web Dev</button>
+                    <button class="filter-btn" data-filter="marketing">Marketing</button>
+                    <button class="filter-btn" data-filter="video">Video</button>
+                    <button class="filter-btn" data-filter="internship">Internships</button>
                 </div>
             </div>
+
+            <!-- Software Development -->
+            <div class="category-section" data-category="software" data-reveal>
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.8rem; color: var(--text-main); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.5rem;"><i class="fa-solid fa-code"></i> Software Development</h3>
+                <div class="roles-container" style="margin-bottom: 4rem;">
+                    <div class="role-card glass">
+                        <div class="role-header">
+                            <h3>Senior Mesh Network Engineer</h3>
+                            <span class="role-tag">Core Tech</span>
+                        </div>
+                        <p>Optimize our decentralized routing algorithms and improve network efficiency across diverse P2P links.</p>
+                        <div class="role-footer">
+                            <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote</span>
+                            <button class="btn btn-secondary apply-btn"
+                                data-title="Senior Mesh Network Engineer"
+                                data-tag="Core Tech"
+                                data-location="Remote / Global"
+                                data-type="Full-time"
+                                data-posted="Open Now"
+                                data-about="We are looking for a brilliant engineer to design and optimize the routing backbone of AirLink's decentralized mesh network. You will be responsible for ensuring packets traverse the P2P topology with minimal latency and maximum reliability — even in low-bandwidth and offline-adjacent environments."
+                                data-responsibilities='["Design and improve multi-hop routing algorithms for the AirLink mesh","Benchmark and profile P2P link performance across device types","Collaborate with the security team to ensure encrypted data packets are routed safely","Write technical documentation for routing protocols","Mentor junior engineers on distributed systems concepts"]'
+                                data-requirements='["5+ years experience in networking or distributed systems","Strong knowledge of graph theory and routing algorithms (e.g. Dijkstra, Bellman-Ford)","Experience with WebRTC, TCP/IP or socket-level programming","Proficiency in Go, Rust, or C++","Open source contributions are a major plus"]'
+                            >Apply Now</button>
+                        </div>
+                    </div>
+                    <div class="role-card glass">
+                        <div class="role-header">
+                            <h3>P2P Security Specialist</h3>
+                            <span class="role-tag">Security</span>
+                        </div>
+                        <p>Implement and audit end-to-end encryption protocols using the Signal Protocol library in a P2P environment.</p>
+                        <div class="role-footer">
+                            <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote</span>
+                            <button class="btn btn-secondary apply-btn"
+                                data-title="P2P Security Specialist"
+                                data-tag="Security"
+                                data-location="Remote"
+                                data-type="Full-time"
+                                data-posted="Open Now"
+                                data-about="AirLink encrypts all messages end-to-end using the Signal Protocol. As our P2P Security Specialist you will own the full encryption pipeline — from key exchange to message sealing — and run penetration tests to find and fix vulnerabilities before bad actors do."
+                                data-responsibilities='["Implement and maintain E2E encryption using the Signal Protocol","Conduct regular penetration tests and security audits","Design key-exchange flows that work reliably on unstable P2P links","Write threat models and security documentation","Respond to community-reported vulnerability disclosures"]'
+                                data-requirements='["3+ years in information security or cryptography","Hands-on experience with the Signal Protocol or libsodium","Familiarity with PKI, ECDH, and forward secrecy","Experience writing security audits or CVE reports","Bonus: experience auditing open-source projects"]'
+                            >Apply Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- App Development -->
+            <div class="category-section" data-category="app" data-reveal>
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.8rem; color: var(--text-main); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.5rem;"><i class="fa-solid fa-mobile-screen-button"></i> App Development</h3>
+                <div class="roles-container" style="margin-bottom: 4rem;">
+                    <div class="role-card glass">
+                        <div class="role-header">
+                            <h3>Mobile App Developer (Flutter)</h3>
+                            <span class="role-tag">Frontend</span>
+                        </div>
+                        <p>Craft beautiful, intuitive interfaces for the AirLink app. Focus on responsiveness and offline-first UX.</p>
+                        <div class="role-footer">
+                            <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote</span>
+                            <button class="btn btn-secondary apply-btn"
+                                data-title="Mobile App Developer (Flutter)"
+                                data-tag="Frontend"
+                                data-location="Remote"
+                                data-type="Full-time"
+                                data-posted="Open Now"
+                                data-about="Join us in crafting the AirLink mobile experience on Flutter — an offline-first, privacy-respecting messaging app that works even when the internet is down. You'll own large swathes of the UI, state management, and the bridge to our native mesh networking layer."
+                                data-responsibilities='["Build and maintain Flutter screens, widgets, and animations","Integrate the native mesh library via platform channels","Implement offline-first data persistence using Hive or Isar","Write widget and integration tests","Collaborate with the design team to produce pixel-perfect UIs"]'
+                                data-requirements='["2+ years of Flutter / Dart development","Experience with state management (Riverpod, BLoC or equivalent)","Understanding of platform channels for native interop","Published at least one app on the Play Store or App Store","Bonus: experience with WebRTC on mobile"]'
+                            >Apply Now</button>
+                        </div>
+                    </div>
+                    <div class="role-card glass">
+                        <div class="role-header">
+                            <h3>Native iOS/Android Engineer</h3>
+                            <span class="role-tag">Native</span>
+                        </div>
+                        <p>Work on the native bindings of our WebRTC and socket layers to ensure maximum performance.</p>
+                        <div class="role-footer">
+                            <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote</span>
+                            <button class="btn btn-secondary apply-btn"
+                                data-title="Native iOS/Android Engineer"
+                                data-tag="Native"
+                                data-location="Remote"
+                                data-type="Full-time"
+                                data-posted="Open Now"
+                                data-about="We need a native engineer who can squeeze every last drop of performance from the platform's Bluetooth, Wi-Fi Direct, and socket APIs. Your work will be the invisible backbone that makes mesh networking feel effortless on both iOS and Android."
+                                data-responsibilities='["Write and maintain Swift (iOS) or Kotlin (Android) native modules","Expose Bluetooth and Wi-Fi Direct APIs to our Flutter layer","Profile and optimise battery and memory footprint","Handle OS-level permission flows and background execution limits","Contribute to the open-source SDK"]'
+                                data-requirements='["3+ years native iOS (Swift) or Android (Kotlin) development","Deep knowledge of Bluetooth LE and/or Wi-Fi Direct APIs","Experience with background processing and foreground service patterns","Comfortable reading network-layer C/C++ code","Bonus: experience with NDK or JNI"]'
+                            >Apply Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Website Development -->
+            <div class="category-section" data-category="web" data-reveal>
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.8rem; color: var(--text-main); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.5rem;"><i class="fa-solid fa-laptop-code"></i> Website Development</h3>
+                <div class="roles-container" style="margin-bottom: 4rem;">
+                    <div class="role-card glass">
+                        <div class="role-header">
+                            <h3>Full Stack Web Engineer</h3>
+                            <span class="role-tag">Web</span>
+                        </div>
+                        <p>Build and scale our web-based dashboard, interactive tools, and decentralized web nodes.</p>
+                        <div class="role-footer">
+                            <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote</span>
+                            <button class="btn btn-secondary apply-btn"
+                                data-title="Full Stack Web Engineer"
+                                data-tag="Web"
+                                data-location="Remote"
+                                data-type="Full-time"
+                                data-posted="Open Now"
+                                data-about="Own the AirLink web presence end-to-end — from the marketing site to the real-time network explorer dashboard. You'll work across a modern TypeScript + Node stack, build REST and WebSocket APIs, and make sure everything is blazing fast and accessible."
+                                data-responsibilities='["Develop and maintain the AirLink marketing site and web app","Build REST and WebSocket APIs in Node.js / Express","Create an interactive network stats dashboard","Optimise frontend performance and Lighthouse scores","Ensure WCAG 2.1 AA accessibility compliance"]'
+                                data-requirements='["3+ years full stack experience (JavaScript / TypeScript)","Proficiency with a modern frontend framework (React, Vue, or Svelte)","Experience with Node.js, REST API design, and databases (Postgres or MongoDB)","Familiarity with CI/CD pipelines and Docker","Bonus: experience with WebSockets or WebRTC on the web"]'
+                            >Apply Now</button>
+                        </div>
+                    </div>
+                    <div class="role-card glass">
+                        <div class="role-header">
+                            <h3>UI/UX Designer</h3>
+                            <span class="role-tag">Design</span>
+                        </div>
+                        <p>Design a seamless experience for users discovering and connecting with peers in a decentralized world.</p>
+                        <div class="role-footer">
+                            <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote / India</span>
+                            <button class="btn btn-secondary apply-btn"
+                                data-title="UI/UX Designer"
+                                data-tag="Design"
+                                data-location="Remote / India"
+                                data-type="Full-time"
+                                data-posted="Open Now"
+                                data-about="We want every interaction in AirLink to feel magical. As our UI/UX Designer you'll own the design system, run user research, craft Figma prototypes, and partner directly with engineers to bring your visions to life — from the first pixel to the final animation."
+                                data-responsibilities='["Design user flows, wireframes, and high-fidelity prototypes in Figma","Maintain and evolve the AirLink design system","Conduct usability testing and synthesise insights","Collaborate with engineers to ensure pixel-perfect implementation","Create marketing and social media assets"]'
+                                data-requirements='["2+ years product design experience, ideally at a B2C mobile app","Expert-level Figma skills (components, auto-layout, variables)","Portfolio demonstrating mobile UI and interaction design","Understanding of accessibility and inclusive design principles","Bonus: experience animating with Rive or Lottie"]'
+                            >Apply Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Media Marketing -->
+            <div class="category-section" data-category="marketing" data-reveal>
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.8rem; color: var(--text-main); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.5rem;"><i class="fa-solid fa-hashtag"></i> Social Media Marketing</h3>
+                <div class="roles-container" style="margin-bottom: 4rem;">
+                    <div class="role-card glass">
+                        <div class="role-header">
+                            <h3>Social Media Manager</h3>
+                            <span class="role-tag">Marketing</span>
+                        </div>
+                        <p>Create engaging content, grow our online presence on X/Twitter and Discord, and interact with our web3 community.</p>
+                        <div class="role-footer">
+                            <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote</span>
+                            <button class="btn btn-secondary apply-btn"
+                                data-title="Social Media Manager"
+                                data-tag="Marketing"
+                                data-location="Remote"
+                                data-type="Full-time"
+                                data-posted="Open Now"
+                                data-about="Be the voice of AirLink across the internet. You'll craft compelling threads on X/Twitter, run engaging campaigns on Instagram and LinkedIn, moderate our Discord community, and evangelise privacy-first communication to a global audience of developers and everyday users."
+                                data-responsibilities='["Own the AirLink content calendar across all social platforms","Write, design, and schedule posts, threads, and stories","Moderate and engage with the Discord and Reddit communities","Track analytics and optimise for reach, engagement, and growth","Coordinate with the team for product announcement campaigns"]'
+                                data-requirements='["2+ years managing social media for a tech brand or startup","Strong writing and storytelling skills","Familiarity with the Web3 / open-source community culture","Experience with analytics tools (Sprout Social, Buffer, etc.)","Bonus: graphic design or basic video editing skills"]'
+                            >Apply Now</button>
+                        </div>
+                    </div>
+                    <div class="role-card glass">
+                        <div class="role-header">
+                            <h3>Community Growth Hacker</h3>
+                            <span class="role-tag">Growth</span>
+                        </div>
+                        <p>Design viral campaigns and partnerships to drive massive adoption of our secure platform globally.</p>
+                        <div class="role-footer">
+                            <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote</span>
+                            <button class="btn btn-secondary apply-btn"
+                                data-title="Community Growth Hacker"
+                                data-tag="Growth"
+                                data-location="Remote"
+                                data-type="Full-time"
+                                data-posted="Open Now"
+                                data-about="AirLink is sitting on a category-defining product. We need a creative growth mind to engineer the word-of-mouth flywheel — from referral schemes and influencer partnerships to open-source hackathons and press outreach that puts AirLink on every tech journalist's radar."
+                                data-responsibilities='["Design and run growth experiments across acquisition channels","Build referral programs and partner integrations","Identify and collaborate with tech influencers and content creators","Analyse funnel data and report to founders weekly","Organise online hackathons and community events"]'
+                                data-requirements='["Proven track record of growing a tech community from scratch","Data-driven mindset — comfortable with growth metrics","Experience with SEO, email campaigns, or paid acquisition","Strong network in the developer or open-source community","Bonus: experience with Product-Led Growth (PLG) strategies"]'
+                            >Apply Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Editor -->
+            <div class="category-section" data-category="video" data-reveal>
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.8rem; color: var(--text-main); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.5rem;"><i class="fa-solid fa-video"></i> Video Editor</h3>
+                <div class="roles-container">
+                    <div class="role-card glass">
+                        <div class="role-header">
+                            <h3>Motion Graphics & Video Editor</h3>
+                            <span class="role-tag">Creative</span>
+                        </div>
+                        <p>Produce high-quality promotional videos, feature explainers, and short-form content for reels/TikToks.</p>
+                        <div class="role-footer">
+                            <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote</span>
+                            <button class="btn btn-secondary apply-btn"
+                                data-title="Motion Graphics &amp; Video Editor"
+                                data-tag="Creative"
+                                data-location="Remote"
+                                data-type="Full-time"
+                                data-posted="Open Now"
+                                data-about="We need a visual storyteller who can bring the invisible magic of mesh networking to life on screen. From slick 30-second product reels to deep-dive explainer animations, your videos will be the first thing potential users and supporters see about AirLink."
+                                data-responsibilities='["Edit and produce short-form videos for Instagram Reels, TikTok, and YouTube Shorts","Create animated explainer videos for product features","Design motion graphics and lower-thirds for long-form content","Maintain brand consistency across all video outputs","Turn raw screen recordings and demos into polished launch videos"]'
+                                data-requirements='["2+ years video editing experience (professional or freelance)","Proficiency in Premiere Pro, DaVinci Resolve, or Final Cut Pro","Experience with After Effects or similar for motion graphics","A portfolio of short-form social content with strong engagement","Bonus: experience with 3D software (Blender, Cinema 4D)"]'
+                            >Apply Now</button>
+                        </div>
+                    </div>
+                    <div class="role-card glass">
+                        <div class="role-header">
+                            <h3>YouTube Content Creator</h3>
+                            <span class="role-tag">Creator</span>
+                        </div>
+                        <p>Host and edit engaging developer logs, tech talks, and open-source updates for our YouTube channel.</p>
+                        <div class="role-footer">
+                            <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote</span>
+                            <button class="btn btn-secondary apply-btn"
+                                data-title="YouTube Content Creator"
+                                data-tag="Creator"
+                                data-location="Remote"
+                                data-type="Full-time"
+                                data-posted="Open Now"
+                                data-about="You'll be the face and the director of the AirLink YouTube channel. From raw developer devlogs to polished 'How does mesh networking work?' explainers aimed at a mainstream audience — you'll plan, script, record, and edit it all, growing a community of curious minds along the way."
+                                data-responsibilities='["Plan and maintain the YouTube content calendar","Script, record, and edit videos end-to-end","Optimise video titles, thumbnails, descriptions, and chapters for SEO","Engage with the comments section and build community","Repurpose long-form content into shorts and clips"]'
+                                data-requirements='["Active YouTube channel with at least 1,000 subscribers OR strong portfolio","Comfortable on camera and confident public speaker","Experience with video editing software (any major tool)","Passion for technology, privacy, or open source","Bonus: experience with tech or developer-focused content"]'
+                            >Apply Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Internships -->
+            <div class="category-section" data-category="internship" data-reveal>
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.8rem; color: var(--text-main); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.5rem;"><i class="fa-solid fa-graduation-cap"></i> Internships</h3>
+                <div class="roles-container">
+                    <div class="role-card glass">
+                        <div class="role-header">
+                            <h3>Software Engineering Intern</h3>
+                            <span class="role-tag">Student</span>
+                        </div>
+                        <p>Learn from senior engineers as you help build and test decentralised P2P protocols over a 3-month summer program.</p>
+                        <div class="role-footer">
+                            <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote / Paid</span>
+                            <button class="btn btn-secondary apply-btn"
+                                data-title="Software Engineering Intern"
+                                data-tag="Internship"
+                                data-location="Remote / Paid"
+                                data-type="Internship · 3 months"
+                                data-posted="Summer 2026"
+                                data-about="Kick-start your engineering career by contributing to a real open-source alternative to centralised messaging. Over 3 months you'll work directly with senior engineers on meaningful features, get code reviewed, and leave with publicly visible open-source contributions on your GitHub profile."
+                                data-responsibilities='["Implement small features or bug-fixes in the Flutter or backend codebase","Write unit tests for your own code","Participate in daily standups and weekly demos","Contribute to technical documentation","Present your project at the end of the internship"]'
+                                data-requirements='["Currently enrolled in a CS, Software Engineering, or related degree","Basic knowledge of Dart/Flutter or any backend language","Familiarity with Git and pull request workflows","Eager to learn and comfortable asking for help","Bonus: any prior open-source contribution"]'
+                            >Apply Now</button>
+                        </div>
+                    </div>
+                    <div class="role-card glass">
+                        <div class="role-header">
+                            <h3>Marketing & Community Intern</h3>
+                            <span class="role-tag">Student</span>
+                        </div>
+                        <p>Assist in growing our Discord and Twitter communities. Great for students passionate about Web3 and open source.</p>
+                        <div class="role-footer">
+                            <span class="role-location"><i class="fa-solid fa-location-dot"></i> Remote / Paid</span>
+                            <button class="btn btn-secondary apply-btn"
+                                data-title="Marketing &amp; Community Intern"
+                                data-tag="Internship"
+                                data-location="Remote / Paid"
+                                data-type="Internship · 3 months"
+                                data-posted="Summer 2026"
+                                data-about="Get hands-on startup marketing experience at AirLink. You'll help run our Discord, draft posts, assist with campaigns, and learn how a lean team builds a global brand from zero. Perfect for a communications, marketing, or business student who loves tech and open source."
+                                data-responsibilities='["Schedule and publish social media posts across platforms","Engage with community members on Discord and Reddit","Assist with writing newsletters and blog posts","Research influencer partnership opportunities","Track and report on weekly growth metrics"]'
+                                data-requirements='["Currently enrolled in a Marketing, Communications, Business, or related degree","Excellent written English skills","Genuine interest in technology, privacy, or Web3","Experience using any major social platform from a creator perspective","Bonus: basic graphic design or video editing skills"]'
+                            >Apply Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -201,6 +732,118 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        // ===== JOB MODAL LOGIC =====
+        const overlay  = document.getElementById('job-modal-overlay');
+        const modal    = document.getElementById('job-modal');
+        const closeBtn = document.getElementById('modal-close');
+
+        function openModal(btn) {
+            document.getElementById('modal-category-tag').textContent   = btn.dataset.tag || '';
+            document.getElementById('modal-title').textContent           = btn.dataset.title || '';
+            document.getElementById('modal-location').textContent        = btn.dataset.location || '';
+            document.getElementById('modal-type').textContent            = btn.dataset.type || '';
+            document.getElementById('modal-posted').textContent          = btn.dataset.posted || '';
+            document.getElementById('modal-about').textContent           = btn.dataset.about || '';
+
+            const rl = document.getElementById('modal-responsibilities');
+            const rq = document.getElementById('modal-requirements');
+            rl.innerHTML = '';
+            rq.innerHTML = '';
+
+            try {
+                JSON.parse(btn.dataset.responsibilities).forEach(item => {
+                    rl.innerHTML += `<li>${item}</li>`;
+                });
+                JSON.parse(btn.dataset.requirements).forEach(item => {
+                    rq.innerHTML += `<li>${item}</li>`;
+                });
+            } catch(e) {}
+
+            // reset form
+            document.getElementById('mf-name').value = '';
+            document.getElementById('mf-email').value = '';
+            document.getElementById('mf-linkedin').value = '';
+            document.getElementById('mf-portfolio').value = '';
+            document.getElementById('mf-cover').value = '';
+            const status = document.getElementById('modal-form-status');
+            status.className = '';
+            status.style.display = 'none';
+
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.apply-btn').forEach(btn => {
+            btn.addEventListener('click', () => openModal(btn));
+        });
+
+        closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        // Form submit → mailto with pre-filled subject
+        document.getElementById('modal-submit').addEventListener('click', () => {
+            const name  = document.getElementById('mf-name').value.trim();
+            const email = document.getElementById('mf-email').value.trim();
+            const cover = document.getElementById('mf-cover').value.trim();
+            const title = document.getElementById('modal-title').textContent;
+            const status = document.getElementById('modal-form-status');
+
+            if (!name || !email || !cover) {
+                status.className = 'error';
+                status.style.display = 'block';
+                status.textContent = 'Please fill in all required fields (*) before submitting.';
+                return;
+            }
+
+            const linkedin  = document.getElementById('mf-linkedin').value.trim();
+            const portfolio = document.getElementById('mf-portfolio').value.trim();
+
+            const body = encodeURIComponent(
+                `Name: ${name}\nEmail: ${email}\nLinkedIn: ${linkedin || 'N/A'}\nPortfolio: ${portfolio || 'N/A'}\n\nCover Letter:\n${cover}`
+            );
+            const subject = encodeURIComponent(`Application: ${title}`);
+            window.location.href = `mailto:careers@airlink.app?subject=${subject}&body=${body}`;
+
+            status.className = 'success';
+            status.style.display = 'block';
+            status.textContent = '✅ Opening your email client… Application details pre-filled!';
+        });
+
+        // ===== CATEGORY FILTER LOGIC =====
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const categorySections = document.querySelectorAll('.category-section');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active state on buttons
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const filterValue = btn.getAttribute('data-filter');
+
+                    // Show/Hide sections with fade-in animation
+                    categorySections.forEach(section => {
+                        if(filterValue === 'all' || section.getAttribute('data-category') === filterValue) {
+                            section.style.display = 'block';
+                            section.style.animation = 'none'; // reset
+                            section.offsetHeight; // trigger reflow
+                            section.style.animation = 'fadeIn 0.5s ease forwards';
+                        } else {
+                            section.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
