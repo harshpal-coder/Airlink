@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /admin-dashboard.html
+Disallow: /admin-dashboard
 
 Sitemap: https://myairlink.vercel.app/sitemap.xml
