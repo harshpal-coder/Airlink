@@ -1905,7 +1905,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 (function () {
     // CONFIGURATION
-    const AUTO_OPEN_DELAY = 5000; // 5 seconds
+
     // (Other configuration moved to Google Apps Script for security)
 
 
@@ -1939,14 +1939,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Auto-open logic
-        if (!localStorage.getItem('nyra_interacted')) {
-            setTimeout(() => {
-                if (!localStorage.getItem('nyra_interacted')) {
-                    openChat();
-                }
-            }, AUTO_OPEN_DELAY);
-        }
+
     }
 
     // CHAT ACTIONS
