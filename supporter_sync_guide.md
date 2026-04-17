@@ -34,22 +34,99 @@ const WEB_APP_URL = "YOUR_WEB_APP_URL_HERE";
 function doGet(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
   
-  // -- PIXEL TRACKING LOGIC --
-  if (e && e.parameter.action === 'track') {
-    const rank = parseInt(e.parameter.rank);
-    if (rank > 0) {
-      const currentStatus = sheet.getRange(rank + 1, 6).getValue();
-      if (!currentStatus) { // Only log the first time they open it
-        sheet.getRange(rank + 1, 6).setValue('Opened: ' + new Date().toLocaleString());
-      }
-    }
-    return ContentService.createTextOutput(""); 
+  if (!e || !e.parameter) {
+    return getSupporters(sheet);
   }
-  
-  // -- NORMAL API LOGIC --
+
+  const action = e.parameter.action;
+
+  switch (action) {
+
+    case 'chat':
+      return handleChat(e.parameter.history);
+
+    case 'track':
+      const rank = parseInt(e.parameter.rank);
+      if (rank > 0) {
+        const currentStatus = sheet.getRange(rank + 1, 6).getValue();
+        if (!currentStatus) {
+          sheet.getRange(rank + 1, 6)
+            .setValue('Opened: ' + new Date().toLocaleString());
+        }
+      }
+      return ContentService.createTextOutput("");
+
+    case 'sendOTP':
+      const email = e.parameter.email;
+      const otp = e.parameter.otp;
+
+      const otpBody = `
+        <div style="background-color: #050a10; padding: 40px 20px; font-family: sans-serif; color: #ffffff; line-height: 1.6;">
+          <div style="max-width: 500px; margin: 0 auto; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 242, 255, 0.15); border-radius: 20px; padding: 40px; text-align: center;">
+            <div style="margin-bottom: 30px;">
+              <h1 style="margin: 0; font-size: 28px; color: #00f2ff; letter-spacing: 4px; font-weight: 800;">AIRLINK</h1>
+              <div style="height: 2px; background: linear-gradient(90deg, transparent, #00f2ff, transparent); width: 80px; margin: 15px auto;"></div>
+            </div>
+            <h2 style="color: #ffffff; font-size: 20px; margin-bottom: 10px; font-weight: 400; letter-spacing: 1px;">Verification Code</h2>
+            <p style="color: #a0a0a0; font-size: 15px; margin-bottom: 30px;">
+              Please use the following OTP to verify your identity and access your AirLink account.
+            </p>
+            <div style="background: #0a1118; border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 12px; padding: 25px; margin: 20px 0; display: inline-block; min-width: 200px;">
+              <span style="font-family: monospace; font-size: 42px; font-weight: bold; color: #00f2ff; letter-spacing: 10px;">
+                ${otp}
+              </span>
+            </div>
+            <p style="color: #666666; font-size: 13px; margin-top: 30px;">
+              Valid for 10 minutes. If you did not request this, please ignore this email.
+            </p>
+            <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px; margin-top: 35px;">
+              <p style="font-size: 11px; color: #444444; letter-spacing: 1px; text-transform: uppercase;">
+                Secure Mesh Protocol &bull; 2026
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      MailApp.sendEmail({
+        to: email,
+        subject: '🔐 AirLink - Your Verification OTP',
+        htmlBody: otpBody,
+        name: "AirLink"
+      });
+
+      return ContentService
+        .createTextOutput(JSON.stringify({ status: 'sent' }))
+        .setMimeType(ContentService.MimeType.JSON);
+
+    case 'addSupporter':
+      const name   = e.parameter.name || '';
+      const email2 = e.parameter.email || '';
+      const amount = parseFloat(e.parameter.amount) || 0;
+      const txnId  = e.parameter.txnId || '';
+
+      sheet.appendRow([
+        new Date().toLocaleString(),
+        name,
+        amount,
+        email2,
+        '',
+        txnId
+      ]);
+
+      return ContentService
+        .createTextOutput(JSON.stringify({ status: 'ok' }))
+        .setMimeType(ContentService.MimeType.JSON);
+
+    default:
+      return getSupporters(sheet);
+  }
+}
+
+function getSupporters(sheet) {
   const data = sheet.getDataRange().getValues();
   const supporters = [];
-  
+
   for (let i = 1; i < data.length; i++) {
     if (data[i][1] && data[i][2]) {
       supporters.push({
@@ -59,10 +136,13 @@ function doGet(e) {
       });
     }
   }
-  
+
   return ContentService.createTextOutput(JSON.stringify(supporters))
     .setMimeType(ContentService.MimeType.JSON);
 }
+
+
+
 
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
@@ -383,6 +463,69 @@ function sendThankYouEmail(email, name, amount, rank) {
     name: "AirLink"
   });
 }
+
+
+
+// --- ADD THIS TO YOUR GOOGLE APPS SCRIPT ---
+
+
+function handleChat(historyJson) {
+  const apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`;
+  
+  const history = JSON.parse(historyJson);
+  const systemPrompt = `You are Nyra, the elite AI digital guardian and official assistant for the "AirLink" project.
+
+### 1. IDENTITY & PROJECT CORE
+- **PROJECT NAME:** AirLink (A decentralized, peer-to-peer mesh messaging ecosystem).
+- **DEVELOPER:** Developed by Harshpal.
+- **LICENSE:** Open Source (MIT).
+- **CRITICAL:** You are NOT an AI for an airline. You do NOT handle flights, bookings, or tickets. If asked, explain that AirLink is for "Airborne Wireless Links" between phones, not airplanes.
+
+### 2. TECHNICAL SPECIFICATIONS (The "Brain" of AirLink)
+- **OFFLINE CONNECTIVITY:** Works completely without Internet, Cellular Data, or Centralized Servers.
+- **P2P TECHNOLOGY:** Uses Bluetooth Low Energy (BLE) for discovery and Wi-Fi Direct (P2P Wi-Fi) for high-speed data transfer.
+- **MESH NETWORKING:** Implements multi-hop routing. If Person A is too far from Person C, the message can "hop" through Person B's device to reach the destination.
+- **ENCRYPTION:** Uses the Signal Protocol for End-to-End Encryption (E2EE). Communication is private and secure.
+- **DISASTER MODE:** A specialized mode for emergency situations (internet blackouts, natural disasters) where the mesh network becomes a lifeline.
+
+### 3. KEY FEATURES
+- **Messaging:** Text, Voice Notes, and Media sharing without internet.
+- **Safety:** Emergency SOS broadcasting within the mesh.
+- **Simplicity:** QR-based pairing for secure contact exchange.
+- **Visualization:** Interactive tech deep-dives on the website show how signal rats and mesh routing work.
+
+### 4. PERSONALITY & TONE
+- **TONE:** Highly intelligent, tech-forward, futuristic, yet approachable and helpful.
+- **STYLE:** Concise but data-rich. Use formatting (bullet points, bold text) for readability.
+- **MISSION:** To wow visitors with the technical brilliance of AirLink and assist with any questions about its implementation or usage.
+
+### 5. HANDLING OUT-OF-SCOPE QUESTIONS
+- If asked about general topics, provide a helpful answer but try to find a "mesh" or "connectivity" angle. 
+- Example: If asked about the weather, say "While I can't pull live weather without a mesh node currently connected to a gateway, the AirLink protocol is designed to help communities share such critical data during blackouts!"
+
+### 6. QUIRKS
+- Occasionally use subtle tech metaphors (e.g., "Let me route that answer for you").
+- Use emojis sparingly but effectively (e.g., 🛡️ for security, ⚡ for speed, 🌐 for mesh).
+`; // Copy from script.js
+
+  const payload = {
+    system_instruction: { parts: [{ text: systemPrompt }] },
+    contents: history,
+    generationConfig: { temperature: 0.7, maxOutputTokens: 512 }
+  };
+
+  const options = {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+
+  const response = UrlFetchApp.fetch(endpoint, options);
+  return ContentService.createTextOutput(response.getContentText()).setMimeType(ContentService.MimeType.JSON);
+}
+
 ```
 
 ### Step 4: Deploy as a Web App
