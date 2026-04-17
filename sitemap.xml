@@ -6,13 +6,18 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://myairlink.vercel.app/careers.html</loc>
+    <lastmod>2026-04-17</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://myairlink.vercel.app/privacy.html</loc>
-    <lastmod>2026-04-05</lastmod>
+    <lastmod>2026-04-17</lastmod>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://myairlink.vercel.app/terms.html</loc>
-    <lastmod>2026-04-05</lastmod>
+    <lastmod>2026-04-17</lastmod>
     <priority>0.5</priority>
   </url>
 </urlset>
