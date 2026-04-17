@@ -168,6 +168,48 @@ if (menuToggle && navLinks) {
     });
 }
 
+// Testimonials Navigation Logic
+const testimonialsGrid = document.getElementById('testimonials-grid');
+const testimonialsPrev = document.getElementById('testimonial-prev');
+const testimonialsNext = document.getElementById('testimonial-next');
+const testimonialsDots = document.querySelectorAll('#testimonial-dots .dot');
+
+if (testimonialsGrid && testimonialsPrev && testimonialsNext) {
+    const cardStep = 420;
+
+    testimonialsNext.addEventListener('click', () => {
+        testimonialsGrid.scrollBy({ left: cardStep, behavior: 'smooth' });
+    });
+
+    testimonialsPrev.addEventListener('click', () => {
+        testimonialsGrid.scrollBy({ left: -cardStep, behavior: 'smooth' });
+    });
+
+    const updateDots = () => {
+        const scrollLeft = testimonialsGrid.scrollLeft;
+        const maxScroll = testimonialsGrid.scrollWidth - testimonialsGrid.clientWidth;
+        if (maxScroll <= 0) return;
+        
+        const scrollPosition = scrollLeft / maxScroll;
+        const activeIndex = Math.min(Math.round(scrollPosition * (testimonialsDots.length - 1)), testimonialsDots.length - 1);
+        
+        testimonialsDots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === activeIndex);
+        });
+    };
+
+    testimonialsGrid.addEventListener('scroll', updateDots);
+    updateDots();
+
+    testimonialsDots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            const maxScroll = testimonialsGrid.scrollWidth - testimonialsGrid.clientWidth;
+            const targetScroll = (index / (testimonialsDots.length - 1)) * maxScroll;
+            testimonialsGrid.scrollTo({ left: targetScroll, behavior: 'smooth' });
+        });
+    });
+}
+
 // Smooth Scroll for local links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
