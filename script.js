@@ -821,8 +821,8 @@ if (compareContainer) {
 
 
 // --- LIVE SUPPORTERS FEED (REAL GOOGLE SHEET LINK) ---
-const SUPPORTER_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx3whVfqrwwkvLpufTZMBUaj7vHU_79l43wZ-fX92mAZiv-H7cW1T0jbxaJv_OJE8-sWw/exec';
-const NYRA_PROXY_URL = 'https://script.google.com/macros/s/AKfycbz9eKIu5aB-5nuACSAIglZxv8ecUbS_vRoIP_1qLi6hYAEtBCYTAZsr4tFvKxopsQI_XA/exec';
+const SUPPORTER_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyu_Wm3fUvcCNuvnEsdAPfxtWHt1Xd_kq_AZb-KHmF4bz4lJ8xShBDXzLLzO5Gt5mhMIA/exec';
+const NYRA_PROXY_URL = 'https://script.google.com/macros/s/AKfycbyu_Wm3fUvcCNuvnEsdAPfxtWHt1Xd_kq_AZb-KHmF4bz4lJ8xShBDXzLLzO5Gt5mhMIA/exec';
 
 const trackContainers = {
     1: document.getElementById('track-1-content'),
