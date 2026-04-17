@@ -821,7 +821,9 @@ if (compareContainer) {
 
 
 // --- LIVE SUPPORTERS FEED (REAL GOOGLE SHEET LINK) ---
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9eKIu5aB-5nuACSAIglZxv8ecUbS_vRoIP_1qLi6hYAEtBCYTAZsr4tFvKxopsQI_XA/exec';
+const SUPPORTER_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx3whVfqrwwkvLpufTZMBUaj7vHU_79l43wZ-fX92mAZiv-H7cW1T0jbxaJv_OJE8-sWw/exec';
+const NYRA_PROXY_URL = 'https://script.google.com/macros/s/AKfycbz9eKIu5aB-5nuACSAIglZxv8ecUbS_vRoIP_1qLi6hYAEtBCYTAZsr4tFvKxopsQI_XA/exec';
+
 const trackContainers = {
     1: document.getElementById('track-1-content'),
     2: document.getElementById('track-2-content'),
@@ -883,12 +885,10 @@ function renderTrack(trackId, tier) {
 let lastJsonString = "";
 
 async function fetchSupporters() {
-    if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbx3whVfqrwwkvLpufTZMBUaj7vHU_79l43wZ-fX92mAZiv-H7cW1T0jbxaJv_OJE8-sWw/exec' || GOOGLE_SCRIPT_URL.includes('macros/s/')) {
-        // Run if we have a valid URL
-    } else return;
+    if (!SUPPORTER_SCRIPT_URL || !SUPPORTER_SCRIPT_URL.includes('macros/s/')) return;
 
     try {
-        const response = await fetch(GOOGLE_SCRIPT_URL);
+        const response = await fetch(SUPPORTER_SCRIPT_URL);
         const currentJsonString = await response.text();
 
         // Only update if the data has actually changed (add, edit, or delete)
@@ -1124,7 +1124,7 @@ fetchSupporters(); // Initial sync on load
             email: email,
             otp: generatedOtp,
         });
-        fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' }).catch(() => {});
+        fetch(`${SUPPORTER_SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' }).catch(() => {});
     }
 
     // --- Email Ghost Autocomplete Logic ---
@@ -1387,7 +1387,7 @@ fetchSupporters(); // Initial sync on load
                 amount: payload.amount,
                 txnId: payload.txnId,
             });
-            const submitUrl = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+            const submitUrl = `${SUPPORTER_SCRIPT_URL}?${params.toString()}`;
 
             // Fire exactly ONE request then advance to success
             fetch(submitUrl, { mode: 'no-cors' }).catch(() => {});
@@ -2066,7 +2066,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 history: JSON.stringify(chatHistory.slice(-10))
             });
 
-            const response = await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
+            const response = await fetch(`${NYRA_PROXY_URL}?${params.toString()}`);
             const data = await response.json();
             
             removeTypingIndicator();
