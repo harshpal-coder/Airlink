@@ -843,6 +843,53 @@
         <div class="terminal-scanline"></div>
     </div>
 
+    <!-- Nyra AI Chatbot -->
+    <div id="nyra-chatbot" class="nyra-container">
+        <!-- FAB -->
+        <button id="nyra-fab" class="nyra-fab" aria-label="Chat with Nyra">
+            <div class="nyra-avatar">
+                <i class="fa-solid fa-robot"></i>
+                <div class="nyra-status-dot"></div>
+            </div>
+            <span class="nyra-fab-tooltip">Chat with Nyra</span>
+        </button>
+
+        <!-- Chat Window -->
+        <div id="nyra-window" class="nyra-window hidden">
+            <div class="nyra-header">
+                <div class="nyra-header-info">
+                    <div class="nyra-avatar mini">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <h3>Nyra</h3>
+                        <span class="nyra-status">Online AI Assistant</span>
+                    </div>
+                </div>
+                <div class="nyra-header-actions">
+                    <button id="nyra-clear" title="Clear Chat"><i class="fa-solid fa-trash-can"></i></button>
+                    <button id="nyra-close"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <div id="nyra-messages" class="nyra-messages">
+                <!-- Welcome message will be injected by JS -->
+            </div>
+
+            <div class="nyra-input-area">
+                <div class="nyra-input-wrapper">
+                    <textarea id="nyra-input" placeholder="Ask about AirLink..." rows="1"></textarea>
+                    <button id="nyra-send" aria-label="Send Message">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="nyra-footer">
+                    <span>Powered by Gemini AI</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 

@@ -1898,3 +1898,237 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 })();
+
+/* ==========================================================================
+   NYRA AI CHATBOT LOGIC
+   ========================================================================== */
+
+(function() {
+    // CONFIGURATION
+    const GEMINI_API_KEY = "AIzaSyC7y1dc_Te69wmNZ5lhYdMwEgWuuhO-nD8"; // PASTE YOUR GEMINI API KEY HERE
+    const AUTO_OPEN_DELAY = 5000; // 5 seconds
+    
+    const SYSTEM_PROMPT = `
+        You are Nyra, the official AI assistant for AirLink.
+        AirLink is a revolutionary decentralized messaging app that works WITHOUT internet.
+        
+        Key Facts about AirLink:
+        - Technology: Uses Bluetooth and Wi-Fi Direct for P2P connection.
+        - Mesh Networking: Messages hop through devices to reach distant peers.
+        - Security: Powered by the Signal Protocol (End-to-End Encryption).
+        - Features: Offline messaging, Voice notes, Media sharing, QR pairing.
+        - Context: Developed by Harshpal. Open Source (MIT License).
+        
+        Personality:
+        - Helpful, intelligent, and tech-forward.
+        - Friendly but professional.
+        - Keep responses concise (max 2-3 short paragraphs).
+        
+        If asked about things outside of AirLink, try to bring it back to the project if possible, or answer politely as a general AI.
+    `;
+
+    // UI ELEMENTS
+    const container = document.getElementById('nyra-chatbot');
+    const fab = document.getElementById('nyra-fab');
+    const windowEl = document.getElementById('nyra-window');
+    const closeBtn = document.getElementById('nyra-close');
+    const clearBtn = document.getElementById('nyra-clear');
+    const sendBtn = document.getElementById('nyra-send');
+    const inputField = document.getElementById('nyra-input');
+    const messagesContainer = document.getElementById('nyra-messages');
+
+    let isChatOpen = false;
+    let chatHistory = [];
+
+    // INITIALIZATION
+    function init() {
+        if (!container) return;
+
+        // Event Listeners
+        fab.addEventListener('click', toggleChat);
+        closeBtn.addEventListener('click', closeChat);
+        clearBtn.addEventListener('click', clearChat);
+        sendBtn.addEventListener('click', handleSend);
+        
+        inputField.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+            }
+        });
+
+        // Auto-open logic
+        if (!localStorage.getItem('nyra_interacted')) {
+            setTimeout(() => {
+                if (!localStorage.getItem('nyra_interacted')) {
+                    openChat();
+                }
+            }, AUTO_OPEN_DELAY);
+        }
+    }
+
+    // CHAT ACTIONS
+    function toggleChat() {
+        isChatOpen ? closeChat() : openChat();
+        localStorage.setItem('nyra_interacted', 'true');
+    }
+
+    function openChat() {
+        windowEl.classList.remove('hidden');
+        isChatOpen = true;
+        inputField.focus();
+
+        // Greet user on first interaction if empty
+        if (messagesContainer.children.length === 0) {
+            setTimeout(() => {
+                addMessage("bot", "Hi there! I'm Nyra, your AirLink guide. 👋 Need help understanding how our offline mesh works?");
+            }, 500);
+        }
+    }
+
+    function closeChat() {
+        windowEl.classList.add('hidden');
+        isChatOpen = false;
+    }
+
+    function clearChat() {
+        messagesContainer.innerHTML = '';
+        chatHistory = [];
+        addMessage("bot", "Chat cleared. What else can I help you with?");
+    }
+
+    async function handleSend() {
+        const text = inputField.value.trim();
+        if (!text) return;
+
+        // User Message
+        addMessage("user", text);
+        inputField.value = '';
+        inputField.style.height = 'auto';
+        
+        // Disable input while thinking
+        setInputState(false);
+
+        // Bot Response
+        await getNyraResponse(text);
+        
+        setInputState(true);
+    }
+
+    function setInputState(enabled) {
+        inputField.disabled = !enabled;
+        sendBtn.disabled = !enabled;
+        if (enabled) inputField.focus();
+    }
+
+    // MESSAGE RENDERING
+    function addMessage(type, text) {
+        const msgEl = document.createElement('div');
+        msgEl.className = `message ${type}`;
+        
+        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        msgEl.innerHTML = `
+            <div class="message-content">${formatText(text)}</div>
+            <span class="message-time">${timestamp}</span>
+        `;
+        
+        messagesContainer.appendChild(msgEl);
+        scrollToBottom();
+        
+        // Update history for API - Only if it's not the initial greeting
+        if (messagesContainer.children.length > 1 || type === 'user') {
+            chatHistory.push({ role: type === 'bot' ? 'model' : 'user', parts: [{ text }] });
+        }
+    }
+
+    function addTypingIndicator() {
+        const indicator = document.createElement('div');
+        indicator.className = 'message bot typing-msg';
+        indicator.id = 'nyra-typing';
+        indicator.innerHTML = `
+            <div class="typing-indicator">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        `;
+        messagesContainer.appendChild(indicator);
+        scrollToBottom();
+    }
+
+    function removeTypingIndicator() {
+        const el = document.getElementById('nyra-typing');
+        if (el) el.remove();
+    }
+
+    function scrollToBottom() {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function formatText(text) {
+        // Simple Markdown-ish formatting
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n/g, '<br>');
+    }
+
+    // GEMINI API INTEGRATION
+    async function getNyraResponse(userText) {
+        addTypingIndicator();
+
+        if (!GEMINI_API_KEY) {
+            // Fallback for demo if no key provided
+            setTimeout(() => {
+                removeTypingIndicator();
+                addMessage("bot", "I'd love to chat more, but I need a Gemini API key to be fully functional! You can add one in the `script.js` file. In the meantime, feel free to explore our Features and Tech sections!");
+            }, 1500);
+            return;
+        }
+
+        try {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
+            
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    system_instruction: {
+                        parts: [{ text: SYSTEM_PROMPT.trim() }]
+                    },
+                    contents: chatHistory.slice(-10),
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 512,
+                    }
+                })
+            });
+
+            const data = await response.json();
+            removeTypingIndicator();
+
+            if (response.ok && data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+                const botText = data.candidates[0].content.parts[0].text;
+                addMessage("bot", botText);
+            } else {
+                const errorMsg = data.error?.message || "Invalid response from AI brain.";
+                console.error("Gemini API Error details:", data);
+                throw new Error(errorMsg);
+            }
+
+        } catch (error) {
+            console.error("Nyra API Error:", error);
+            removeTypingIndicator();
+            addMessage("bot", `Oops! I'm having trouble: ${error.message}. Please check your connection or try again.`);
+        }
+    }
+
+    // Auto-resize textarea
+    inputField.addEventListener('input', () => {
+        inputField.style.height = 'auto';
+        inputField.style.height = inputField.scrollHeight + 'px';
+    });
+
+    init();
+})();
