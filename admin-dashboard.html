@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruitment Dashboard | AirLink</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #00f2ff;
+            --secondary-color: #7000ff;
+            --bg-dark: #050505;
+            --surface: #111111;
+            --surface-hover: #1a1a1a;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+            --accent-glow: rgba(0, 242, 255, 0.15);
+            --border: rgba(255, 255, 255, 0.08);
+            
+            --status-new: #00f2ff;
+            --status-review: #ffb800;
+            --status-interview: #7000ff;
+            --status-hired: #00ff88;
+            --status-rejected: #ff4d4d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Access Gate */
+        #access-gate {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-dark);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .gate-card {
+            background: var(--surface);
+            padding: 3rem;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .gate-card h2 { margin-bottom: 1.5rem; font-weight: 800; }
+        .gate-card input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        /* Dashboard Layout */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: none; /* Shown after auth */
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-card span { color: var(--text-dim); font-size: 0.85rem; text-transform: uppercase; font-weight: 600; }
+        .stat-card h3 { font-size: 2rem; margin-top: 0.5rem; }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 3rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            outline: none;
+        }
+
+        /* Table */
+        .table-wrapper {
+            background: var(--surface);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(255,255,255,0.03);
+            padding: 1.2rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+
+        tr:hover td {
+            background: var(--surface-hover);
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .status-new { background: rgba(0, 242, 255, 0.1); color: var(--status-new); }
+        .status-reviewing { background: rgba(255, 184, 0, 0.1); color: var(--status-review); }
+        .status-interviewing { background: rgba(112, 0, 255, 0.1); color: var(--status-interview); }
+        .status-hired { background: rgba(0, 255, 136, 0.1); color: var(--status-hired); }
+        .status-rejected { background: rgba(255, 77, 77, 0.1); color: var(--status-rejected); }
+
+        .btn-icon {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: white;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-icon:hover { background: var(--primary-color); color: var(--bg-dark); border-color: var(--primary-color); }
+
+        select.status-updater {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 0.3rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Loader */
+        .loader {
+            text-align: center;
+            padding: 4rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Detail Modal */
+        #detail-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            max-width: 600px;
+            width: 100%;
+            padding: 2.5rem;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-dim);
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        .btn-primary { background: var(--primary-color); color: var(--bg-dark); }
+    </style>
+</head>
+<body>
+
+    <!-- Access Gate -->
+    <div id="access-gate">
+        <div class="gate-card">
+            <h2 class="gradient-text">Personnel Only</h2>
+            <p style="margin-bottom: 2rem; color: var(--text-dim);">Please enter your access key to enter the AirLink recruitment hub.</p>
+            <input type="password" id="access-key" placeholder="Enter Key...">
+            <button class="btn btn-primary" style="width:100%" onclick="checkGate()">Access Dashboard</button>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard-container" id="dashboard">
+        <header>
+            <div class="logo">AIRLINK <span class="gradient-text">RECRUITMENT</span></div>
+            <button class="btn btn-icon" title="Refresh" onclick="fetchData()"><i class="fa-solid fa-rotate"></i></button>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span>Total Applications</span>
+                <h3 id="stat-total">0</h3>
+            </div>
+            <div class="stat-card">
+                <span>New / Unreviewed</span>
+                <h3 id="stat-new" style="color: var(--status-new)">0</h3>
+            </div>
+            <div class="stat-card">
+                <span>Hired</span>
+                <h3 id="stat-hired" style="color: var(--status-hired)">0</h3>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-input" placeholder="Search by name, email or role..." oninput="filterData()">
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="apps-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Applicant</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Resume</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+            
+            <div id="loading" class="loader">
+                <div class="spinner"></div>
+                <p>Establishing secure connection to database...</p>
+            </div>
+            
+            <div id="no-data" style="display:none; text-align:center; padding:4rem; color:var(--text-dim);">
+                <i class="fa-solid fa-folder-open" style="font-size:2rem; margin-bottom:1rem; opacity:0.5;"></i>
+                <p>No applications found yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cover Letter Modal -->
+    <div id="detail-modal">
+        <div class="modal-content">
+            <i class="fa-solid fa-xmark close-modal" onclick="closeDetail()"></i>
+            <h3 style="margin-bottom: 0.5rem;" id="modal-name">Applicant Name</h3>
+            <p id="modal-role" class="gradient-text" style="font-weight:700; font-size: 0.9rem; margin-bottom: 2rem;">Applied Role</p>
+            
+            <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); max-height: 400px; overflow-y: auto;">
+                <h4 style="font-size: 0.8rem; text-transform:uppercase; color: var(--primary-color); margin-bottom: 1rem;">Cover Letter</h4>
+                <p id="modal-cover" style="font-size: 0.95rem; white-space: pre-wrap;"></p>
+            </div>
+            
+            <div style="margin-top:2rem; display: flex; gap: 1rem;">
+                <a href="#" id="modal-resume-btn" target="_blank" class="btn btn-primary"><i class="fa-solid fa-file-pdf"></i> View Resume</a>
+                <a href="#" id="modal-email-btn" class="btn" style="background: rgba(255,255,255,0.1); color: white;"><i class="fa-solid fa-envelope"></i> Contact</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzH7qwfOfri8m_Xc-_4ieoZRFR2s0AsLPwRF_p05X1Vs78z6tC8MGG5Ny0RRpBm7pj5ng/exec';
+        const ACCESS_KEY = '8577026386'; // UPDATED ACCESS KEY
+
+        let allApplications = [];
+
+        function checkGate() {
+            const key = document.getElementById('access-key').value;
+            if (key === ACCESS_KEY) {
+                document.getElementById('access-gate').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                fetchData();
+            } else {
+                alert('Invalid Access Key');
+            }
+        }
+
+        async function fetchData() {
+            showLoading(true);
+            try {
+                // We use a POST request even for fetching to avoid some CORS GET issues with certain browsers
+                const formData = new URLSearchParams();
+                formData.append('action', 'getApplications');
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    allApplications = result.data;
+                    renderData(allApplications);
+                    updateStats(allApplications);
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Failed to load data: ' + err.message + '\n\nMake sure your Apps Script is deployed as "Anyone" and the URL is correct.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function renderData(data) {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                document.getElementById('no-data').style.display = 'block';
+                return;
+            } else {
+                document.getElementById('no-data').style.display = 'none';
+            }
+
+            // most recent first
+            data.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            data.forEach(app => {
+                const date = new Date(app.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${date}</td>
+                    <td>
+                        <div style="font-weight:600">${app.full_name}</div>
+                        <div style="font-size:0.8rem; color:var(--text-dim)">${app.email}</div>
+                    </td>
+                    <td>${app.applied_role}</td>
+                    <td>
+                        <select class="status-updater" onchange="updateStatus(${app.id}, this.value)">
+                            <option value="New" ${app.status === 'New' ? 'selected' : ''}>New</option>
+                            <option value="Reviewing" ${app.status === 'Reviewing' ? 'selected' : ''}>Reviewing</option>
+                            <option value="Interviewing" ${app.status === 'Interviewing' ? 'selected' : ''}>Interviewing</option>
+                            <option value="Hired" ${app.status === 'Hired' ? 'selected' : ''}>Hired</option>
+                            <option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                        </select>
+                    </td>
+                    <td>
+                        <a href="${app.resume_link}" target="_blank" class="btn-icon" style="display:flex; align-items:center; justify-content:center; text-decoration:none;">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <button class="btn-icon" onclick="viewDetail(${JSON.stringify(app).replace(/"/g, '&quot;')})">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Toast Notification System
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.style.position = 'fixed';
+            toast.style.top = '2rem';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.padding = '1rem 2rem';
+            toast.style.borderRadius = '12px';
+            toast.style.background = isError ? 'var(--status-rejected)' : 'var(--status-hired)';
+            toast.style.color = isError ? 'white' : 'var(--bg-dark)';
+            toast.style.fontWeight = '700';
+            toast.style.zIndex = '10001';
+            toast.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+            toast.innerHTML = (isError ? '❌ ' : '✅ ') + message;
+            
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        async function updateStatus(rowId, newStatus) {
+            const selectElement = event.target;
+            const originalValue = selectElement.getAttribute('data-last-val') || 'New';
+            
+            try {
+                selectElement.style.opacity = '0.5';
+                const formData = new URLSearchParams();
+                formData.append('action', 'updateStatus');
+                formData.append('id', rowId);
+                formData.append('status', newStatus);
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+                
+                const result = await response.json();
+                if (result.status === 'success') {
+                    showToast('Status updated to ' + newStatus);
+                    selectElement.setAttribute('data-last-val', newStatus);
+                    
+                    // Update local data and stats
+                    const app = allApplications.find(a => a.id === rowId);
+                    if (app) app.status = newStatus;
+                    updateStats(allApplications);
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Update failed: ' + err.message, true);
+                selectElement.value = originalValue; // Revert on failure
+            } finally {
+                selectElement.style.opacity = '1';
+            }
+        }
+
+        function filterData() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = allApplications.filter(app => 
+                app.full_name.toLowerCase().includes(query) || 
+                app.email.toLowerCase().includes(query) || 
+                app.applied_role.toLowerCase().includes(query)
+            );
+            renderData(filtered);
+        }
+
+        function updateStats(data) {
+            document.getElementById('stat-total').textContent = data.length;
+            document.getElementById('stat-new').textContent = data.filter(a => a.status === 'New').length;
+            document.getElementById('stat-hired').textContent = data.filter(a => a.status === 'Hired').length;
+        }
+
+        function viewDetail(app) {
+            document.getElementById('modal-name').textContent = app.full_name;
+            document.getElementById('modal-role').textContent = app.applied_role;
+            document.getElementById('modal-cover').textContent = app.cover_letter;
+            document.getElementById('modal-resume-btn').href = app.resume_link;
+            document.getElementById('modal-email-btn').href = `mailto:${app.email}?subject=Application for ${app.applied_role}`;
+            document.getElementById('detail-modal').style.display = 'flex';
+        }
+
+        function closeDetail() {
+            document.getElementById('detail-modal').style.display = 'none';
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('apps-table').style.opacity = show ? '0.3' : '1';
+        }
+    </script>
+</body>
+</html>
