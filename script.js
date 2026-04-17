@@ -821,7 +821,7 @@ if (compareContainer) {
 
 
 // --- LIVE SUPPORTERS FEED (REAL GOOGLE SHEET LINK) ---
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx3whVfqrwwkvLpufTZMBUaj7vHU_79l43wZ-fX92mAZiv-H7cW1T0jbxaJv_OJE8-sWw/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9eKIu5aB-5nuACSAIglZxv8ecUbS_vRoIP_1qLi6hYAEtBCYTAZsr4tFvKxopsQI_XA/exec';
 const trackContainers = {
     1: document.getElementById('track-1-content'),
     2: document.getElementById('track-2-content'),
@@ -1905,27 +1905,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 (function() {
     // CONFIGURATION
-    const GEMINI_API_KEY = "AIzaSyC7y1dc_Te69wmNZ5lhYdMwEgWuuhO-nD8"; // PASTE YOUR GEMINI API KEY HERE
     const AUTO_OPEN_DELAY = 5000; // 5 seconds
-    
-    const SYSTEM_PROMPT = `
-        You are Nyra, the official AI assistant for AirLink.
-        AirLink is a revolutionary decentralized messaging app that works WITHOUT internet.
-        
-        Key Facts about AirLink:
-        - Technology: Uses Bluetooth and Wi-Fi Direct for P2P connection.
-        - Mesh Networking: Messages hop through devices to reach distant peers.
-        - Security: Powered by the Signal Protocol (End-to-End Encryption).
-        - Features: Offline messaging, Voice notes, Media sharing, QR pairing.
-        - Context: Developed by Harshpal. Open Source (MIT License).
-        
-        Personality:
-        - Helpful, intelligent, and tech-forward.
-        - Friendly but professional.
-        - Keep responses concise (max 2-3 short paragraphs).
-        
-        If asked about things outside of AirLink, try to bring it back to the project if possible, or answer politely as a general AI.
-    `;
+    // (Other configuration moved to Google Apps Script for security)
+
 
     // UI ELEMENTS
     const container = document.getElementById('nyra-chatbot');
@@ -2078,34 +2060,15 @@ document.addEventListener('DOMContentLoaded', () => {
     async function getNyraResponse(userText) {
         addTypingIndicator();
 
-        if (!GEMINI_API_KEY) {
-            // Fallback for demo if no key provided
-            setTimeout(() => {
-                removeTypingIndicator();
-                addMessage("bot", "I'd love to chat more, but I need a Gemini API key to be fully functional! You can add one in the `script.js` file. In the meantime, feel free to explore our Features and Tech sections!");
-            }, 1500);
-            return;
-        }
-
         try {
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
-            
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    system_instruction: {
-                        parts: [{ text: SYSTEM_PROMPT.trim() }]
-                    },
-                    contents: chatHistory.slice(-10),
-                    generationConfig: {
-                        temperature: 0.7,
-                        maxOutputTokens: 512,
-                    }
-                })
+            const params = new URLSearchParams({
+                action: 'chat',
+                history: JSON.stringify(chatHistory.slice(-10))
             });
 
+            const response = await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
             const data = await response.json();
+            
             removeTypingIndicator();
 
             if (response.ok && data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
@@ -2113,14 +2076,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 addMessage("bot", botText);
             } else {
                 const errorMsg = data.error?.message || "Invalid response from AI brain.";
-                console.error("Gemini API Error details:", data);
+                console.error("Proxy Error details:", data);
                 throw new Error(errorMsg);
             }
 
         } catch (error) {
-            console.error("Nyra API Error:", error);
+            console.error("Nyra Proxy Error:", error);
             removeTypingIndicator();
-            addMessage("bot", `Oops! I'm having trouble: ${error.message}. Please check your connection or try again.`);
+            addMessage("bot", `Oops! I'm having trouble reaching my brain: ${error.message}. Please try again later.`);
         }
     }
 
