@@ -821,8 +821,8 @@ if (compareContainer) {
 
 
 // --- LIVE SUPPORTERS FEED (REAL GOOGLE SHEET LINK) ---
-const SUPPORTER_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyu_Wm3fUvcCNuvnEsdAPfxtWHt1Xd_kq_AZb-KHmF4bz4lJ8xShBDXzLLzO5Gt5mhMIA/exec';
-const NYRA_PROXY_URL = 'https://script.google.com/macros/s/AKfycbyu_Wm3fUvcCNuvnEsdAPfxtWHt1Xd_kq_AZb-KHmF4bz4lJ8xShBDXzLLzO5Gt5mhMIA/exec';
+const SUPPORTER_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwH9u3PKIKq7rbnnBE7kDEx6THYHNpCkSNZtvBKULDtYUFjySLpMhaUpgePlh3aWQ1DgQ/exec';
+const NYRA_PROXY_URL = 'https://script.google.com/macros/s/AKfycbwH9u3PKIKq7rbnnBE7kDEx6THYHNpCkSNZtvBKULDtYUFjySLpMhaUpgePlh3aWQ1DgQ/exec';
 
 const trackContainers = {
     1: document.getElementById('track-1-content'),
@@ -931,12 +931,12 @@ async function fetchSupporters() {
             }
 
             // Re-render all tracks to reflect the current sheet state
-            const tiers = { 
-                1: 'tier-platinum', 
-                2: 'tier-gold', 
-                3: 'tier-silver', 
+            const tiers = {
+                1: 'tier-platinum',
+                2: 'tier-gold',
+                3: 'tier-silver',
                 4: 'tier-community',
-                5: 'tier-custom' 
+                5: 'tier-custom'
             };
             for (let id in supportersByTrack) {
                 renderTrack(id, tiers[id]);
@@ -1087,15 +1087,15 @@ fetchSupporters(); // Initial sync on load
             const timerContainer = document.getElementById('resend-timer-text');
             if (timerContainer) timerContainer.innerHTML = `Resend in <span id="resend-timer">${secs}</span>s`;
         }
-        
+
         if (progressEl) progressEl.style.strokeDashoffset = dashArray;
-        
+
         if (resendInterval) clearInterval(resendInterval);
         resendInterval = setInterval(() => {
             secs--;
             const timerEl = document.getElementById('resend-timer');
             if (timerEl) timerEl.textContent = secs;
-            
+
             if (progressEl) {
                 const offset = dashArray - (dashArray * (totalSecs - secs) / totalSecs);
                 progressEl.style.strokeDashoffset = offset;
@@ -1124,7 +1124,7 @@ fetchSupporters(); // Initial sync on load
             email: email,
             otp: generatedOtp,
         });
-        fetch(`${SUPPORTER_SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' }).catch(() => {});
+        fetch(`${SUPPORTER_SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' }).catch(() => { });
     }
 
     // --- Email Ghost Autocomplete Logic ---
@@ -1195,12 +1195,12 @@ fetchSupporters(); // Initial sync on load
         sendOtpBtn.classList.remove('sent');
         otpStatus.textContent = '';
         otpStatus.className = 'submission-status';
-        
+
         if (typeof resendInterval !== 'undefined' && resendInterval) {
             clearInterval(resendInterval);
         }
         resendOtpBtn.disabled = true;
-        
+
         emailInput.focus();
     });
 
@@ -1230,7 +1230,7 @@ fetchSupporters(); // Initial sync on load
             if (val.length > 0) {
                 // Keep only last char if somehow more entered
                 e.target.value = val.slice(-1);
-                
+
                 // Move to next if digit
                 if (/[0-9]/.test(e.target.value)) {
                     if (index < otpInputs.length - 1) {
@@ -1267,7 +1267,7 @@ fetchSupporters(); // Initial sync on load
     function checkAllOtpInputs() {
         const otpValues = Array.from(otpInputs).map(i => i.value).join('');
         const section = document.getElementById('otp-section');
-        
+
         if (otpValues.length === 6) {
             // Add verifying state
             section.classList.add('verifying');
@@ -1281,12 +1281,12 @@ fetchSupporters(); // Initial sync on load
                     otpStatus.textContent = '✅ Email verified!';
                     otpStatus.className = 'submission-status otp-status-success';
                     triggerHaptic('success');
-                    
+
                     otpInputs.forEach(input => {
                         input.classList.add('verified');
                         input.disabled = true;
                     });
-                    
+
                     // Auto-submit: Transition directly to Step 2 ("Choose Your Tier")
                     setTimeout(() => {
                         goToStep(2);
@@ -1296,7 +1296,7 @@ fetchSupporters(); // Initial sync on load
                     otpStatus.textContent = '❌ Incorrect OTP. Please try again.';
                     otpStatus.className = 'submission-status error';
                     triggerHaptic('error');
-                    
+
                     // Shake animation
                     const inputsContainer = document.getElementById('otp-inputs-container');
                     inputsContainer.classList.add('shake');
@@ -1390,7 +1390,7 @@ fetchSupporters(); // Initial sync on load
             const submitUrl = `${SUPPORTER_SCRIPT_URL}?${params.toString()}`;
 
             // Fire exactly ONE request then advance to success
-            fetch(submitUrl, { mode: 'no-cors' }).catch(() => {});
+            fetch(submitUrl, { mode: 'no-cors' }).catch(() => { });
             // Wait 2s then show success (can't read response in no-cors)
             setTimeout(() => goToStep(5), 2000);
         } catch (err) {
@@ -1722,7 +1722,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let uptimeInterval = null;
     let nodeInterval = null;
     let uptimeSeconds = 0;
-    
+
     // --- Audio Assets ---
     const siren = new Audio('assets/siren.mp3');
     siren.loop = true;
@@ -1834,14 +1834,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (const log of logs) {
             if (!window.isDisasterMode) break; // Abort if turned off during sequence
-            
+
             const line = document.createElement('div');
             line.className = `terminal-line ${log.type}`;
             const ts = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
             line.innerHTML = `<span class="terminal-timestamp">[${ts}]</span> <span class="terminal-text">${log.text}</span>`;
             body.appendChild(line);
             body.scrollTop = body.scrollHeight;
-            
+
             await new Promise(r => setTimeout(r, 180 + Math.random() * 200));
         }
 
@@ -1860,7 +1860,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Step 1: Show Terminal Bootup
             btn.classList.add('loading'); // Optional loading state for button
             await runTerminalSequence();
-            
+
             if (!window.isDisasterMode) return; // In case they toggled it off fast
 
             // Step 2: Apply Red Theme & Effects
@@ -1869,7 +1869,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.innerHTML = '<i class="fa-solid fa-power-off"></i>';
 
             siren.play().catch(e => console.log("Audio play blocked:", e));
-            
+
             triggerShake();
             setTimeout(triggerFlicker, 100);
             setTimeout(runTypewriter, 400);
@@ -1903,7 +1903,7 @@ document.addEventListener('DOMContentLoaded', () => {
    NYRA AI CHATBOT LOGIC
    ========================================================================== */
 
-(function() {
+(function () {
     // CONFIGURATION
     const AUTO_OPEN_DELAY = 5000; // 5 seconds
     // (Other configuration moved to Google Apps Script for security)
@@ -1931,7 +1931,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeBtn.addEventListener('click', closeChat);
         clearBtn.addEventListener('click', clearChat);
         sendBtn.addEventListener('click', handleSend);
-        
+
         inputField.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -1987,13 +1987,13 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage("user", text);
         inputField.value = '';
         inputField.style.height = 'auto';
-        
+
         // Disable input while thinking
         setInputState(false);
 
         // Bot Response
         await getNyraResponse(text);
-        
+
         setInputState(true);
     }
 
@@ -2007,17 +2007,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function addMessage(type, text) {
         const msgEl = document.createElement('div');
         msgEl.className = `message ${type}`;
-        
+
         const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        
+
         msgEl.innerHTML = `
             <div class="message-content">${formatText(text)}</div>
             <span class="message-time">${timestamp}</span>
         `;
-        
+
         messagesContainer.appendChild(msgEl);
         scrollToBottom();
-        
+
         // Update history for API - Only if it's not the initial greeting
         if (messagesContainer.children.length > 1 || type === 'user') {
             chatHistory.push({ role: type === 'bot' ? 'model' : 'user', parts: [{ text }] });
@@ -2068,7 +2068,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const response = await fetch(`${NYRA_PROXY_URL}?${params.toString()}`);
             const data = await response.json();
-            
+
             removeTypingIndicator();
 
             if (response.ok && data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
