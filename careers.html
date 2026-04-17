@@ -245,6 +245,40 @@
         }
         #modal-form-status.success { background: rgba(0,255,136,0.1); color: #00FF88; display: block; }
         #modal-form-status.error   { background: rgba(255,77,77,0.1);  color: #FF4D4D; display: block; }
+
+        /* Resume Upload Styling */
+        .mf-file-custom {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.05);
+            border: 1px dashed rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 0.85rem 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .mf-file-custom:hover {
+            border-color: var(--primary-color);
+            background: rgba(255,255,255,0.08);
+        }
+        .mf-file-custom i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        .mf-file-custom input[type="file"] {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+        #mf-resume-name {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -301,6 +335,14 @@
                         <label for="mf-portfolio">Portfolio / Website</label>
                         <input type="url" id="mf-portfolio" placeholder="https://yoursite.com">
                     </div>
+                </div>
+                <div class="mf-group">
+                    <label>Resume / CV *</label>
+                    <label class="mf-file-custom">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span id="mf-resume-name">Upload Resume (PDF, DOCX)</span>
+                        <input type="file" id="mf-resume" accept=".pdf,.doc,.docx" required>
+                    </label>
                 </div>
                 <div class="mf-group">
                     <label for="mf-cover">Why do you want to join AirLink? *</label>
@@ -766,6 +808,8 @@
             document.getElementById('mf-linkedin').value = '';
             document.getElementById('mf-portfolio').value = '';
             document.getElementById('mf-cover').value = '';
+            document.getElementById('mf-resume').value = '';
+            document.getElementById('mf-resume-name').textContent = 'Upload Resume (PDF, DOCX)';
             const status = document.getElementById('modal-form-status');
             status.className = '';
             status.style.display = 'none';
@@ -773,6 +817,12 @@
             overlay.classList.add('open');
             document.body.style.overflow = 'hidden';
         }
+
+        // Handle File Name Display
+        document.getElementById('mf-resume').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'Upload Resume (PDF, DOCX)';
+            document.getElementById('mf-resume-name').textContent = fileName;
+        });
 
         function closeModal() {
             overlay.classList.remove('open');
@@ -792,13 +842,14 @@
             const name  = document.getElementById('mf-name').value.trim();
             const email = document.getElementById('mf-email').value.trim();
             const cover = document.getElementById('mf-cover').value.trim();
+            const resumeFile = document.getElementById('mf-resume').files[0];
             const title = document.getElementById('modal-title').textContent;
             const status = document.getElementById('modal-form-status');
 
-            if (!name || !email || !cover) {
+            if (!name || !email || !cover || !resumeFile) {
                 status.className = 'error';
                 status.style.display = 'block';
-                status.textContent = 'Please fill in all required fields (*) before submitting.';
+                status.textContent = 'Please fill in all required fields (*) and upload your resume.';
                 return;
             }
 
@@ -806,14 +857,16 @@
             const portfolio = document.getElementById('mf-portfolio').value.trim();
 
             const body = encodeURIComponent(
-                `Name: ${name}\nEmail: ${email}\nLinkedIn: ${linkedin || 'N/A'}\nPortfolio: ${portfolio || 'N/A'}\n\nCover Letter:\n${cover}`
+                `Name: ${name}\nEmail: ${email}\nLinkedIn: ${linkedin || 'N/A'}\nPortfolio: ${portfolio || 'N/A'}\nResume: ${resumeFile.name}\n\nCover Letter:\n${cover}`
             );
             const subject = encodeURIComponent(`Application: ${title}`);
+            
+            // Note: browser mailto doesn't support attachments directly for security reasons
             window.location.href = `mailto:careers@airlink.app?subject=${subject}&body=${body}`;
 
             status.className = 'success';
             status.style.display = 'block';
-            status.textContent = '✅ Opening your email client… Application details pre-filled!';
+            status.innerHTML = '✅ Opening email client... <br><strong>IMPORTANT:</strong> Please remember to manually ATTACH your resume file "' + resumeFile.name + '" to the email.';
         });
 
         // ===== CATEGORY FILTER LOGIC =====
