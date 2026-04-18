@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin-dashboard
 
-Sitemap: https://myairlink.vercel.app/sitemap-main.xml
+Sitemap: https://myairlink.vercel.app/sitemap.xml
