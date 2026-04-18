@@ -619,7 +619,7 @@
                 hub.</p>
 
             <div class="input-group">
-                <input type="password" id="access-key" placeholder="••••••••" autocomplete="off">
+                <input type="password" id="access-key" placeholder="••••••••" autocomplete="off" autofocus>
             </div>
 
             <button class="btn btn-primary" style="width:100%; justify-content: center;" onclick="checkGate()"
@@ -874,11 +874,14 @@
 
         // --- AUTH FLOW ---
         function checkGate() {
-            const key = document.getElementById('access-key').value;
+            const input = document.getElementById('access-key');
+            const key = input.value;
             const gateCard = document.querySelector('.gate-card');
             const gateBtn = document.getElementById('gate-btn');
 
             if (key === ACCESS_KEY) {
+                input.disabled = true;
+                input.blur();
                 // Play animation
                 gateCard.classList.add('authenticating');
                 gateBtn.innerHTML = '<span>Authenticating...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
@@ -1342,9 +1345,16 @@
             animate();
         }
 
-        // Handle enter key on login
-        document.getElementById('access-key').addEventListener('keypress', (e) => {
+        // Handle enter key and automatic authentication
+        const accessKey = document.getElementById('access-key');
+        accessKey.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') checkGate();
+        });
+
+        accessKey.addEventListener('input', (e) => {
+            if (e.target.value === ACCESS_KEY) {
+                checkGate();
+            }
         });
     </script>
 
