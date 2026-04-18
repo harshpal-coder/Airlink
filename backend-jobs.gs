@@ -56,7 +56,7 @@ function getJobs(publicOnly) {
             job[key] = val;
         }
         
-        if (!publicOnly || job.status === 'Open') {
+        if (!publicOnly || job.status === 'Open' || job.status === 'Closed') {
           jobs.push(job);
         }
     }

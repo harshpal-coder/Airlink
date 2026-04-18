@@ -179,6 +179,25 @@
                 text-align: center;
             }
         }
+
+        /* Closed Role Styles */
+        .role-card.closed {
+            opacity: 0.65;
+            filter: grayscale(0.3);
+            border-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .role-card.closed:hover {
+            transform: none;
+            background: rgba(255, 255, 255, 0.02);
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .role-tag.closed-badge {
+            background: rgba(255, 77, 77, 0.15);
+            color: #FF4D4D;
+            border: 1px solid rgba(255, 77, 77, 0.2);
+        }
     </style>
 
     <style>
@@ -759,21 +778,28 @@
                         <i class="fa-solid ${meta.icon}"></i> ${meta.label}
                     </h3>
                     <div class="roles-container" style="margin-bottom: 4rem;">
-                        ${grouped[cat].map(job => `
-                            <div class="role-card glass">
-                                <div class="role-header">
-                                    <h3>${job.title}</h3>
-                                    <span class="role-tag">${job.category.toUpperCase()}</span>
+                        ${grouped[cat].map(job => {
+                            const isClosed = job.status === 'Closed';
+                            return `
+                                <div class="role-card glass ${isClosed ? 'closed' : ''}">
+                                    <div class="role-header">
+                                        <h3>${job.title}</h3>
+                                        <div style="display:flex; gap:0.5rem; align-items:center;">
+                                            ${isClosed ? '<span class="role-tag closed-badge"><i class="fa-solid fa-lock" style="font-size:0.7rem;"></i> Closed</span>' : ''}
+                                            <span class="role-tag">${job.category.toUpperCase()}</span>
+                                        </div>
+                                    </div>
+                                    <p>${job.about.substring(0, 120)}...</p>
+                                    <div class="role-footer">
+                                        <span class="role-location"><i class="fa-solid fa-location-dot"></i> ${job.location}</span>
+                                        ${isClosed 
+                                            ? '<button class="btn btn-secondary" disabled style="opacity: 0.6; cursor: not-allowed;"><i class="fa-solid fa-ban" style="margin-right:5px;"></i> Closed</button>'
+                                            : `<button class="btn btn-primary trigger-apply" data-job='${JSON.stringify(job).replace(/'/g, "&apos;")}'>Apply Now</button>`
+                                        }
+                                    </div>
                                 </div>
-                                <p>${job.about.substring(0, 120)}...</p>
-                                <div class="role-footer">
-                                    <span class="role-location"><i class="fa-solid fa-location-dot"></i> ${job.location}</span>
-                                    <button class="btn btn-primary trigger-apply" 
-                                        data-job='${JSON.stringify(job).replace(/'/g, "&apos;")}'
-                                    >Apply Now</button>
-                                </div>
-                            </div>
-                        `).join('')}
+                            `;
+                        }).join('')}
                     </div>
                 `;
                 container.appendChild(section);
