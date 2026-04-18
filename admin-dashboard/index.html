@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recruitment Dashboard | AirLink</title>
+    <title>Personnel Hub | AirLink</title>
     <meta name="robots" content="noindex, nofollow">
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="/assets/logo.png">
     
@@ -17,12 +17,12 @@
             --primary-color: #00f2ff;
             --secondary-color: #7000ff;
             --bg-dark: #050505;
-            --surface: #111111;
-            --surface-hover: #1a1a1a;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-hover: rgba(255, 255, 255, 0.08);
             --text-main: #ffffff;
             --text-dim: #a0a0a0;
-            --accent-glow: rgba(0, 242, 255, 0.15);
-            --border: rgba(255, 255, 255, 0.08);
+            --accent-glow: rgba(0, 242, 255, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.1);
             
             --status-new: #00f2ff;
             --status-review: #ffb800;
@@ -38,7 +38,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
             background: var(--bg-dark);
             color: var(--text-main);
             line-height: 1.6;
@@ -46,40 +46,112 @@
             min-height: 100vh;
         }
 
+        /* Mesh Background */
+        #canvas-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        .glass {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
         /* Access Gate */
         #access-gate {
             position: fixed;
             inset: 0;
-            background: var(--bg-dark);
             z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(20px);
+            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #access-gate.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(1.1);
         }
 
         .gate-card {
-            background: var(--surface);
-            padding: 3rem;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            text-align: center;
-            max-width: 400px;
             width: 90%;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            max-width: 440px;
+            padding: 3.5rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        .gate-card h2 { margin-bottom: 1.5rem; font-weight: 800; }
-        .gate-card input {
+        .gate-logo {
+            width: 60px;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 15px var(--accent-glow));
+        }
+
+        .gate-card h2 { margin-bottom: 0.5rem; font-weight: 800; font-size: 2rem; letter-spacing: -1px; }
+        
+        .input-group {
+            position: relative;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group input {
             width: 100%;
-            padding: 1rem;
+            padding: 1.2rem;
             background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border);
+            border: 1px solid var(--glass-border);
             border-radius: 12px;
             color: white;
-            margin-bottom: 1.5rem;
             font-size: 1rem;
             text-align: center;
+            outline: none;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes scanning {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .gate-card.authenticating .scan-line {
+            animation: scanning 2s infinite ease-in-out;
         }
 
         /* Dashboard Layout */
@@ -87,7 +159,16 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
-            display: none; /* Shown after auth */
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
+            visibility: hidden;
+        }
+
+        .dashboard-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
         }
 
         header {
@@ -101,24 +182,84 @@
             font-size: 1.5rem;
             font-weight: 800;
             letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo img { height: 32px; }
+
+        /* Stats & Insights */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            gap: 1.2rem;
         }
 
         .stat-card {
-            background: var(--surface);
             padding: 1.5rem;
-            border-radius: 20px;
-            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
         }
 
-        .stat-card span { color: var(--text-dim); font-size: 0.85rem; text-transform: uppercase; font-weight: 600; }
-        .stat-card h3 { font-size: 2rem; margin-top: 0.5rem; }
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--card-accent, var(--primary-color));
+            opacity: 0.5;
+        }
+
+        .stat-card span { color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        .stat-card h3 { font-size: 2.2rem; margin-top: 0.3rem; font-weight: 800; }
+
+        .insights-panel {
+            padding: 1.5rem;
+        }
+
+        .insights-panel h4 { font-size: 0.85rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: 1.5rem; }
+        
+        .progress-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .progress-item {
+            display: grid;
+            grid-template-columns: 80px 1fr 30px;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .progress-bar-bg {
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--bar-color, var(--primary-color));
+            width: 0%;
+            transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px var(--bar-color);
+        }
 
         /* Controls */
         .controls {
@@ -126,18 +267,18 @@
             justify-content: space-between;
             gap: 1rem;
             margin-bottom: 2rem;
-            flex-wrap: wrap;
+            align-items: center;
         }
 
         .search-box {
             position: relative;
             flex-grow: 1;
-            max-width: 400px;
+            max-width: 500px;
         }
 
         .search-box i {
             position: absolute;
-            left: 1rem;
+            left: 1.2rem;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-dim);
@@ -145,32 +286,37 @@
 
         .search-box input {
             width: 100%;
-            padding: 0.8rem 1rem 0.8rem 3rem;
+            padding: 1rem 1.2rem 1rem 3.2rem;
             background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
             color: white;
             outline: none;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary-color);
+            background: rgba(255,255,255,0.06);
         }
 
         /* Table */
         .table-wrapper {
-            background: var(--surface);
-            border-radius: 20px;
-            border: 1px solid var(--border);
             overflow: hidden;
+            margin-bottom: 3rem;
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0 8px;
             text-align: left;
         }
 
         th {
-            background: rgba(255,255,255,0.03);
-            padding: 1.2rem 1.5rem;
-            font-size: 0.85rem;
+            padding: 1rem 1.5rem;
+            font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
             color: var(--text-dim);
@@ -179,91 +325,78 @@
 
         td {
             padding: 1.2rem 1.5rem;
-            border-bottom: 1px solid var(--border);
+            background: rgba(255,255,255,0.02);
             font-size: 0.95rem;
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
         }
+
+        td:first-child { border-left: 1px solid var(--glass-border); border-radius: 15px 0 0 15px; }
+        td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 15px 15px 0; }
 
         tr:hover td {
-            background: var(--surface-hover);
-        }
-
-        .status-badge {
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            display: inline-block;
-        }
-
-        .status-new { background: rgba(0, 242, 255, 0.1); color: var(--status-new); }
-        .status-reviewing { background: rgba(255, 184, 0, 0.1); color: var(--status-review); }
-        .status-interviewing { background: rgba(112, 0, 255, 0.1); color: var(--status-interview); }
-        .status-hired { background: rgba(0, 255, 136, 0.1); color: var(--status-hired); }
-        .status-rejected { background: rgba(255, 77, 77, 0.1); color: var(--status-rejected); }
-
-        .btn-icon {
             background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border);
-            color: white;
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
+            border-color: rgba(255,255,255,0.15);
         }
-
-        .btn-icon:hover { background: var(--primary-color); color: var(--bg-dark); border-color: var(--primary-color); }
 
         select.status-updater {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-dim);
-            padding: 0.3rem;
-            border-radius: 6px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
             font-size: 0.8rem;
             outline: none;
             cursor: pointer;
+            font-family: inherit;
         }
 
-        /* Loader */
-        .loader {
-            text-align: center;
-            padding: 4rem;
+        .btn-icon {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            color: white;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
         }
 
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255,255,255,0.1);
-            border-left-color: var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1.5rem;
+        .btn-icon:hover { 
+            background: var(--primary-color); 
+            color: var(--bg-dark); 
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 242, 255, 0.3);
         }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Detail Modal */
         #detail-modal {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
             z-index: 10000;
             display: none;
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            transition: 0.3s;
         }
 
         .modal-content {
-            background: var(--surface);
-            max-width: 600px;
+            background: #0d1117;
+            border: 1px solid var(--glass-border);
+            max-width: 700px;
             width: 100%;
-            padding: 2.5rem;
-            border-radius: 24px;
-            border: 1px solid var(--border);
+            padding: 3rem;
+            border-radius: 28px;
             position: relative;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
 
         .close-modal {
@@ -273,63 +406,102 @@
             cursor: pointer;
             font-size: 1.2rem;
             color: var(--text-dim);
+            transition: 0.3s;
         }
+        .close-modal:hover { color: white; transform: rotate(90deg); }
 
         .btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            font-weight: 600;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 700;
             cursor: pointer;
             transition: 0.3s;
             border: none;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
             font-size: 0.9rem;
+            font-family: inherit;
         }
         .btn-primary { background: var(--primary-color); color: var(--bg-dark); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 242, 255, 0.2); }
+
+        /* Tablet/Mobile fixes */
+        @media (max-width: 1000px) {
+            .insights-grid { grid-template-columns: 1fr; }
+            .insights-panel { order: -1; }
+        }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spinning { animation: rotate 1s linear infinite; }
+
     </style>
 </head>
 <body>
 
+    <canvas id="canvas-mesh"></canvas>
+
     <!-- Access Gate -->
     <div id="access-gate">
-        <div class="gate-card">
+        <div class="gate-card glass">
+            <div class="scan-line"></div>
+            <img src="/assets/logo.png" alt="AirLink" class="gate-logo">
             <h2 class="gradient-text">Personnel Only</h2>
-            <p style="margin-bottom: 2rem; color: var(--text-dim);">Please enter your access key to enter the AirLink recruitment hub.</p>
-            <input type="password" id="access-key" placeholder="Enter Key...">
-            <button class="btn btn-primary" style="width:100%" onclick="checkGate()">Access Dashboard</button>
+            <p style="color: var(--text-dim); font-size: 0.95rem;">Authentication required to access the recruitment hub.</p>
+            
+            <div class="input-group">
+                <input type="password" id="access-key" placeholder="••••••••" autocomplete="off">
+            </div>
+            
+            <button class="btn btn-primary" style="width:100%; justify-content: center;" onclick="checkGate()" id="gate-btn">
+                <span>Access Dashboard</span>
+                <i class="fa-solid fa-shield-halved"></i>
+            </button>
         </div>
     </div>
 
     <!-- Dashboard -->
     <div class="dashboard-container" id="dashboard">
         <header>
-            <div class="logo">AIRLINK <span class="gradient-text">RECRUITMENT</span></div>
+            <div class="logo">
+                <img src="/assets/logo.png" alt="Logo">
+                <span>AIRLINK <span class="gradient-text">HUB</span></span>
+            </div>
             <div style="display:flex; gap: 1rem; align-items:center;">
-                <a href="/careers" class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-dim); font-size: 0.8rem;"><i class="fa-solid fa-arrow-left" style="margin-right:5px;"></i> View Careers Site</a>
-                <button class="btn btn-icon" title="Refresh" onclick="fetchData()"><i class="fa-solid fa-rotate"></i></button>
+                <a href="/careers" class="btn" style="background: rgba(255,255,255,0.05); color: var(--text-dim);"><i class="fa-solid fa-arrow-left"></i> Careers Site</a>
+                <button class="btn-icon" title="Refresh" onclick="fetchData()" id="refresh-btn"><i class="fa-solid fa-rotate"></i></button>
             </div>
         </header>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span>Total Applications</span>
-                <h3 id="stat-total">0</h3>
+        <div class="insights-grid">
+            <div class="stats-grid">
+                <div class="stat-card glass">
+                    <span>Total Applications</span>
+                    <h3 id="stat-total">0</h3>
+                </div>
+                <div class="stat-card glass" style="--card-accent: var(--status-new)">
+                    <span>Unreviewed</span>
+                    <h3 id="stat-new" style="color: var(--status-new)">0</h3>
+                </div>
+                <div class="stat-card glass" style="--card-accent: var(--status-hired)">
+                    <span>Hired</span>
+                    <h3 id="stat-hired" style="color: var(--status-hired)">0</h3>
+                </div>
             </div>
-            <div class="stat-card">
-                <span>New / Unreviewed</span>
-                <h3 id="stat-new" style="color: var(--status-new)">0</h3>
-            </div>
-            <div class="stat-card">
-                <span>Hired</span>
-                <h3 id="stat-hired" style="color: var(--status-hired)">0</h3>
+
+            <div class="insights-panel glass">
+                <h4>Funnel Distribution</h4>
+                <div class="progress-stack" id="insights-stack">
+                    <!-- Funnel bars will be injected here -->
+                </div>
             </div>
         </div>
 
         <div class="controls">
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="search-input" placeholder="Search by name, email or role..." oninput="filterData()">
+                <input type="text" id="search-input" placeholder="Search applicants, roles or email..." oninput="filterData()">
             </div>
         </div>
 
@@ -341,68 +513,89 @@
                         <th>Applicant</th>
                         <th>Role</th>
                         <th>Status</th>
-                        <th>Resume</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="table-body">
-                    <!-- Data will be loaded here -->
+                    <!-- Data loaded here -->
                 </tbody>
             </table>
             
-            <div id="loading" class="loader">
-                <div class="spinner"></div>
-                <p>Establishing secure connection to database...</p>
+            <div id="loading" style="text-align:center; padding: 4rem;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                <p style="color: var(--text-dim);">Connecting to secure database...</p>
             </div>
             
             <div id="no-data" style="display:none; text-align:center; padding:4rem; color:var(--text-dim);">
-                <i class="fa-solid fa-folder-open" style="font-size:2rem; margin-bottom:1rem; opacity:0.5;"></i>
-                <p>No applications found yet.</p>
+                <i class="fa-solid fa-folder-open" style="font-size:2.5rem; margin-bottom:1.5rem; opacity:0.3;"></i>
+                <p>No applications found.</p>
             </div>
         </div>
     </div>
 
-    <!-- Cover Letter Modal -->
+    <!-- Detail Modal -->
     <div id="detail-modal">
-        <div class="modal-content">
+        <div class="modal-content glass">
             <i class="fa-solid fa-xmark close-modal" onclick="closeDetail()"></i>
-            <h3 style="margin-bottom: 0.5rem;" id="modal-name">Applicant Name</h3>
-            <p id="modal-role" class="gradient-text" style="font-weight:700; font-size: 0.9rem; margin-bottom: 2rem;">Applied Role</p>
             
-            <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); max-height: 400px; overflow-y: auto;">
-                <h4 style="font-size: 0.8rem; text-transform:uppercase; color: var(--primary-color); margin-bottom: 1rem;">Cover Letter</h4>
-                <p id="modal-cover" style="font-size: 0.95rem; white-space: pre-wrap;"></p>
+            <div style="display:flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem;">
+                <div>
+                    <h3 style="font-size: 1.8rem; font-weight: 800;" id="modal-name">Applicant Name</h3>
+                    <p id="modal-role" class="gradient-text" style="font-weight:700; font-size: 1rem;"></p>
+                </div>
+                <div id="modal-date-label" style="font-size: 0.8rem; color: var(--text-dim); background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px;"></div>
             </div>
             
-            <div style="margin-top:2rem; display: flex; gap: 1rem;">
+            <div style="background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 2.5rem;">
+                <h4 style="font-size: 0.75rem; text-transform:uppercase; color: var(--primary-color); margin-bottom: 1rem; letter-spacing: 1px;">Cover Letter</h4>
+                <div id="modal-cover" style="font-size: 1rem; white-space: pre-wrap; color: #e0e0e0; max-height: 300px; overflow-y: auto; padding-right: 1rem;"></div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem;">
                 <a href="#" id="modal-resume-btn" target="_blank" class="btn btn-primary"><i class="fa-solid fa-file-pdf"></i> View Resume</a>
-                <a href="#" id="modal-email-btn" class="btn" style="background: rgba(255,255,255,0.1); color: white;"><i class="fa-solid fa-envelope"></i> Contact</a>
+                <a href="#" id="modal-email-btn" class="btn" style="background: rgba(255,255,255,0.08); color: white;"><i class="fa-solid fa-envelope"></i> Contact Applicant</a>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIGURATION
+        // --- CONFIG ---
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzH7qwfOfri8m_Xc-_4ieoZRFR2s0AsLPwRF_p05X1Vs78z6tC8MGG5Ny0RRpBm7pj5ng/exec';
-        const ACCESS_KEY = '8577026386'; // UPDATED ACCESS KEY
+        const ACCESS_KEY = '8577026386';
 
         let allApplications = [];
 
+        // --- AUTH FLOW ---
         function checkGate() {
             const key = document.getElementById('access-key').value;
+            const gateCard = document.querySelector('.gate-card');
+            const gateBtn = document.getElementById('gate-btn');
+            
             if (key === ACCESS_KEY) {
-                document.getElementById('access-gate').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                fetchData();
+                // Play animation
+                gateCard.classList.add('authenticating');
+                gateBtn.innerHTML = '<span>Authenticating...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
+                
+                setTimeout(() => {
+                    document.getElementById('access-gate').classList.add('hidden');
+                    document.getElementById('dashboard').classList.add('visible');
+                    fetchData();
+                    initMeshBackground();
+                }, 1500);
             } else {
-                alert('Invalid Access Key');
+                gateCard.style.animation = 'shake 0.5s';
+                setTimeout(() => gateCard.style.animation = '', 500);
+                alert('Invalid Security Key');
             }
         }
 
+        // --- DATA MGT ---
         async function fetchData() {
+            const refreshBtn = document.getElementById('refresh-btn');
+            if(refreshBtn) refreshBtn.querySelector('i').classList.add('spinning');
+            
             showLoading(true);
             try {
-                // We use a POST request even for fetching to avoid some CORS GET issues with certain browsers
                 const formData = new URLSearchParams();
                 formData.append('action', 'getApplications');
 
@@ -417,15 +610,16 @@
                 if (result.status === 'success') {
                     allApplications = result.data;
                     renderData(allApplications);
-                    updateStats(allApplications);
+                    updateStats();
                 } else {
                     throw new Error(result.message);
                 }
             } catch (err) {
                 console.error(err);
-                alert('Failed to load data: ' + err.message + '\n\nMake sure your Apps Script is deployed as "Anyone" and the URL is correct.');
+                showToast('Database connection failed', true);
             } finally {
                 showLoading(false);
+                if(refreshBtn) refreshBtn.querySelector('i').classList.remove('spinning');
             }
         }
 
@@ -436,11 +630,9 @@
             if (data.length === 0) {
                 document.getElementById('no-data').style.display = 'block';
                 return;
-            } else {
-                document.getElementById('no-data').style.display = 'none';
             }
+            document.getElementById('no-data').style.display = 'none';
 
-            // most recent first
             data.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
 
             data.forEach(app => {
@@ -448,12 +640,14 @@
                 const row = document.createElement('tr');
                 
                 row.innerHTML = `
-                    <td>${date}</td>
                     <td>
-                        <div style="font-weight:600">${app.full_name}</div>
-                        <div style="font-size:0.8rem; color:var(--text-dim)">${app.email}</div>
+                        <span style="color:var(--text-dim); font-size:0.8rem">${date}</span>
                     </td>
-                    <td>${app.applied_role}</td>
+                    <td>
+                        <div style="font-weight:700; color:white">${app.full_name}</div>
+                        <div style="font-size:0.8rem; color:var(--text-dim); opacity:0.8">${app.email}</div>
+                    </td>
+                    <td style="font-weight:600">${app.applied_role}</td>
                     <td>
                         <select class="status-updater" onchange="updateStatus(${app.id}, this.value)">
                             <option value="New" ${app.status === 'New' ? 'selected' : ''}>New</option>
@@ -464,38 +658,18 @@
                         </select>
                     </td>
                     <td>
-                        <a href="${app.resume_link}" target="_blank" class="btn-icon" style="display:flex; align-items:center; justify-content:center; text-decoration:none;">
-                            <i class="fa-solid fa-file-pdf"></i>
-                        </a>
-                    </td>
-                    <td>
-                        <button class="btn-icon" onclick="viewDetail(${JSON.stringify(app).replace(/"/g, '&quot;')})">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
+                        <div style="display:flex; gap: 8px;">
+                            <a href="${app.resume_link}" target="_blank" class="btn-icon" title="View PDF">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </a>
+                            <button class="btn-icon" onclick="viewDetail(${JSON.stringify(app).replace(/"/g, '&quot;')})" title="Details">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(row);
             });
-        }
-
-        // Toast Notification System
-        function showToast(message, isError = false) {
-            const toast = document.createElement('div');
-            toast.style.position = 'fixed';
-            toast.style.top = '2rem';
-            toast.style.left = '50%';
-            toast.style.transform = 'translateX(-50%)';
-            toast.style.padding = '1rem 2rem';
-            toast.style.borderRadius = '12px';
-            toast.style.background = isError ? 'var(--status-rejected)' : 'var(--status-hired)';
-            toast.style.color = isError ? 'white' : 'var(--bg-dark)';
-            toast.style.fontWeight = '700';
-            toast.style.zIndex = '10001';
-            toast.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
-            toast.innerHTML = (isError ? '❌ ' : '✅ ') + message;
-            
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
         }
 
         async function updateStatus(rowId, newStatus) {
@@ -517,23 +691,16 @@
                 
                 const result = await response.json();
                 if (result.status === 'success') {
-                    showToast('Status updated to ' + newStatus);
+                    showToast('Status updated');
                     selectElement.setAttribute('data-last-val', newStatus);
-                    
-                    // Update local data and stats
                     const app = allApplications.find(a => a.id === rowId);
                     if (app) app.status = newStatus;
-                    updateStats(allApplications);
-                } else {
-                    throw new Error(result.message);
-                }
+                    updateStats();
+                } else { throw new Error(result.message); }
             } catch (err) {
-                console.error(err);
-                showToast('Update failed: ' + err.message, true);
-                selectElement.value = originalValue; // Revert on failure
-            } finally {
-                selectElement.style.opacity = '1';
-            }
+                showToast('Update failed', true);
+                selectElement.value = originalValue;
+            } finally { selectElement.style.opacity = '1'; }
         }
 
         function filterData() {
@@ -546,10 +713,33 @@
             renderData(filtered);
         }
 
-        function updateStats(data) {
+        function updateStats() {
+            const data = allApplications;
             document.getElementById('stat-total').textContent = data.length;
             document.getElementById('stat-new').textContent = data.filter(a => a.status === 'New').length;
             document.getElementById('stat-hired').textContent = data.filter(a => a.status === 'Hired').length;
+            
+            // Funnel Visuals
+            const statuses = ['New', 'Reviewing', 'Interviewing', 'Hired', 'Rejected'];
+            const colors = ['var(--status-new)', 'var(--status-review)', '#7000ff', 'var(--status-hired)', 'var(--status-rejected)'];
+            const stack = document.getElementById('insights-stack');
+            stack.innerHTML = '';
+            
+            statuses.forEach((status, idx) => {
+                const count = data.filter(a => a.status === status).length;
+                const percent = data.length > 0 ? (count / data.length) * 100 : 0;
+                
+                const item = document.createElement('div');
+                item.className = 'progress-item';
+                item.innerHTML = `
+                    <span>${status}</span>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${percent}%; --bar-color: ${colors[idx]}"></div>
+                    </div>
+                    <strong>${count}</strong>
+                `;
+                stack.appendChild(item);
+            });
         }
 
         function viewDetail(app) {
@@ -557,18 +747,102 @@
             document.getElementById('modal-role').textContent = app.applied_role;
             document.getElementById('modal-cover').textContent = app.cover_letter;
             document.getElementById('modal-resume-btn').href = app.resume_link;
-            document.getElementById('modal-email-btn').href = `mailto:${app.email}?subject=Application for ${app.applied_role}`;
+            document.getElementById('modal-email-btn').href = `mailto:${app.email}?subject=Regarding your application for ${app.applied_role}`;
+            document.getElementById('modal-date-label').textContent = 'Applied ' + new Date(app.timestamp).toLocaleDateString();
             document.getElementById('detail-modal').style.display = 'flex';
         }
 
-        function closeDetail() {
-            document.getElementById('detail-modal').style.display = 'none';
+        function closeDetail() { document.getElementById('detail-modal').style.display = 'none'; }
+        function showLoading(show) { document.getElementById('loading').style.display = show ? 'block' : 'none'; }
+
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            Object.assign(toast.style, {
+                position: 'fixed', bottom: '2rem', right: '2rem', padding: '1rem 2rem', borderRadius: '12px',
+                background: isError ? 'var(--status-rejected)' : '#1a1a1a', border: '1px solid var(--glass-border)',
+                color: 'white', fontWeight: '700', zIndex: '10001', boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                transition: '0.3s', transform: 'translateY(100px)'
+            });
+            toast.innerHTML = (isError ? '❌ ' : '✨ ') + message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.style.transform = 'translateY(0)', 10);
+            setTimeout(() => {
+                toast.style.transform = 'translateY(100px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
-        function showLoading(show) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
-            document.getElementById('apps-table').style.opacity = show ? '0.3' : '1';
+        // --- MESH BACKGROUND ---
+        function initMeshBackground() {
+            const canvas = document.getElementById('canvas-mesh');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.reset();
+                }
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.4;
+                    this.vy = (Math.random() - 0.5) * 0.4;
+                    this.size = Math.random() * 2 + 1;
+                }
+                update() {
+                    this.x += this.vx; this.y += this.vy;
+                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(0, 242, 255, 0.4)';
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < 60; i++) particles.push(new Particle());
+
+            function animate() {
+                ctx.clearRect(0,0, canvas.width, canvas.height);
+                particles.forEach((p, i) => {
+                    p.update(); p.draw();
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const dist = Math.sqrt((p.x-p2.x)**2 + (p.y-p2.y)**2);
+                        if (dist < 150) {
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(0, 242, 255, ${0.15 * (1 - dist / 150)})`;
+                            ctx.stroke();
+                        }
+                    }
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
         }
+
+        // Handle enter key on login
+        document.getElementById('access-key').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkGate();
+        });
     </script>
+
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
 </body>
 </html>
