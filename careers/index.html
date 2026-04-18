@@ -38,12 +38,30 @@
         "name": "AirLink",
         "sameAs": "https://myairlink.vercel.app"
       },
+      "jobLocationType": "TELECOMMUTE",
+      "applicantLocationRequirements": {
+        "@type": "Country",
+        "name": "Anywhere"
+      },
       "jobLocation": {
         "@type": "Place",
         "address": {
           "@type": "PostalAddress",
+          "streetAddress": "Remote",
           "addressLocality": "Remote",
-          "addressRegion": "Global"
+          "addressRegion": "Global",
+          "postalCode": "Remote",
+          "addressCountry": "Global"
+        }
+      },
+      "baseSalary": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 120000,
+          "maxValue": 180000,
+          "unitText": "YEAR"
         }
       },
       "employmentType": "FULL_TIME"
@@ -809,6 +827,67 @@
             if (window.ScrollReveal) {
                 ScrollReveal().reveal('.role-card', { interval: 100 });
             }
+
+            // Inject Structured Data for SEO
+            injectJobSchema(jobs);
+        }
+
+        function injectJobSchema(jobs) {
+            // Remove any existing dynamic schemas
+            document.querySelectorAll('.dynamic-job-schema').forEach(s => s.remove());
+
+            jobs.forEach(job => {
+                if (job.status === 'Closed') return;
+
+                const schema = {
+                    "@context": "https://schema.org",
+                    "@type": "JobPosting",
+                    "title": job.title,
+                    "description": job.about,
+                    "datePosted": new Date().toISOString().split('T')[0], // Simplified
+                    "hiringOrganization": {
+                        "@type": "Organization",
+                        "name": "AirLink",
+                        "sameAs": "https://myairlink.vercel.app"
+                    },
+                    "jobLocationType": job.location.toLowerCase().includes('remote') ? "TELECOMMUTE" : undefined,
+                    "applicantLocationRequirements": job.location.toLowerCase().includes('remote') ? {
+                        "@type": "Country",
+                        "name": "Anywhere"
+                    } : undefined,
+                    "jobLocation": {
+                        "@type": "Place",
+                        "address": {
+                            "@type": "PostalAddress",
+                            "streetAddress": job.streetAddress || job.location,
+                            "addressLocality": job.location,
+                            "addressRegion": job.location.toLowerCase().includes('remote') ? "Global" : undefined,
+                            "postalCode": job.postalCode || "N/A",
+                            "addressCountry": job.country || "Global"
+                        }
+                    },
+                    "employmentType": job.type.toUpperCase().replace('-', '_') || "FULL_TIME"
+                };
+
+                // Add Salary if available
+                if (job.salary) {
+                    schema.baseSalary = {
+                        "@type": "MonetaryAmount",
+                        "currency": "USD",
+                        "value": {
+                            "@type": "QuantitativeValue",
+                            "value": job.salary,
+                            "unitText": "YEAR"
+                        }
+                    };
+                }
+
+                const script = document.createElement('script');
+                script.type = 'application/ld+json';
+                script.className = 'dynamic-job-schema';
+                script.text = JSON.stringify(schema);
+                document.head.appendChild(script);
+            });
         }
 
         // Event Delegation for Apply Buttons

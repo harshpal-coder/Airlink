@@ -84,7 +84,11 @@ function upsertJob(e) {
       e.parameter.responsibilities, // Expecting JSON string
       e.parameter.requirements,    // Expecting JSON string
       e.parameter.status || 'Open',
-      e.parameter.posted_date || new Date().toISOString()
+      e.parameter.posted_date || new Date().toISOString(),
+      e.parameter.salary || '',
+      e.parameter.country || '',
+      e.parameter.streetAddress || '',
+      e.parameter.postalCode || ''
     ];
     
     if (rowIndex > 1) {
@@ -139,9 +143,9 @@ function getOrCreateJobsDatabase() {
   } else {
     ss = SpreadsheetApp.create(name);
     var sheet = ss.getSheets()[0];
-    sheet.appendRow(["ID", "Title", "Category", "Location", "Type", "About", "Responsibilities", "Requirements", "Status", "Posted_Date"]);
+    sheet.appendRow(["ID", "Title", "Category", "Location", "Type", "About", "Responsibilities", "Requirements", "Status", "Posted_Date", "Salary", "Country", "StreetAddress", "PostalCode"]);
     sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, 10).setFontWeight("bold").setBackground("#f3f3f3");
+    sheet.getRange(1, 1, 1, 14).setFontWeight("bold").setBackground("#f3f3f3");
   }
   return ss;
 }

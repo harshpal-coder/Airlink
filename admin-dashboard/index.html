@@ -823,12 +823,34 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Location *</label>
-                        <input type="text" id="job-location" required placeholder="e.g. Remote / India">
+                        <label>Location (City/Region) *</label>
+                        <input type="text" id="job-location" required placeholder="e.g. Noida / Remote">
                     </div>
                     <div class="form-group">
                         <label>Employment Type *</label>
                         <input type="text" id="job-type" required placeholder="e.g. Full-time">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Salary Range (Annual USD) *</label>
+                        <input type="number" id="job-salary" required placeholder="e.g. 150000">
+                    </div>
+                    <div class="form-group">
+                        <label>Country *</label>
+                        <input type="text" id="job-country" required placeholder="e.g. India / Global">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Street Address</label>
+                        <input type="text" id="job-street" placeholder="e.g. Remote or Office Address">
+                    </div>
+                    <div class="form-group">
+                        <label>Postal Code</label>
+                        <input type="text" id="job-postal" placeholder="e.g. 201301 or Remote">
                     </div>
                 </div>
 
@@ -1036,6 +1058,10 @@
                 params.append('category', document.getElementById('job-category').value);
                 params.append('location', document.getElementById('job-location').value);
                 params.append('type', document.getElementById('job-type').value);
+                params.append('salary', document.getElementById('job-salary').value);
+                params.append('country', document.getElementById('job-country').value);
+                params.append('streetAddress', document.getElementById('job-street').value);
+                params.append('postalCode', document.getElementById('job-postal').value);
                 params.append('about', document.getElementById('job-about').value);
                 params.append('responsibilities', JSON.stringify(resps));
                 params.append('requirements', JSON.stringify(reqs));
@@ -1111,6 +1137,10 @@
                 document.getElementById('job-category').value = job.category;
                 document.getElementById('job-location').value = job.location;
                 document.getElementById('job-type').value = job.type;
+                document.getElementById('job-salary').value = job.salary || '';
+                document.getElementById('job-country').value = job.country || '';
+                document.getElementById('job-street').value = job.streetAddress || '';
+                document.getElementById('job-postal').value = job.postalCode || '';
                 document.getElementById('job-about').value = job.about;
                 document.getElementById('job-responsibilities').value = (job.responsibilities || []).join('\n');
                 document.getElementById('job-requirements').value = (job.requirements || []).join('\n');
