@@ -189,10 +189,10 @@ if (testimonialsGrid && testimonialsPrev && testimonialsNext) {
         const scrollLeft = testimonialsGrid.scrollLeft;
         const maxScroll = testimonialsGrid.scrollWidth - testimonialsGrid.clientWidth;
         if (maxScroll <= 0) return;
-        
+
         const scrollPosition = scrollLeft / maxScroll;
         const activeIndex = Math.min(Math.round(scrollPosition * (testimonialsDots.length - 1)), testimonialsDots.length - 1);
-        
+
         testimonialsDots.forEach((dot, index) => {
             dot.classList.toggle('active', index === activeIndex);
         });
@@ -714,60 +714,7 @@ if (labSection) {
 }
 
 
-// --- EMAILJS INTEGRATION ---
-(function () {
-    // Replace with your actual Public Key from EmailJS Account > Settings
-    emailjs.init({
-        publicKey: "EcX4qrCdou0WD2P5u",
-    });
-})();
 
-const contactForm = document.getElementById('contact-form');
-const submitBtn = document.getElementById('submit-btn');
-const formStatus = document.getElementById('form-status');
-
-if (contactForm) {
-    contactForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        // UI Feedback: Loading state
-        submitBtn.classList.add('loading');
-        submitBtn.disabled = true;
-        const originalBtnText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<span>Sending...</span> <i class="fa-solid fa-spinner fa-spin" style="margin-left: 10px;"></i>';
-
-        formStatus.className = 'form-status';
-        formStatus.innerText = '';
-
-        // These IDs come from your EmailJS Dashboard
-        const serviceID = 'service_vjtg4ps';
-        const templateID = 'template_ht10bts';
-
-        emailjs.sendForm(serviceID, templateID, this)
-            .then(() => {
-                submitBtn.classList.remove('loading');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
-
-                formStatus.classList.add('success');
-                formStatus.innerText = 'Message sent successfully! We will get back to you soon.';
-                contactForm.reset();
-
-                // Hide status after 5 seconds
-                setTimeout(() => {
-                    formStatus.style.display = 'none';
-                }, 5000);
-            }, (err) => {
-                submitBtn.classList.remove('loading');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
-
-                formStatus.classList.add('error');
-                formStatus.innerText = 'Oops! Something went wrong. Please try again later.';
-                console.error('EmailJS Error:', err);
-            });
-    });
-}
 
 // --- NETWORK COMPARISON SLIDER ---
 const compareContainer = document.querySelector('.comparison-slider-container');
@@ -2130,3 +2077,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
     init();
 })();
+
+// Newsletter Subscription Logic
+const newsletterForm = document.getElementById('newsletter-form');
+const newsletterStatus = document.getElementById('newsletter-status');
+const newsletterSubmit = document.getElementById('newsletter-submit');
+
+// --- IMPORTANT: User must update this URL after deploying their Apps Script ---
+const NEWSLETTER_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFElOkbbF3GUUpbsvGrRWUcqfXbUzw15pccv_SFacmfQxi2VGorr0CI0fqbXhX4Lne/exec';
+
+if (newsletterForm) {
+    newsletterForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const emailInput = document.getElementById('newsletter-email');
+        const email = emailInput.value.trim();
+
+        if (!validateEmail(email)) {
+            showNewsletterStatus('Please enter a valid email address.', 'error');
+            return;
+        }
+
+        // Disable button & show loading state
+        newsletterSubmit.disabled = true;
+        const originalBtnText = newsletterSubmit.innerHTML;
+        newsletterSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subscribing...';
+        showNewsletterStatus('Connecting to mesh...', '');
+
+        try {
+            // Using URLSearchParams for compatibility with Google Apps Script doPost
+            const params = new URLSearchParams();
+            params.append('email', email);
+            params.append('action', 'subscribe');
+
+            const response = await fetch(NEWSLETTER_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Google Apps Script requires no-cors for simple POSTs
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: params
+            });
+
+            // Since we use no-cors, we can't read the response body, 
+            // but if it didn't throw an error, we assume success or handle it based on timeout.
+            showNewsletterStatus('Welcome to the mesh! Check your inbox soon. 🚀', 'success');
+            emailInput.value = '';
+
+            // Celebration effect
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#00F2FF', '#7000FF', '#FFFFFF']
+                });
+            }
+
+        } catch (error) {
+            console.error('Newsletter Error:', error);
+            showNewsletterStatus('Something went wrong. Please try again later.', 'error');
+        } finally {
+            newsletterSubmit.disabled = false;
+            newsletterSubmit.innerHTML = originalBtnText;
+        }
+    });
+
+    function validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function showNewsletterStatus(message, type) {
+        newsletterStatus.textContent = message;
+        newsletterStatus.className = 'newsletter-status ' + type;
+    }
+}

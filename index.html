@@ -66,8 +66,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="assets/logo.png">
 
-    <!-- EmailJS SDK -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7387155885182247"
@@ -865,34 +864,27 @@
         </div>
     </section>
 
-    <section id="contact">
-        <div class="container">
-            <div style="text-align: center; margin-bottom: 4rem;" data-reveal>
-                <h2 style="font-size: 2.5rem;">Connect with <span class="gradient-text">Us</span></h2>
-                <p style="color: var(--text-dim);">Have questions about the mesh? We're here to help.</p>
-            </div>
-            <div class="contact-container glass" data-reveal>
-                <form id="contact-form" class="contact-form">
-                    <div class="form-group">
-                        <label for="user_name">Name</label>
-                        <input type="text" name="user_name" id="user_name" placeholder="John Doe" required
-                            class="glass">
+
+
+    <section id="newsletter">
+        <div class="container" data-reveal>
+            <div class="newsletter-wrapper glass">
+                <div class="newsletter-content">
+                    <h2 class="gradient-text">Subscribe to our Newsletter</h2>
+                    <p>Get notified about the latest mesh technology, project updates, and upcoming webinars from AirLink.</p>
+                </div>
+                <form id="newsletter-form" class="newsletter-form">
+                    <div class="input-form-group">
+                        <div class="input-group">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" id="newsletter-email" placeholder="Your email address" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="newsletter-submit">
+                            <span>Subscribe</span>
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="user_email">Email</label>
-                        <input type="email" name="user_email" id="user_email" placeholder="john@example.com" required
-                            class="glass">
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea name="message" id="message" rows="5" placeholder="How can we help you?" required
-                            class="glass"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;" id="submit-btn">
-                        <span>Send Message</span>
-                        <i class="fa-solid fa-paper-plane" style="margin-left: 10px;"></i>
-                    </button>
-                    <div id="form-status" class="form-status"></div>
+                    <div id="newsletter-status" class="newsletter-status"></div>
                 </form>
             </div>
         </div>
