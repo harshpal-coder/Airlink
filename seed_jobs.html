@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Seed Jobs - AirLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background: #050505; color: white; padding: 4rem; text-align: center; }
+        .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 2rem; border-radius: 20px; max-width: 600px; margin: 0 auto; }
+        button { background: #00f2ff; color: #050505; border: none; padding: 1rem 2rem; border-radius: 50px; font-weight: 700; cursor: pointer; font-size: 1.1rem; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        pre { text-align: left; background: #000; padding: 1rem; border-radius: 10px; font-size: 0.8rem; overflow-x: auto; max-height: 300px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🌱 Job Seeder</h1>
+        <p>This tool will extract the 12 existing jobs from your HTML and push them to your new <b>Separate Jobs Database</b>.</p>
+        
+        <div style="margin: 2rem 0;">
+            <label>Jobs Script URL:</label><br>
+            <input type="text" id="script-url" style="width: 100%; padding: 0.8rem; margin-top: 0.5rem; border-radius: 10px; border: 1px solid #444; background: #222; color: white;" placeholder="Paste your Jobs Script Deployment URL here">
+        </div>
+
+        <div id="status">Ready to extract...</div>
+        <button id="seed-btn" onclick="runSeeder()">Extract & Seed Database</button>
+
+        <div id="preview-area" style="display:none; margin-top: 2rem;">
+            <h3>Extracted Jobs:</h3>
+            <pre id="json-preview"></pre>
+        </div>
+    </div>
+
+    <!-- Hidden iframe to load careers page temporarily for scraping if needed, 
+         but since I (the AI) can see the code, I'll just hardcode the extracted data here -->
+    
+    <script>
+        const jobsToSeed = [
+            {
+                title: "Senior Mesh Network Engineer",
+                category: "software",
+                location: "Remote / Global",
+                type: "Full-time",
+                about: "We are looking for a brilliant engineer to design and optimize the routing backbone of AirLink's decentralized mesh network.",
+                responsibilities: ["Design and improve multi-hop routing algorithms","Benchmark and profile P2P link performance","Collaborate with security team","Write technical documentation","Mentor junior engineers"],
+                requirements: ["5+ years experience in networking","Strong knowledge of graph theory","Experience with WebRTC/TCP/IP","Proficiency in Go, Rust, or C++","Open source contributions"]
+            },
+            {
+                title: "P2P Security Specialist",
+                category: "software",
+                location: "Remote",
+                type: "Full-time",
+                about: "AirLink encrypts all messages end-to-end using the Signal Protocol. As our P2P Security Specialist you will own the full encryption pipeline.",
+                responsibilities: ["Implement and maintain E2E encryption","Conduct regular penetration tests","Design key-exchange flows","Write threat models","Respond to community disclosures"],
+                requirements: ["3+ years in info security","Hands-on with Signal Protocol or libsodium","Familiarity with PKI, ECDH, forward secrecy","Experience writing security audits","Bonus: open-source audit experience"]
+            },
+            {
+                title: "Mobile App Developer (Flutter)",
+                category: "app",
+                location: "Remote",
+                type: "Full-time",
+                about: "Join us in crafting the AirLink mobile experience on Flutter — an offline-first, privacy-respecting messaging app.",
+                responsibilities: ["Build and maintain Flutter screens","Integrate native mesh via platform channels","Implement offline-first persistence","Write widget and integration tests","Collaborate with design team"],
+                requirements: ["2+ years of Flutter / Dart","Experience with Riverpod/BLoC","Understanding of platform channels","Published app on Store","Bonus: WebRTC on mobile"]
+            },
+            {
+                title: "Native iOS/Android Engineer",
+                category: "app",
+                location: "Remote",
+                type: "Full-time",
+                about: "We need a native engineer who can squeeze performance from Bluetooth, Wi-Fi Direct, and socket APIs.",
+                responsibilities: ["Write Swift/Kotlin native modules","Expose BT/Wi-Fi Direct APIs","Profile battery and memory","Handle background execution limits","Contribute to SDK"],
+                requirements: ["3+ years native iOS/Android","Deep knowledge of BLE/Wi-Fi Direct","Background processing experience","Network-layer C/C++ comfort","Bonus: NDK or JNI"]
+            },
+            {
+                title: "Full Stack Web Engineer",
+                category: "web",
+                location: "Remote",
+                type: "Full-time",
+                about: "Own the AirLink web presence end-to-end — from the marketing site to the real-time network explorer dashboard.",
+                responsibilities: ["Develop marketing site and web app","Build Express APIs","Create interactive stats dashboard","Optimise frontend performance","Ensure accessibility compliance"],
+                requirements: ["3+ years full stack (TS)","Proficiency with React/Vue/Svelte","Experience with Node.js and DBs","Familiarity with Docker","Bonus: WebSockets/WebRTC"]
+            },
+            {
+                title: "UI/UX Designer",
+                category: "web",
+                location: "Remote / India",
+                type: "Full-time",
+                about: "Design a seamless experience for users discovering and connecting with peers in a decentralized world.",
+                responsibilities: ["Design user flows and prototypes","Maintain design system","Conduct usability testing","Partner with engineers","Create marketing assets"],
+                requirements: ["2+ years product design","Expert-level Figma skills","Portfolio of mobile/interaction design","Inclusion/Accessibility knowledge","Bonus: Rive or Lottie"]
+            },
+            {
+                title: "Social Media Manager",
+                category: "marketing",
+                location: "Remote",
+                type: "Full-time",
+                about: "Be the voice of AirLink across the internet. Craft compelling threads and engage with the web3 community.",
+                responsibilities: ["Own content calendar","Write and design threads","Moderate Discord/Reddit","Track analytics and growth","Coordinate launch campaigns"],
+                requirements: ["2+ years managing tech social","Strong writing/storytelling","Familiarity with Web3 culture","Experience with analytics tools","Bonus: Graphic design"]
+            },
+            {
+                title: "Community Growth Hacker",
+                category: "marketing",
+                location: "Remote",
+                type: "Full-time",
+                about: "Design viral campaigns and partnerships to drive massive adoption of our secure platform globally.",
+                responsibilities: ["Design growth experiments","Build referral programs","Partner with influencers","Analyse funnel data","Organise hackathons"],
+                requirements: ["Proven track record of community growth","Data-driven mindset","experience with SEO/Paid acquisition","Strong developer network","Bonus: PLG strategies"]
+            },
+            {
+                title: "Motion Graphics & Video Editor",
+                category: "video",
+                location: "Remote",
+                type: "Full-time",
+                about: "Produce high-quality promotional videos, feature explainers, and short-form content.",
+                responsibilities: ["Edit reels and TikToks","Create animated explainers","Design motion graphics","Maintain brand consistency","Turn recordings into launch videos"],
+                requirements: ["2+ years video editing","Proficiency in Premiere/DaVinci","After Effects experience","Social content portfolio","Bonus: Blender/3D"]
+            },
+            {
+                title: "YouTube Content Creator",
+                category: "video",
+                location: "Remote",
+                type: "Full-time",
+                about: "Host and edit engaging developer logs and tech talks for our YouTube channel.",
+                responsibilities: ["Plan YouTube calendar","Script and record end-to-end","Optimise for SEO","Engage with comments","Repurpose content for clips"],
+                requirements: ["Active YouTube channel","Comfortable on camera","Video editing experience","Passion for tech/privacy","Bonus: Dev-focused content"]
+            },
+            {
+                title: "Software Engineering Intern",
+                category: "internship",
+                location: "Remote / Paid",
+                type: "Internship · 3 months",
+                about: "Learn from senior engineers as you help build and test decentralised P2P protocols.",
+                responsibilities: ["Implement features/bug-fixes","Write unit tests","Participate in standups","Contribute to docs","Present final project"],
+                requirements: ["Enrolled in CS degree","Basic Dart/Flutter/Backend","Familiarity with Git","Eager to learn","Bonus: Open source contribution"]
+            },
+            {
+                title: "Marketing & Community Intern",
+                category: "internship",
+                location: "Remote / Paid",
+                type: "Internship · 3 months",
+                about: "Assist in growing our Discord and Twitter communities. Great for students passionate about Web3.",
+                responsibilities: ["Schedule social posts","Engage with community","Assist with blog posts","Research partnerships","Track growth metrics"],
+                requirements: ["Enrolled in Marketing/Comms","Excellent written English","Genuine interest in Privacy","Social platform experience","Bonus: Basic design skills"]
+            }
+        ];
+
+        async function runSeeder() {
+            const url = document.getElementById('script-url').value.trim();
+            if (!url) {
+                alert("Please enter your Jobs Script Deployment URL.");
+                return;
+            }
+
+            const btn = document.getElementById('seed-btn');
+            const status = document.getElementById('status');
+            btn.disabled = true;
+            status.innerHTML = "🚀 Seeding started...";
+
+            document.getElementById('preview-area').style.display = 'block';
+            document.getElementById('json-preview').innerHTML = JSON.stringify(jobsToSeed, null, 2);
+
+            let count = 0;
+            for (const job of jobsToSeed) {
+                try {
+                    status.innerHTML = `Posting (${count+1}/${jobsToSeed.length}): ${job.title}...`;
+                    const params = new URLSearchParams();
+                    params.append('action', 'upsertJob');
+                    params.append('title', job.title);
+                    params.append('category', job.category);
+                    params.append('location', job.location);
+                    params.append('type', job.type);
+                    params.append('about', job.about);
+                    params.append('responsibilities', JSON.stringify(job.responsibilities));
+                    params.append('requirements', JSON.stringify(job.requirements));
+                    params.append('status', 'Open');
+
+                    await fetch(url, {
+                        method: 'POST',
+                        body: params,
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                    });
+                    count++;
+                } catch (e) {
+                    console.error("Failed to seed", job.title, e);
+                }
+            }
+
+            status.innerHTML = `✅ Successfully seeded ${count} jobs! You can now delete this file.`;
+            btn.innerHTML = "Seeding Complete";
+        }
+    </script>
+</body>
+</html>

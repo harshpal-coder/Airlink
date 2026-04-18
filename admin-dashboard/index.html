@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="/assets/logo.png">
-    
+
     <style>
         :root {
             --primary-color: #00f2ff;
@@ -23,7 +24,7 @@
             --text-dim: #a0a0a0;
             --accent-glow: rgba(0, 242, 255, 0.3);
             --glass-border: rgba(255, 255, 255, 0.1);
-            
+
             --status-new: #00f2ff;
             --status-review: #ffb800;
             --status-interview: #7000ff;
@@ -104,8 +105,13 @@
             filter: drop-shadow(0 0 15px var(--accent-glow));
         }
 
-        .gate-card h2 { margin-bottom: 0.5rem; font-weight: 800; font-size: 2rem; letter-spacing: -1px; }
-        
+        .gate-card h2 {
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+            font-size: 2rem;
+            letter-spacing: -1px;
+        }
+
         .input-group {
             position: relative;
             margin-top: 2rem;
@@ -115,7 +121,7 @@
         .input-group input {
             width: 100%;
             padding: 1.2rem;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
             color: white;
@@ -144,10 +150,23 @@
         }
 
         @keyframes scanning {
-            0% { top: 0; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
+            0% {
+                top: 0;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
         }
 
         .gate-card.authenticating .scan-line {
@@ -187,7 +206,9 @@
             gap: 12px;
         }
 
-        .logo img { height: 32px; }
+        .logo img {
+            height: 32px;
+        }
 
         /* Stats & Insights */
         .insights-grid {
@@ -223,15 +244,31 @@
             opacity: 0.5;
         }
 
-        .stat-card span { color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
-        .stat-card h3 { font-size: 2.2rem; margin-top: 0.3rem; font-weight: 800; }
+        .stat-card span {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .stat-card h3 {
+            font-size: 2.2rem;
+            margin-top: 0.3rem;
+            font-weight: 800;
+        }
 
         .insights-panel {
             padding: 1.5rem;
         }
 
-        .insights-panel h4 { font-size: 0.85rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: 1.5rem; }
-        
+        .insights-panel h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+
         .progress-stack {
             display: flex;
             flex-direction: column;
@@ -248,7 +285,7 @@
 
         .progress-bar-bg {
             height: 6px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
             overflow: hidden;
         }
@@ -298,7 +335,7 @@
 
         .search-box input:focus {
             border-color: var(--primary-color);
-            background: rgba(255,255,255,0.06);
+            background: rgba(255, 255, 255, 0.06);
         }
 
         /* Table */
@@ -325,22 +362,29 @@
 
         td {
             padding: 1.2rem 1.5rem;
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             font-size: 0.95rem;
             border-top: 1px solid var(--glass-border);
             border-bottom: 1px solid var(--glass-border);
         }
 
-        td:first-child { border-left: 1px solid var(--glass-border); border-radius: 15px 0 0 15px; }
-        td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 15px 15px 0; }
+        td:first-child {
+            border-left: 1px solid var(--glass-border);
+            border-radius: 15px 0 0 15px;
+        }
+
+        td:last-child {
+            border-right: 1px solid var(--glass-border);
+            border-radius: 0 15px 15px 0;
+        }
 
         tr:hover td {
-            background: rgba(255,255,255,0.05);
-            border-color: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
         select.status-updater {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--glass-border);
             color: white;
             padding: 0.5rem 0.8rem;
@@ -352,7 +396,7 @@
         }
 
         .btn-icon {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--glass-border);
             color: white;
             width: 38px;
@@ -366,9 +410,9 @@
             text-decoration: none;
         }
 
-        .btn-icon:hover { 
-            background: var(--primary-color); 
-            color: var(--bg-dark); 
+        .btn-icon:hover {
+            background: var(--primary-color);
+            color: var(--bg-dark);
             border-color: var(--primary-color);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 242, 255, 0.3);
@@ -378,7 +422,7 @@
         #detail-modal {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(10px);
             z-index: 10000;
             display: none;
@@ -396,7 +440,7 @@
             padding: 3rem;
             border-radius: 28px;
             position: relative;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
         }
 
         .close-modal {
@@ -408,7 +452,11 @@
             color: var(--text-dim);
             transition: 0.3s;
         }
-        .close-modal:hover { color: white; transform: rotate(90deg); }
+
+        .close-modal:hover {
+            color: white;
+            transform: rotate(90deg);
+        }
 
         .btn {
             padding: 0.8rem 1.5rem;
@@ -424,20 +472,139 @@
             font-size: 0.9rem;
             font-family: inherit;
         }
-        .btn-primary { background: var(--primary-color); color: var(--bg-dark); }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 242, 255, 0.2); }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--bg-dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 242, 255, 0.2);
+        }
 
         /* Tablet/Mobile fixes */
         @media (max-width: 1000px) {
-            .insights-grid { grid-template-columns: 1fr; }
-            .insights-panel { order: -1; }
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .insights-panel {
+                order: -1;
+            }
         }
 
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .spinning { animation: rotate 1s linear infinite; }
+        /* View Switcher */
+        .view-switcher {
+            display: flex;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 5px;
+            border-radius: 50px;
+            margin: 0 auto 2.5rem;
+            width: fit-content;
+        }
 
+        .view-btn {
+            padding: 0.7rem 1.8rem;
+            border-radius: 50px;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .view-btn.active {
+            background: var(--primary-color);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        #jobs-view {
+            display: none;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tag-open {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .tag-closed {
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+            border: 1px solid rgba(255, 77, 77, 0.2);
+        }
+
+        /* Job Editor Modal */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 0.8rem;
+            color: white;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinning {
+            animation: rotate 1s linear infinite;
+        }
     </style>
 </head>
+
 <body>
 
     <canvas id="canvas-mesh"></canvas>
@@ -448,13 +615,15 @@
             <div class="scan-line"></div>
             <img src="/assets/logo.png" alt="AirLink" class="gate-logo">
             <h2 class="gradient-text">Personnel Only</h2>
-            <p style="color: var(--text-dim); font-size: 0.95rem;">Authentication required to access the recruitment hub.</p>
-            
+            <p style="color: var(--text-dim); font-size: 0.95rem;">Authentication required to access the recruitment
+                hub.</p>
+
             <div class="input-group">
                 <input type="password" id="access-key" placeholder="••••••••" autocomplete="off">
             </div>
-            
-            <button class="btn btn-primary" style="width:100%; justify-content: center;" onclick="checkGate()" id="gate-btn">
+
+            <button class="btn btn-primary" style="width:100%; justify-content: center;" onclick="checkGate()"
+                id="gate-btn">
                 <span>Access Dashboard</span>
                 <i class="fa-solid fa-shield-halved"></i>
             </button>
@@ -469,113 +638,251 @@
                 <span>AIRLINK <span class="gradient-text">HUB</span></span>
             </div>
             <div style="display:flex; gap: 1rem; align-items:center;">
-                <a href="/careers" class="btn" style="background: rgba(255,255,255,0.05); color: var(--text-dim);"><i class="fa-solid fa-arrow-left"></i> Careers Site</a>
-                <button class="btn-icon" title="Refresh" onclick="fetchData()" id="refresh-btn"><i class="fa-solid fa-rotate"></i></button>
+                <a href="/careers" target="_blank" class="btn"
+                    style="background: rgba(255,255,255,0.05); color: var(--text-dim);"><i
+                        class="fa-solid fa-arrow-left"></i> Careers Site</a>
+                <button class="btn-icon" title="Refresh" onclick="refreshCurrentView()" id="refresh-btn"><i
+                        class="fa-solid fa-rotate"></i></button>
             </div>
         </header>
 
-        <div class="insights-grid">
-            <div class="stats-grid">
-                <div class="stat-card glass">
-                    <span>Total Applications</span>
-                    <h3 id="stat-total">0</h3>
+        <div class="view-switcher">
+            <button class="view-btn active" onclick="switchView('applications')" id="btn-view-apps">
+                <i class="fa-solid fa-users"></i> Applicants
+            </button>
+            <button class="view-btn" onclick="switchView('jobs')" id="btn-view-jobs">
+                <i class="fa-solid fa-briefcase"></i> Job Management
+            </button>
+        </div>
+
+        <div id="applications-view">
+            <div class="insights-grid">
+                <div class="stats-grid">
+                    <div class="stat-card glass">
+                        <span>Total Applications</span>
+                        <h3 id="stat-total">0</h3>
+                    </div>
+                    <div class="stat-card glass" style="--card-accent: var(--status-new)">
+                        <span>Unreviewed</span>
+                        <h3 id="stat-new" style="color: var(--status-new)">0</h3>
+                    </div>
+                    <div class="stat-card glass" style="--card-accent: var(--status-hired)">
+                        <span>Hired</span>
+                        <h3 id="stat-hired" style="color: var(--status-hired)">0</h3>
+                    </div>
                 </div>
-                <div class="stat-card glass" style="--card-accent: var(--status-new)">
-                    <span>Unreviewed</span>
-                    <h3 id="stat-new" style="color: var(--status-new)">0</h3>
-                </div>
-                <div class="stat-card glass" style="--card-accent: var(--status-hired)">
-                    <span>Hired</span>
-                    <h3 id="stat-hired" style="color: var(--status-hired)">0</h3>
+
+                <div class="insights-panel glass">
+                    <h4>Funnel Distribution</h4>
+                    <div class="progress-stack" id="insights-stack">
+                        <!-- Funnel bars will be injected here -->
+                    </div>
                 </div>
             </div>
 
-            <div class="insights-panel glass">
-                <h4>Funnel Distribution</h4>
-                <div class="progress-stack" id="insights-stack">
-                    <!-- Funnel bars will be injected here -->
+            <div class="controls">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search-input" placeholder="Search applicants, roles or email..."
+                        oninput="filterData()">
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="apps-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Applicant</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Data loaded here -->
+                    </tbody>
+                </table>
+
+                <div id="loading" style="text-align:center; padding: 4rem;">
+                    <i class="fa-solid fa-spinner fa-spin"
+                        style="font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                    <p style="color: var(--text-dim);">Connecting to secure database...</p>
+                </div>
+
+                <div id="no-data" style="display:none; text-align:center; padding:4rem; color:var(--text-dim);">
+                    <i class="fa-solid fa-folder-open" style="font-size:2.5rem; margin-bottom:1.5rem; opacity:0.3;"></i>
+                    <p>No applications found.</p>
                 </div>
             </div>
         </div>
 
-        <div class="controls">
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="search-input" placeholder="Search applicants, roles or email..." oninput="filterData()">
+        <div id="jobs-view">
+            <div class="controls">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="job-search-input" placeholder="Search jobs, categories..."
+                        oninput="filterJobs()">
+                </div>
+                <button class="btn btn-primary" onclick="openJobEditor()"><i class="fa-solid fa-plus"></i> Post New
+                    Job</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="jobs-table">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Category</th>
+                            <th>Location/Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobs-table-body">
+                        <!-- Jobs loaded here -->
+                    </tbody>
+                </table>
+                <div id="jobs-loading" style="text-align:center; padding: 4rem;">
+                    <i class="fa-solid fa-spinner fa-spin"
+                        style="font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                    <p style="color: var(--text-dim);">Fetching job registry...</p>
+                </div>
+                <div id="jobs-no-data" style="display:none; text-align:center; padding:4rem; color:var(--text-dim);">
+                    <i class="fa-solid fa-briefcase" style="font-size:2.5rem; margin-bottom:1.5rem; opacity:0.3;"></i>
+                    <p>No jobs found. Click 'Post New Job' to start.</p>
+                </div>
             </div>
         </div>
 
-        <div class="table-wrapper">
-            <table id="apps-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Applicant</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                    <!-- Data loaded here -->
-                </tbody>
-            </table>
-            
-            <div id="loading" style="text-align:center; padding: 4rem;">
-                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
-                <p style="color: var(--text-dim);">Connecting to secure database...</p>
-            </div>
-            
-            <div id="no-data" style="display:none; text-align:center; padding:4rem; color:var(--text-dim);">
-                <i class="fa-solid fa-folder-open" style="font-size:2.5rem; margin-bottom:1.5rem; opacity:0.3;"></i>
-                <p>No applications found.</p>
-            </div>
-        </div>
     </div>
 
     <!-- Detail Modal -->
     <div id="detail-modal">
         <div class="modal-content glass">
             <i class="fa-solid fa-xmark close-modal" onclick="closeDetail()"></i>
-            
+
             <div style="display:flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem;">
                 <div>
                     <h3 style="font-size: 1.8rem; font-weight: 800;" id="modal-name">Applicant Name</h3>
                     <p id="modal-role" class="gradient-text" style="font-weight:700; font-size: 1rem;"></p>
                 </div>
-                <div id="modal-date-label" style="font-size: 0.8rem; color: var(--text-dim); background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px;"></div>
+                <div id="modal-date-label"
+                    style="font-size: 0.8rem; color: var(--text-dim); background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px;">
+                </div>
             </div>
-            
-            <div style="background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 2.5rem;">
-                <h4 style="font-size: 0.75rem; text-transform:uppercase; color: var(--primary-color); margin-bottom: 1rem; letter-spacing: 1px;">Cover Letter</h4>
-                <div id="modal-cover" style="font-size: 1rem; white-space: pre-wrap; color: #e0e0e0; max-height: 300px; overflow-y: auto; padding-right: 1rem;"></div>
+
+            <div
+                style="background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 2.5rem;">
+                <h4
+                    style="font-size: 0.75rem; text-transform:uppercase; color: var(--primary-color); margin-bottom: 1rem; letter-spacing: 1px;">
+                    Cover Letter</h4>
+                <div id="modal-cover"
+                    style="font-size: 1rem; white-space: pre-wrap; color: #e0e0e0; max-height: 300px; overflow-y: auto; padding-right: 1rem;">
+                </div>
             </div>
-            
+
             <div style="display: flex; gap: 1rem;">
-                <a href="#" id="modal-resume-btn" target="_blank" class="btn btn-primary"><i class="fa-solid fa-file-pdf"></i> View Resume</a>
-                <a href="#" id="modal-email-btn" class="btn" style="background: rgba(255,255,255,0.08); color: white;"><i class="fa-solid fa-envelope"></i> Contact Applicant</a>
+                <a href="#" id="modal-resume-btn" target="_blank" class="btn btn-primary"><i
+                        class="fa-solid fa-file-pdf"></i> View Resume</a>
+                <a href="#" id="modal-email-btn" class="btn"
+                    style="background: rgba(255,255,255,0.08); color: white;"><i class="fa-solid fa-envelope"></i>
+                    Contact Applicant</a>
             </div>
         </div>
     </div>
 
+    <!-- Job Editor Modal -->
+    <div id="job-editor-modal"
+        style="position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:10000; display:none; align-items:center; justify-content:center; padding:2rem;">
+        <div class="modal-content glass" style="max-width: 800px;">
+            <i class="fa-solid fa-xmark close-modal" onclick="closeJobEditor()"></i>
+            <h3 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 2rem;" id="editor-title">Post New Job</h3>
+
+            <form id="job-form" onsubmit="saveJob(event)">
+                <input type="hidden" id="job-row-index" value="-1">
+                <input type="hidden" id="job-id" value="">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Job Title *</label>
+                        <input type="text" id="job-title" required placeholder="e.g. Senior Mesh Engineer">
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="job-category" required>
+                            <option value="software">Software</option>
+                            <option value="app">App Dev</option>
+                            <option value="web">Web Dev</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="video">Video</option>
+                            <option value="internship">Internship</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Location *</label>
+                        <input type="text" id="job-location" required placeholder="e.g. Remote / India">
+                    </div>
+                    <div class="form-group">
+                        <label>Employment Type *</label>
+                        <input type="text" id="job-type" required placeholder="e.g. Full-time">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.2rem;">
+                    <label>About the Role *</label>
+                    <textarea id="job-about" required
+                        placeholder="Brief overview of the mission and role..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Responsibilities (One per line) *</label>
+                        <textarea id="job-responsibilities" required
+                            placeholder="Design routing algorithms&#10;Optimize P2P links..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Requirements (One per line) *</label>
+                        <textarea id="job-requirements" required
+                            placeholder="5+ years experience&#10;Proficiency in Go/Rust..."></textarea>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                    <button type="button" class="btn" style="background: rgba(255,255,255,0.05); color: white;"
+                        onclick="closeJobEditor()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="job-save-btn">Save Job Posting</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <script>
         // --- CONFIG ---
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzH7qwfOfri8m_Xc-_4ieoZRFR2s0AsLPwRF_p05X1Vs78z6tC8MGG5Ny0RRpBm7pj5ng/exec';
-        const ACCESS_KEY = '8577026386';
+        const JOBS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby050sRiGQTHNp3BVjDlSEPJd0CPOky-cYaRpuxuMTSo32QecV3uNiTwxl3cxp_a50/exec'; // USER: Add your second script URL here
+        const ACCESS_KEY = '5577';
 
         let allApplications = [];
+        let allJobs = [];
+        let currentView = 'applications';
+
 
         // --- AUTH FLOW ---
         function checkGate() {
             const key = document.getElementById('access-key').value;
             const gateCard = document.querySelector('.gate-card');
             const gateBtn = document.getElementById('gate-btn');
-            
+
             if (key === ACCESS_KEY) {
                 // Play animation
                 gateCard.classList.add('authenticating');
                 gateBtn.innerHTML = '<span>Authenticating...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
-                
+
                 setTimeout(() => {
                     document.getElementById('access-gate').classList.add('hidden');
                     document.getElementById('dashboard').classList.add('visible');
@@ -590,10 +897,26 @@
         }
 
         // --- DATA MGT ---
+        function switchView(view) {
+            currentView = view;
+            document.getElementById('applications-view').style.display = view === 'applications' ? 'block' : 'none';
+            document.getElementById('jobs-view').style.display = view === 'jobs' ? 'block' : 'none';
+
+            document.getElementById('btn-view-apps').classList.toggle('active', view === 'applications');
+            document.getElementById('btn-view-jobs').classList.toggle('active', view === 'jobs');
+
+            refreshCurrentView();
+        }
+
+        function refreshCurrentView() {
+            if (currentView === 'applications') fetchData();
+            else fetchJobs();
+        }
+
         async function fetchData() {
             const refreshBtn = document.getElementById('refresh-btn');
-            if(refreshBtn) refreshBtn.querySelector('i').classList.add('spinning');
-            
+            if (refreshBtn) refreshBtn.querySelector('i').classList.add('spinning');
+
             showLoading(true);
             try {
                 const formData = new URLSearchParams();
@@ -604,9 +927,9 @@
                     body: formData,
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.status === 'success') {
                     allApplications = result.data;
                     renderData(allApplications);
@@ -619,26 +942,214 @@
                 showToast('Database connection failed', true);
             } finally {
                 showLoading(false);
-                if(refreshBtn) refreshBtn.querySelector('i').classList.remove('spinning');
+                if (refreshBtn) refreshBtn.querySelector('i').classList.remove('spinning');
             }
         }
+
+        // --- JOBS MGT ---
+        async function fetchJobs() {
+            if (!JOBS_SCRIPT_URL) {
+                showToast('Jobs Script URL not configured', true);
+                return;
+            }
+
+            const refreshBtn = document.getElementById('refresh-btn');
+            if (refreshBtn) refreshBtn.querySelector('i').classList.add('spinning');
+
+            document.getElementById('jobs-loading').style.display = 'block';
+            try {
+                // Using GET for fetching to avoid POST CORS issues in GAS
+                const response = await fetch(`${JOBS_SCRIPT_URL}?action=getAllJobs`);
+                
+                const result = await response.json();
+                if (result.status === 'success') {
+                    allJobs = result.data;
+                    renderJobs(allJobs);
+                } else { throw new Error(result.message); }
+            } catch (err) {
+                showToast('Jobs database connection failed', true);
+            } finally {
+                document.getElementById('jobs-loading').style.display = 'none';
+                if (refreshBtn) refreshBtn.querySelector('i').classList.remove('spinning');
+            }
+        }
+
+        function renderJobs(data) {
+            const tbody = document.getElementById('jobs-table-body');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                document.getElementById('jobs-no-data').style.display = 'block';
+                return;
+            }
+            document.getElementById('jobs-no-data').style.display = 'none';
+
+            data.forEach(job => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-weight:700">${job.title}</td>
+                    <td><span style="text-transform:capitalize">${job.category}</span></td>
+                    <td>
+                        <div style="font-size:0.9rem">${job.location}</div>
+                        <div style="font-size:0.75rem; color:var(--text-dim)">${job.type}</div>
+                    </td>
+                    <td>
+                        <span class="tag ${job.status === 'Open' ? 'tag-open' : 'tag-closed'}">${job.status}</span>
+                    </td>
+                    <td>
+                        <div style="display:flex; gap: 8px;">
+                            <button class="btn-icon" onclick="toggleJobStatus(${job.rowIndex}, '${job.status}')" title="Toggle Status">
+                                <i class="fa-solid ${job.status === 'Open' ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                            </button>
+                            <button class="btn-icon" onclick='openJobEditor(${JSON.stringify(job).replace(/'/g, "&apos;")})' title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn-icon" style="color:#ff4d4d" onclick="deleteJob(${job.rowIndex})" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function saveJob(event) {
+            event.preventDefault();
+            const saveBtn = document.getElementById('job-save-btn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+            const rowIndex = document.getElementById('job-row-index').value;
+            const resps = document.getElementById('job-responsibilities').value.split('\n').filter(l => l.trim());
+            const reqs = document.getElementById('job-requirements').value.split('\n').filter(l => l.trim());
+
+            try {
+                const params = new URLSearchParams();
+                params.append('action', 'upsertJob');
+                params.append('rowIndex', rowIndex);
+                params.append('id', document.getElementById('job-id').value);
+                params.append('title', document.getElementById('job-title').value);
+                params.append('category', document.getElementById('job-category').value);
+                params.append('location', document.getElementById('job-location').value);
+                params.append('type', document.getElementById('job-type').value);
+                params.append('about', document.getElementById('job-about').value);
+                params.append('responsibilities', JSON.stringify(resps));
+                params.append('requirements', JSON.stringify(reqs));
+
+                const response = await fetch(JOBS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: params,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    showToast('Job saved successfully');
+                    closeJobEditor();
+                    fetchJobs();
+                } else { throw new Error(result.message); }
+            } catch (err) {
+                showToast('Save failed', true);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = 'Save Job Posting';
+            }
+        }
+
+        async function toggleJobStatus(rowIndex, currentStatus) {
+            const newStatus = currentStatus === 'Open' ? 'Closed' : 'Open';
+            try {
+                const params = new URLSearchParams();
+                params.append('action', 'toggleStatus');
+                params.append('rowIndex', rowIndex);
+                params.append('status', newStatus);
+
+                const response = await fetch(JOBS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: params,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    showToast(`Job ${newStatus}`);
+                    fetchJobs();
+                }
+            } catch (err) { showToast('Toggle failed', true); }
+        }
+
+        async function deleteJob(rowIndex) {
+            if (!confirm('Are you sure you want to delete this job posting? This cannot be undone.')) return;
+            try {
+                const params = new URLSearchParams();
+                params.append('action', 'deleteJob');
+                params.append('rowIndex', rowIndex);
+
+                await fetch(JOBS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: params,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+                showToast('Job deleted');
+                fetchJobs();
+            } catch (err) { showToast('Delete failed', true); }
+        }
+
+        function openJobEditor(job = null) {
+            const editor = document.getElementById('job-editor-modal');
+            const title = document.getElementById('editor-title');
+
+            if (job) {
+                title.textContent = 'Edit Job Posting';
+                document.getElementById('job-row-index').value = job.rowIndex;
+                document.getElementById('job-id').value = job.id;
+                document.getElementById('job-title').value = job.title;
+                document.getElementById('job-category').value = job.category;
+                document.getElementById('job-location').value = job.location;
+                document.getElementById('job-type').value = job.type;
+                document.getElementById('job-about').value = job.about;
+                document.getElementById('job-responsibilities').value = (job.responsibilities || []).join('\n');
+                document.getElementById('job-requirements').value = (job.requirements || []).join('\n');
+            } else {
+                title.textContent = 'Post New Job';
+                document.getElementById('job-form').reset();
+                document.getElementById('job-row-index').value = '-1';
+                document.getElementById('job-id').value = '';
+            }
+
+            editor.style.display = 'flex';
+        }
+
+        function closeJobEditor() { document.getElementById('job-editor-modal').style.display = 'none'; }
+
+        function filterJobs() {
+            const query = document.getElementById('job-search-input').value.toLowerCase();
+            const filtered = allJobs.filter(j =>
+                j.title.toLowerCase().includes(query) ||
+                j.category.toLowerCase().includes(query) ||
+                j.location.toLowerCase().includes(query)
+            );
+            renderJobs(filtered);
+        }
+
 
         function renderData(data) {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
-            
+
             if (data.length === 0) {
                 document.getElementById('no-data').style.display = 'block';
                 return;
             }
             document.getElementById('no-data').style.display = 'none';
 
-            data.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
             data.forEach(app => {
                 const date = new Date(app.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 const row = document.createElement('tr');
-                
+
                 row.innerHTML = `
                     <td>
                         <span style="color:var(--text-dim); font-size:0.8rem">${date}</span>
@@ -675,7 +1186,7 @@
         async function updateStatus(rowId, newStatus) {
             const selectElement = event.target;
             const originalValue = selectElement.getAttribute('data-last-val') || 'New';
-            
+
             try {
                 selectElement.style.opacity = '0.5';
                 const formData = new URLSearchParams();
@@ -688,7 +1199,7 @@
                     body: formData,
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                 });
-                
+
                 const result = await response.json();
                 if (result.status === 'success') {
                     showToast('Status updated');
@@ -705,9 +1216,9 @@
 
         function filterData() {
             const query = document.getElementById('search-input').value.toLowerCase();
-            const filtered = allApplications.filter(app => 
-                app.full_name.toLowerCase().includes(query) || 
-                app.email.toLowerCase().includes(query) || 
+            const filtered = allApplications.filter(app =>
+                app.full_name.toLowerCase().includes(query) ||
+                app.email.toLowerCase().includes(query) ||
                 app.applied_role.toLowerCase().includes(query)
             );
             renderData(filtered);
@@ -718,17 +1229,17 @@
             document.getElementById('stat-total').textContent = data.length;
             document.getElementById('stat-new').textContent = data.filter(a => a.status === 'New').length;
             document.getElementById('stat-hired').textContent = data.filter(a => a.status === 'Hired').length;
-            
+
             // Funnel Visuals
             const statuses = ['New', 'Reviewing', 'Interviewing', 'Hired', 'Rejected'];
             const colors = ['var(--status-new)', 'var(--status-review)', '#7000ff', 'var(--status-hired)', 'var(--status-rejected)'];
             const stack = document.getElementById('insights-stack');
             stack.innerHTML = '';
-            
+
             statuses.forEach((status, idx) => {
                 const count = data.filter(a => a.status === status).length;
                 const percent = data.length > 0 ? (count / data.length) * 100 : 0;
-                
+
                 const item = document.createElement('div');
                 item.className = 'progress-item';
                 item.innerHTML = `
@@ -777,7 +1288,7 @@
             const canvas = document.getElementById('canvas-mesh');
             const ctx = canvas.getContext('2d');
             let particles = [];
-            
+
             function resize() {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
@@ -812,12 +1323,12 @@
             for (let i = 0; i < 60; i++) particles.push(new Particle());
 
             function animate() {
-                ctx.clearRect(0,0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 particles.forEach((p, i) => {
                     p.update(); p.draw();
                     for (let j = i + 1; j < particles.length; j++) {
                         const p2 = particles[j];
-                        const dist = Math.sqrt((p.x-p2.x)**2 + (p.y-p2.y)**2);
+                        const dist = Math.sqrt((p.x - p2.x) ** 2 + (p.y - p2.y) ** 2);
                         if (dist < 150) {
                             ctx.beginPath();
                             ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
@@ -839,10 +1350,21 @@
 
     <style>
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            75% {
+                transform: translateX(10px);
+            }
         }
     </style>
 </body>
+
 </html>
