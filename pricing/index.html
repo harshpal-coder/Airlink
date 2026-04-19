@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Pricing | AirLink - Secure Mesh Tiers</title>
+    <meta name="description" content="Choose the right AirLink plan for your connectivity needs. From community-driven open source to enterprise-grade mesh infrastructure.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+</head>
+
+<body class="pricing-page">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <img src="/assets/logo.png" alt="AirLink Logo" class="loader-logo">
+            <div class="mesh-loader">
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="line"></div>
+            </div>
+            <div class="loader-text gradient-text">Loading Packages...</div>
+        </div>
+    </div>
+
+    <canvas id="canvas-mesh"></canvas>
+
+    <nav id="navbar" class="scrolled">
+        <div class="container nav-content">
+            <a href="/" class="logo">
+                <img src="/assets/logo.png" alt="Airlink Logo">
+                AirLink
+            </a>
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="nav-links" id="nav-links">
+                <a href="/#features">Features</a>
+                <a href="/#tech">Technology</a>
+                <a href="/#download">Download</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="pricing-hero">
+        <div class="container">
+            <h1 data-reveal>Transparent <span class="gradient-text">Pricing</span></h1>
+            <p style="color: var(--text-dim); max-width: 600px; margin: 0 auto;" data-reveal>
+                Choose the tier that fits your mesh networking needs. Open-source, secure, and resilient.
+            </p>
+        </div>
+    </header>
+
+    <section id="pricing-plans">
+        <div class="container">
+            <div class="pricing-grid">
+                <!-- Community Tier -->
+                <div class="pricing-card glass" data-reveal>
+                    <div class="price-header">
+                        <h3>Community</h3>
+                        <div class="price">₹0<span>/forever</span></div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="fa-solid fa-check"></i> Standard P2P Messaging</li>
+                        <li><i class="fa-solid fa-check"></i> End-to-End Encryption</li>
+                        <li><i class="fa-solid fa-check"></i> Open Source Access</li>
+                        <li><i class="fa-solid fa-check"></i> Community Support</li>
+                        <li class="disabled"><i class="fa-solid fa-xmark"></i> Priority Mesh Routing</li>
+                        <li class="disabled"><i class="fa-solid fa-xmark"></i> Encrypted Cloud Sync</li>
+                    </ul>
+                    <a href="/#download" class="btn btn-secondary">Get Started</a>
+                </div>
+
+                <!-- Pro Tier -->
+                <div class="pricing-card glass featured" data-reveal>
+                    <div class="price-header">
+                        <h3>Pro</h3>
+                        <div class="price">₹499<span>/year</span></div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="fa-solid fa-circle-check"></i> Everything in Community</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Priority Mesh Routing</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Encrypted Cloud Backups</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Premium Supporter Badge</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Extended Range Mode</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Direct Email Support</li>
+                    </ul>
+                    <a href="/#supporters" class="btn btn-primary">Upgrade Now</a>
+                </div>
+
+                <!-- Enterprise Tier -->
+                <div class="pricing-card glass" data-reveal>
+                    <div class="price-header">
+                        <h3>Enterprise</h3>
+                        <div class="price">Custom<span>/contact</span></div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="fa-solid fa-check"></i> Targeted Mesh Nodes</li>
+                        <li><i class="fa-solid fa-check"></i> Dedicated Infrastructure</li>
+                        <li><i class="fa-solid fa-check"></i> White-label Distribution</li>
+                        <li><i class="fa-solid fa-check"></i> SDK & API Access</li>
+                        <li><i class="fa-solid fa-check"></i> 24/7 Priority Assistance</li>
+                        <li><i class="fa-solid fa-check"></i> On-site Deployment</li>
+                    </ul>
+                    <a href="mailto:contact@airlink.app" class="btn btn-secondary">Contact Sales</a>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="pricing-faq">
+                <div style="text-align: center; margin-bottom: 3rem;" data-reveal>
+                    <h2>Frequently Asked <span class="gradient-text">Questions</span></h2>
+                </div>
+                <div class="faq-container">
+                    <div class="faq-item glass" data-reveal>
+                        <div class="faq-question">How does Pro routing work? <i class="fa-solid fa-plus"></i></div>
+                        <div class="faq-answer">Pro users get priority relaying across the mesh network, ensuring their messages reach destinations faster during high congestion.</div>
+                    </div>
+                    <div class="faq-item glass" data-reveal>
+                        <div class="faq-question">Can I use Community forever? <i class="fa-solid fa-plus"></i></div>
+                        <div class="faq-answer">Yes! Our core mission is free and secure communication. The Community plan will always be free and open-source.</div>
+                    </div>
+                    <div class="faq-item glass" data-reveal>
+                        <div class="faq-question">What is Extended Range Mode? <i class="fa-solid fa-plus"></i></div>
+                        <div class="faq-answer">It optimizes radio frequencies and transmission power on supported devices to increase the direct hop distance by up to 30%.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="logo footer-logo" style="justify-content: center;">
+                <img src="/assets/logo.png" alt="Airlink Logo">
+                AirLink
+            </div>
+            <div class="footer-links">
+                <a href="/#features">Features</a>
+                <a href="/#download">Download</a>
+                <a href="/pricing">Pricing</a>
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/terms">Terms & Conditions</a>
+                <a href="/careers">Careers</a>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.9rem;">&copy; 2026 AirLink Project. Developed by Harshpal. Open Source under MIT License.</p>
+        </div>
+    </footer>
+
+    <script src="/script.js"></script>
+</body>
+
+</html>
