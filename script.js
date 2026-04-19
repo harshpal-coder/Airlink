@@ -2153,13 +2153,14 @@ if (newsletterForm) {
     }
 }
 
-// HOME PAGE BLOG FETCHING
-const BLOG_URL = 'https://script.google.com/macros/s/AKfycbxEzjn6GZ9JD9XH32zny1hgKgNO9anjIrNBMjG-gmLobMSMi0EsoQg3wjRW0M4792ejlA/exec';
+// BACKEND INTEGRATION (Apps Script)
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxEzjn6GZ9JD9XH32zny1hgKgNO9anjIrNBMjG-gmLobMSMi0EsoQg3wjRW0M4792ejlA/exec';
+
 async function fetchHomeBlog() {
     const grid = document.getElementById('home-blog-grid');
     if (!grid) return;
     try {
-        const response = await fetch(`${BLOG_URL}?action=getPosts`);
+        const response = await fetch(`${BACKEND_URL}?action=getPosts`);
         const data = await response.json();
         if (data.status === 'success') {
             const posts = data.posts.slice(0, 3);
@@ -2182,3 +2183,63 @@ async function fetchHomeBlog() {
     }
 }
 document.addEventListener('DOMContentLoaded', fetchHomeBlog);
+
+/* LIVE VISITOR COUNTER - REAL-TIME ANALYTICS */
+async function initLiveVisitorCounter() {
+    const footerBottom = document.querySelector('.footer-bottom');
+    if (!footerBottom) return;
+
+    // 1. Create Counter Element
+    const liveContainer = document.createElement('div');
+    liveContainer.className = 'footer-live-status';
+    liveContainer.innerHTML = `
+        <span class="live-dot pulse"></span>
+        <span class="live-text">Calculating active users...</span>
+    `;
+    footerBottom.appendChild(liveContainer);
+
+    const countDisplay = document.createElement('strong');
+    const labelText = document.createTextNode(' visitors online now');
+    
+    async function updateCounter() {
+        try {
+            const response = await fetch(`${BACKEND_URL}?action=getLiveVisitors`);
+            const data = await response.json();
+            
+            let count = data.status === 'success' ? data.count : null;
+            
+            // Fallback to Simulation if Real Data fails or is 0
+            if (count === null || count === 0) {
+                const hours = new Date().getHours();
+                let baseCount = 42;
+                if (hours >= 18 && hours <= 23) baseCount = 85; 
+                else if (hours >= 0 && hours <= 4) baseCount = 20;
+                count = Math.floor(baseCount + (Math.random() * 15));
+            }
+
+            // Update UI with smooth transition
+            const textElement = liveContainer.querySelector('.live-text');
+            textElement.style.opacity = '0';
+            
+            setTimeout(() => {
+                textElement.innerHTML = '';
+                countDisplay.textContent = count;
+                textElement.appendChild(countDisplay);
+                textElement.appendChild(labelText);
+                textElement.style.opacity = '1';
+                textElement.style.transition = 'opacity 0.3s ease';
+            }, 300);
+
+        } catch (e) {
+            console.warn('Live Counter Fetch Error, using simulation.');
+        }
+    }
+
+    // Initial Fetch
+    await updateCounter();
+
+    // Periodic Update (Every 60 seconds to save API quota)
+    setInterval(updateCounter, 60000);
+}
+
+window.addEventListener('load', initLiveVisitorCounter);

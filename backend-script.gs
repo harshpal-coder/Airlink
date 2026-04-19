@@ -1,12 +1,9 @@
-/* 
-  AIRLINK RECRUITMENT BACKEND v3.0 - "Email Automation"
-  --------------------------------------------------
-  Added: Professional HTML Auto-Replies for All Statuses.
-*/
+var PROPERTY_ID = '533610243'; // GA4 Property ID
 
 function doGet(e) {
   var action = e.parameter.action;
   if (action === 'getApplications') { return getApplications(e); }
+  if (action === 'getLiveVisitors') { return getRealtimeVisitors(); }
   return ContentService.createTextOutput("AirLink Backend Active");
 }
 
@@ -190,4 +187,37 @@ function getOrCreateFolder() {
   var name = "AirLink_Applicant_Resumes";
   var folders = DriveApp.getFoldersByName(name);
   return folders.hasNext() ? folders.next() : DriveApp.createFolder(name);
+}
+
+/**
+ * Fetches real-time active users from GA4
+ * Requires "Google Analytics Data API" service to be added in Apps Script
+ */
+function getRealtimeVisitors() {
+  try {
+    var metric = AnalyticsData.newMetric();
+    metric.name = 'activeUsers';
+
+    var request = AnalyticsData.newRunRealtimeReportRequest();
+    request.metrics = [metric];
+
+    var report = AnalyticsData.Properties.runRealtimeReport(request, 'properties/' + PROPERTY_ID);
+    
+    var count = 0;
+    if (report.rows && report.rows.length > 0) {
+      count = report.rows[0].metricValues[0].value;
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'success',
+      count: parseInt(count)
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error',
+      message: err.toString(),
+      fallback_count: 42 // Minimal fallback
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 }

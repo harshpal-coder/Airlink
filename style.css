@@ -4397,3 +4397,63 @@ body.disaster-flicker nav {
     }
 }
 
+
+/* Live Visitor Footer Integration */
+.footer-live-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 6px 14px;
+    border-radius: 50px;
+    border: 1px solid var(--glass-border);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-top: 1rem;
+    width: fit-content;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--success-color);
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 10px var(--success-color);
+}
+
+.live-dot.pulse::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid var(--success-color);
+    border-radius: 50%;
+    animation: livePulse 1.5s infinite;
+    opacity: 0;
+}
+
+@keyframes livePulse {
+    0% {
+        transform: scale(0.5);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+.footer-live-status strong {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .footer-live-status {
+        margin: 1rem auto 0;
+    }
+}
+
