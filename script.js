@@ -2165,7 +2165,7 @@ async function fetchHomeBlog() {
             const posts = data.posts.slice(0, 3);
             grid.innerHTML = posts.map(post => {
                 const date = new Date(post.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                return `<div class="blog-card glass" data-reveal onclick="window.location.href='/blog'" style="cursor:pointer; display:flex; flex-direction:column; overflow:hidden;">
+                return `<div class="blog-card glass" onclick="window.location.href='/blog'" style="cursor:pointer; display:flex; flex-direction:column; overflow:hidden;">
                     <div style="height: 160px; overflow: hidden;">
                         <img src="${post.thumbnail}" style="width:100%; height:100%; object-fit:cover;">
                     </div>

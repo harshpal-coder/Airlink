@@ -52,7 +52,6 @@ function renderPosts(posts) {
     posts.forEach((post, index) => {
         const card = document.createElement('div');
         card.className = 'blog-card glass';
-        card.setAttribute('data-reveal', '');
         card.style.animationDelay = `${index * 0.1}s`;
         
         const date = new Date(post.published).toLocaleDateString('en-US', {
