@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Blog | AirLink - Insights from the Mesh</title>
+    <meta name="description" content="Stay updated with the latest news, tech deep-dives, and community stories from the AirLink mesh networking project.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+
+    <style>
+        .blog-hero {
+            padding: 120px 0 60px;
+            text-align: center;
+        }
+
+        .blog-hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin-top: 4rem;
+        }
+
+        .blog-card {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            border-color: var(--primary-color);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .blog-thumbnail {
+            width: 100%;
+            height: 220px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blog-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .blog-card:hover .blog-thumbnail img {
+            transform: scale(1.1);
+        }
+
+        .blog-card-content {
+            padding: 2rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .blog-date {
+            font-size: 0.8rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+
+        .blog-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+            color: var(--text-main);
+        }
+
+        .blog-card p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .blog-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .author-img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--primary-color);
+        }
+
+        .author-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Full Post Modal */
+        #post-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 7, 12, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 5000;
+            display: none;
+            justify-content: center;
+            padding: 4rem 1.5rem 2rem;
+            overflow-y: auto;
+        }
+
+        #post-modal {
+            background: var(--surface-color);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            width: 100%;
+            max-width: 900px;
+            padding: 4rem;
+            position: relative;
+            height: fit-content;
+        }
+
+        #modal-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: var(--surface-hover);
+            border: 1px solid var(--glass-border);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        #modal-close:hover {
+            background: var(--primary-color);
+            color: var(--bg-color);
+        }
+
+        .full-post-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .full-post-header h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .full-post-meta {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .full-post-body {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        .full-post-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 20px;
+            margin: 2rem 0;
+            border: 1px solid var(--glass-border);
+        }
+
+        .full-post-body h2, .full-post-body h3 {
+            margin: 2.5rem 0 1rem;
+            color: var(--primary-color);
+        }
+
+        /* Loading Spinner */
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 0;
+            width: 100%;
+            grid-column: 1 / -1;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--surface-hover);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .blog-hero h1 { font-size: 3rem; }
+            #post-modal { padding: 2rem; }
+            .full-post-header h2 { font-size: 2rem; }
+        }
+    </style>
+</head>
+
+<body class="blog-page">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <img src="/assets/logo.png" alt="AirLink Logo" class="loader-logo">
+            <div class="mesh-loader">
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="line"></div>
+            </div>
+            <div class="loader-text gradient-text">Fetching Articles...</div>
+        </div>
+    </div>
+
+    <canvas id="canvas-mesh"></canvas>
+
+    <nav id="navbar" class="scrolled">
+        <div class="container nav-content">
+            <a href="/" class="logo">
+                <img src="/assets/logo.png" alt="Airlink Logo">
+                AirLink
+            </a>
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="nav-links" id="nav-links">
+                <a href="/#features">Features</a>
+                <a href="/#tech">Technology</a>
+                <a href="/blog" class="active" style="color: var(--primary-color);">Blog</a>
+                <a href="/#download">Download</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="blog-hero">
+        <div class="container">
+            <h1 data-reveal>Insights from the <span class="gradient-text">Mesh</span></h1>
+            <p style="color: var(--text-dim); max-width: 600px; margin: 0 auto;" data-reveal>
+                Deep dives into decentralized technology, project updates, and the future of offline communication.
+            </p>
+        </div>
+    </header>
+
+    <section id="blog-content">
+        <div class="container">
+            <div id="blog-grid" class="blog-grid">
+                <!-- Posts will be injected here -->
+                <div class="loader-container">
+                    <div class="spinner"></div>
+                    <p style="color: var(--text-dim);">Connecting to Blogger API...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Post Modal -->
+    <div id="post-modal-overlay">
+        <div id="post-modal" class="glass">
+            <button id="modal-close"><i class="fa-solid fa-xmark"></i></button>
+            <div id="modal-content">
+                <!-- Content injected here -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="logo footer-logo" style="justify-content: center;">
+                <img src="/assets/logo.png" alt="Airlink Logo">
+                AirLink
+            </div>
+            <div class="footer-links">
+                <a href="/#features">Features</a>
+                <a href="/#download">Download</a>
+                <a href="/pricing">Pricing</a>
+                <a href="/blog">Blog</a>
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/terms">Terms & Conditions</a>
+                <a href="/careers">Careers</a>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.9rem;">&copy; 2026 AirLink Project. Developed by Harshpal. Open Source under MIT License.</p>
+        </div>
+    </footer>
+
+    <script src="/script.js"></script>
+    <script src="blog-script.js"></script>
+</body>
+
+</html>

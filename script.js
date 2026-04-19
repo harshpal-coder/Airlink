@@ -2152,3 +2152,33 @@ if (newsletterForm) {
         newsletterStatus.className = 'newsletter-status ' + type;
     }
 }
+
+// HOME PAGE BLOG FETCHING
+const BLOG_URL = 'https://script.google.com/macros/s/AKfycbxEzjn6GZ9JD9XH32zny1hgKgNO9anjIrNBMjG-gmLobMSMi0EsoQg3wjRW0M4792ejlA/exec';
+async function fetchHomeBlog() {
+    const grid = document.getElementById('home-blog-grid');
+    if (!grid) return;
+    try {
+        const response = await fetch(`${BLOG_URL}?action=getPosts`);
+        const data = await response.json();
+        if (data.status === 'success') {
+            const posts = data.posts.slice(0, 3);
+            grid.innerHTML = posts.map(post => {
+                const date = new Date(post.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                return `<div class="blog-card glass" data-reveal onclick="window.location.href='/blog'" style="cursor:pointer; display:flex; flex-direction:column; overflow:hidden;">
+                    <div style="height: 160px; overflow: hidden;">
+                        <img src="${post.thumbnail}" style="width:100%; height:100%; object-fit:cover;">
+                    </div>
+                    <div style="padding: 1.5rem;">
+                        <span style="color: var(--primary-color); font-size: 0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">${date}</span>
+                        <h4 style="margin: 0.5rem 0; font-size: 1.1rem; color: var(--text-main);">${post.title}</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-dim); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${post.summary}</p>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    } catch (e) {
+        console.error('Home Blog Error:', e);
+    }
+}
+document.addEventListener('DOMContentLoaded', fetchHomeBlog);
