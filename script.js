@@ -605,12 +605,24 @@ function initMeshEcosystem() {
             </defs>
         `;
 
-        const hX = hub.offsetLeft + hub.offsetWidth / 2;
-        const hY = hub.offsetTop + hub.offsetHeight / 2;
+        const containerRect = container.getBoundingClientRect();
+        const hubCore = hub.querySelector('.hub-core') || hub;
+        const hRect = hubCore.getBoundingClientRect();
+        const hW = hRect.width || hubCore.offsetWidth || 120;
+        const hH = hRect.height || hubCore.offsetHeight || 120;
+
+        
+        const hX = (hRect.left + hW / 2) - containerRect.left;
+        const hY = (hRect.top + hH / 2) - containerRect.top;
+
 
         nodes.forEach(node => {
-            const nX = node.offsetLeft + node.offsetWidth / 2;
-            const nY = node.offsetTop + node.offsetHeight / 2;
+            const nRect = node.getBoundingClientRect();
+            const nW = nRect.width || node.offsetWidth;
+            const nH = nRect.height || node.offsetHeight;
+            const nX = (nRect.left + nW / 2) - containerRect.left;
+            const nY = (nRect.top + nH / 2) - containerRect.top;
+
 
             const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
             line.setAttribute("x1", hX);
@@ -653,8 +665,9 @@ function initMeshEcosystem() {
     });
     ro.observe(container);
     
-    // Initial draw
+    // Initial draw with retries to ensure final positions are captured
     setTimeout(drawConnections, 500); 
+    setTimeout(drawConnections, 2000); 
 }
 
 // Initialize on Load

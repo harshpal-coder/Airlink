@@ -592,16 +592,22 @@ nav.scrolled .progress-bar::after {
 /* Mesh Ecosystem - Non-Card Layout */
 .mesh-ecosystem {
     position: relative;
-    height: 800px;
     margin-top: 4rem;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    gap: 4rem;
+    width: 100%;
 }
 
 .mesh-hub {
     position: relative;
     z-index: 10;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .hub-core {
@@ -643,20 +649,27 @@ nav.scrolled .progress-bar::after {
     100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
 }
 
+.features-bento-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    width: 100%;
+}
+
 .mesh-node {
-    position: absolute;
-    width: 280px;
-    padding: 1.5rem;
+    padding: 2rem;
     background: rgba(255, 255, 255, 0.02);
     backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border);
-    border-radius: 20px;
+    border-radius: 24px;
     display: flex;
-    align-items: center;
-    gap: 1.2rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
     z-index: 20;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     will-change: transform, background, border-color;
+    height: 100%;
 }
 
 .mesh-node:hover {
@@ -684,12 +697,7 @@ nav.scrolled .progress-bar::after {
 }
 
 /* Position Nodes in an organic orbit */
-.node-top-left { top: 10%; left: 10%; }
-.node-top-right { top: 10%; right: 10%; }
-.node-right { top: 50%; right: 0%; transform: translateY(-50%); }
-.node-bottom-right { bottom: 10%; right: 10%; }
-.node-bottom-left { bottom: 10%; left: 10%; }
-.node-left { top: 50%; left: 0%; transform: translateY(-50%); }
+/* Removed Orbital Positioning */
 
 .mesh-connections {
     position: absolute;
@@ -784,14 +792,11 @@ nav.scrolled .progress-bar::after {
 
 @media (max-width: 992px) {
     .mesh-ecosystem {
-        height: auto;
-        flex-direction: column;
-        gap: 2rem;
+        gap: 3rem;
     }
-    .mesh-node {
-        position: static;
-        width: 100%;
-        transform: none !important;
+    .features-bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
     }
     .mesh-hub {
         order: -1;
