@@ -4793,3 +4793,109 @@ body.disaster-flicker nav {
     }
 }
 
+/* --- CUSTOM PREMIUM CURSOR --- */
+html, body {
+    cursor: none !important;
+}
+
+/* Ensure interactive elements also hide the cursor */
+a, button, [role="button"], .glass, .glass-card, .blog-card, .supporter-card, .faq-question, .read-more, .nav-link, .btn-nav-cta, .social-link {
+    cursor: none !important;
+}
+
+.cursor-dot,
+.cursor-outline {
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    opacity: 0;
+    z-index: 10000;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.cursor-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #fff;
+    mix-blend-mode: difference;
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.cursor-outline {
+    width: 40px;
+    height: 40px;
+    border: 1.5px solid rgba(0, 242, 255, 0.4);
+    background-color: rgba(0, 242, 255, 0.02);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+}
+
+/* Cursor Ping (Mesh Ripple) */
+.cursor-ping {
+    position: fixed;
+    pointer-events: none;
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    animation: cursorPing 0.6s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+@keyframes cursorPing {
+    0% {
+        width: 10px;
+        height: 10px;
+        opacity: 1;
+    }
+    100% {
+        width: 80px;
+        height: 80px;
+        opacity: 0;
+    }
+}
+
+/* Hover States */
+body.cursor-hovered .cursor-dot {
+    transform: translate(-50%, -50%) scale(1.5);
+    background-color: #fff;
+    box-shadow: 0 0 15px #fff;
+}
+
+body.cursor-hovered .cursor-outline {
+    width: 60px;
+    height: 60px;
+    border-color: var(--primary-color);
+    background-color: rgba(0, 242, 255, 0.1);
+    box-shadow: 0 0 25px rgba(0, 242, 255, 0.3);
+}
+
+/* Active/Click State */
+body.cursor-active .cursor-dot {
+    transform: translate(-50%, -50%) scale(0.5);
+}
+
+body.cursor-active .cursor-outline {
+    transform: translate(-50%, -50%) scale(0.9);
+    background-color: rgba(0, 242, 255, 0.15);
+}
+
+/* Magnetic Element Transitions */
+.magnetic-target {
+    display: inline-block;
+    transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform;
+}
+
+/* Hide cursor on mobile/tablets for better UX */
+@media (max-width: 1024px) {
+    .cursor-dot, .cursor-outline {
+        display: none !important;
+    }
+    html, body, a, button, [role="button"], .glass, .glass-card, .blog-card, .supporter-card, .faq-question {
+        cursor: auto !important;
+    }
+}
+

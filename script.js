@@ -94,7 +94,7 @@ function animate() {
         p.update();
         p.draw();
 
-        // Draw connections
+        // Draw connections between particles
         for (let j = i + 1; j < particles.length; j++) {
             const p2 = particles[j];
             const dx = p.x - p2.x;
@@ -108,16 +108,25 @@ function animate() {
                 ctx.moveTo(p.x, p.y);
                 ctx.lineTo(p2.x, p2.y);
                 ctx.strokeStyle = `rgba(0, 242, 255, ${alpha})`;
-                if (disaster) {
-                    ctx.lineWidth = 1.5;
-                    ctx.shadowBlur = 6;
-                    ctx.shadowColor = '#00F2FF';
-                } else {
-                    ctx.lineWidth = 1;
-                }
+                ctx.lineWidth = disaster ? 1.5 : 1;
                 ctx.stroke();
-                ctx.shadowBlur = 0;
-                ctx.lineWidth = 1;
+            }
+        }
+
+        // --- NEW: Draw connections to Mouse (Advanced Cursor Plugin) ---
+        if (mouse.x && mouse.y) {
+            const mdx = p.x - mouse.x;
+            const mdy = p.y - mouse.y;
+            const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+
+            if (mdist < 180) {
+                const alpha = 0.3 * (1 - mdist / 180);
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(mouse.x, mouse.y);
+                ctx.strokeStyle = `rgba(0, 242, 255, ${alpha})`;
+                ctx.lineWidth = 0.8;
+                ctx.stroke();
             }
         }
     });
@@ -2452,3 +2461,113 @@ async function initLiveVisitorCounter() {
 }
 
 window.addEventListener('load', initLiveVisitorCounter);
+
+/* --- CUSTOM PREMIUM CURSOR LOGIC --- */
+function initCustomCursor() {
+    const dot = document.getElementById('cursor-dot');
+    const outline = document.getElementById('cursor-outline');
+    const body = document.body;
+
+    if (!dot || !outline) return;
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let outlineX = 0;
+    let outlineY = 0;
+
+    // Linear Interpolation (Lerp) for smooth following
+    const lerp = (start, end, amt) => (1 - amt) * start + amt * end;
+
+    window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        // Instantly move the dot
+        dot.style.left = `${mouseX}px`;
+        dot.style.top = `${mouseY}px`;
+        dot.style.opacity = '1';
+        outline.style.opacity = '1';
+    });
+
+    function animate() {
+        // Smoothly follow with the outline
+        outlineX = lerp(outlineX, mouseX, 0.15);
+        outlineY = lerp(outlineY, mouseY, 0.15);
+
+        outline.style.left = `${outlineX}px`;
+        outline.style.top = `${outlineY}px`;
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Hover Detection
+    const interactiveElements = 'a, button, [role="button"], .glass, .glass-card, .blog-card, .supporter-card, .faq-question, .read-more, .nav-link, .btn-nav-cta, .social-link';
+    
+    document.addEventListener('mouseover', (e) => {
+        if (e.target.closest(interactiveElements)) {
+            body.classList.add('cursor-hovered');
+        }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        if (e.target.closest(interactiveElements)) {
+            body.classList.remove('cursor-hovered');
+        }
+    });
+
+    // Active/Click Detection & Mesh Ping
+    document.addEventListener('mousedown', (e) => {
+        body.classList.add('cursor-active');
+        
+        // Spawn Ripple
+        const ripple = document.createElement('div');
+        ripple.className = 'cursor-ping';
+        ripple.style.left = `${e.clientX}px`;
+        ripple.style.top = `${e.clientY}px`;
+        document.body.appendChild(ripple);
+        
+        // Cleanup
+        setTimeout(() => ripple.remove(), 600);
+    });
+    
+    document.addEventListener('mouseup', () => body.classList.remove('cursor-active'));
+
+    // --- NEW: Magnetic Interaction ---
+    const magneticElements = document.querySelectorAll('.btn, .nav-link, .btn-nav-cta, .social-link, .glass-card');
+    
+    magneticElements.forEach(el => {
+        el.addEventListener('mousemove', (e) => {
+            const rect = el.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            
+            // Subtle pull effect
+            el.style.transform = `translate(${x * 0.3}px, ${y * 0.5}px) scale(1.02)`;
+            el.classList.add('magnetic-target');
+            
+            // Magnetize the cursor dot slightly to the center
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            mouseX = lerp(mouseX, centerX, 0.2);
+            mouseY = lerp(mouseY, centerY, 0.2);
+        });
+        
+        el.addEventListener('mouseleave', () => {
+            el.style.transform = '';
+            el.classList.remove('magnetic-target');
+        });
+    });
+
+    // Handle Window Leave
+    document.addEventListener('mouseleave', () => {
+        dot.style.opacity = '0';
+        outline.style.opacity = '0';
+    });
+}
+
+// Initialize if NOT on mobile
+if (window.innerWidth > 1024) {
+    initCustomCursor();
+}
+
