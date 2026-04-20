@@ -24,6 +24,21 @@
     </script>
     <title>Blog | AirLink - Insights from the Mesh</title>
     <meta name="description" content="Stay updated with the latest news, tech deep-dives, and community stories from the AirLink mesh networking project.">
+    <link rel="canonical" href="https://myairlink.vercel.app/blog">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://myairlink.vercel.app/blog">
+    <meta property="og:title" content="Blog | AirLink - Insights from the Mesh">
+    <meta property="og:description" content="Stay updated with the latest news and tech deep-dives from the AirLink mesh networking project.">
+    <meta property="og:image" content="https://myairlink.vercel.app/assets/social-preview.png">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://myairlink.vercel.app/blog">
+    <meta name="twitter:title" content="AirLink Blog - Decentralized Insights">
+    <meta name="twitter:description" content="Deep dives into decentralized technology and offline communication.">
+    <meta name="twitter:image" content="https://myairlink.vercel.app/assets/social-preview.png">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -317,10 +332,16 @@
     <section id="blog-content">
         <div class="container">
             <div id="blog-grid" class="blog-grid">
+                <!-- Static SEO content to prevent Soft 404 -->
+                <div class="blog-seo-intro" style="display: none;">
+                    <h2>Exploring Decentralized Mesh Networking</h2>
+                    <p>Our blog covers critical topics in the evolution of offline communication, including P2P protocols, end-to-end encryption, and community-driven mesh infrastructure. Stay informed about the latest project updates and technical deep-dives.</p>
+                </div>
+
                 <!-- Posts will be injected here -->
                 <div class="loader-container">
                     <div class="spinner"></div>
-                    <p style="color: var(--text-dim);">Connecting to Blogger API...</p>
+                    <p style="color: var(--text-dim);">Syncing the latest mesh networking insights...</p>
                 </div>
             </div>
         </div>
