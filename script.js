@@ -326,22 +326,31 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// 3D Tilt Effect Logic
-const tiltElements = document.querySelectorAll('.feature-card, .tech-card, .supporter-tier');
+// 3D Tilt & Interactive Spotlight Logic
+const tiltElements = document.querySelectorAll('.feature-card, .tech-card, .use-case-card, .link-item, .supporter-tier');
 tiltElements.forEach(el => {
     el.addEventListener('mousemove', (e) => {
         const rect = el.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
+        
+        // Calculate percentages for CSS variables (Spotlight tracking)
+        const mouseX = (x / rect.width) * 100;
+        const mouseY = (y / rect.height) * 100;
+        el.style.setProperty('--mouse-x', `${mouseX}%`);
+        el.style.setProperty('--mouse-y', `${mouseY}%`);
+
+        // 3D Tilt calculation
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        const rotateX = (centerY - y) / 10;
-        const rotateY = (x - centerX) / 10;
+        const rotateX = (centerY - y) / 15; // Slightly less aggressive tilt
+        const rotateY = (x - centerX) / 15;
         el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
     });
 
     el.addEventListener('mouseleave', () => {
         el.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+        // Spotlight resets automatically via CSS transition
     });
 });
 
