@@ -127,12 +127,97 @@ function animate() {
 
 animate();
 
-// Navbar Scroll Effect
+// --- PREMIUM NAVBAR LOGIC ---
+const navIndicator = document.getElementById('nav-indicator');
+const navLinksItems = document.querySelectorAll('.nav-link');
+const navProgress = document.getElementById('nav-progress');
+
+function updateNavIndicator(element) {
+    if (!navIndicator || !element) return;
+    const rect = element.getBoundingClientRect();
+    const parentRect = element.parentElement.getBoundingClientRect();
+    
+    navIndicator.style.width = `${rect.width}px`;
+    navIndicator.style.left = `${rect.left - parentRect.left}px`;
+}
+
+// Initialize indicator on active link
+const activeNavLink = document.querySelector('.nav-link.active');
+if (activeNavLink) {
+    // Small delay to ensure layout is ready
+    setTimeout(() => updateNavIndicator(activeNavLink), 150);
+}
+
+// Hover effects for indicator
+navLinksItems.forEach(link => {
+    link.addEventListener('mouseenter', () => updateNavIndicator(link));
+    link.addEventListener('mouseleave', () => {
+        const active = document.querySelector('.nav-link.active');
+        if (active) updateNavIndicator(active);
+    });
+});
+
+// Logo Click - Scroll to Top
+const logo = document.querySelector('.logo');
+if (logo) {
+    logo.addEventListener('click', (e) => {
+        if (window.location.pathname === '/' || window.location.pathname.endsWith('index.html')) {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    });
+}
+
+// Update indicator on resize
+window.addEventListener('resize', () => {
+    const active = document.querySelector('.nav-link.active');
+    if (active) updateNavIndicator(active);
+});
+
+// Scroll Progress & Navbar Effects
 window.addEventListener('scroll', () => {
+    // Navbar background & size
     if (window.scrollY > 50) {
         navbar.classList.add('scrolled');
-    } else {
+    } else if (!document.body.classList.contains('blog-page') && 
+               !document.body.classList.contains('careers-page') && 
+               !document.body.classList.contains('pricing-page') &&
+               !document.body.classList.contains('legal-page')) {
+        // Only remove scrolled class if not a sub-page that requires it
         navbar.classList.remove('scrolled');
+    }
+
+    // Scroll Progress
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+    if (navProgress) navProgress.style.width = scrolled + "%";
+
+    // ScrollSpy - Only if sections exist and we are on home
+    const sections = document.querySelectorAll('section[id]');
+    if (sections.length > 0 && window.location.pathname === '/') {
+        let current = "";
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (pageYOffset >= sectionTop - 150) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        if (current) {
+            navLinksItems.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href.includes('#' + current)) {
+                    navLinksItems.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    updateNavIndicator(link);
+                }
+            });
+        }
     }
 });
 
@@ -163,8 +248,10 @@ if (menuToggle && navLinks) {
     menuToggle.addEventListener('click', () => {
         navLinks.classList.toggle('active');
         const icon = menuToggle.querySelector('i');
-        icon.classList.toggle('fa-bars');
-        icon.classList.toggle('fa-times');
+        if (icon) {
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        }
     });
 }
 
@@ -911,6 +998,17 @@ async function fetchSupporters() {
             const totalMoneyEl = document.getElementById('total-money-amount');
             if (totalMoneyEl) {
                 totalMoneyEl.innerText = `₹${totalCollected}`;
+            }
+
+            // Update Goal Progress (Target: ₹2500)
+            const GOAL_AMOUNT = 2500;
+            const progressFill = document.getElementById('goal-progress-fill');
+            const percentText = document.getElementById('goal-percent');
+            
+            if (progressFill && percentText) {
+                const percent = Math.min(Math.max((totalCollected / GOAL_AMOUNT) * 100, 0), 100);
+                progressFill.style.width = `${percent}%`;
+                percentText.innerText = `${Math.round(percent)}% reached`;
             }
 
             // Update total supporters count

@@ -592,21 +592,25 @@
     <canvas id="canvas-mesh"></canvas>
 
     <nav id="navbar" class="scrolled">
+        <div class="scroll-progress"><div class="progress-bar" id="nav-progress"></div></div>
         <div class="container nav-content">
             <a href="/" class="logo">
                 <img src="/assets/logo.png" alt="Airlink Logo">
-                AirLink
+                <span>AirLink</span>
             </a>
             <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <div class="nav-links" id="nav-links">
-                <a href="/#features">Features</a>
-                <a href="/#tech">Technology</a>
-                <a href="/#download">Download</a>
-                <a href="/admin-dashboard" target="_blank" class="admin-link"
-                    style="color: var(--primary-color); border: 1px solid rgba(0, 242, 255, 0.3); padding: 0.4rem 1rem; border-radius: 50px; font-weight: 700; font-size: 0.85rem;"><i
-                        class="fa-solid fa-lock" style="margin-right: 5px; font-size: 0.75rem;"></i> Admin</a>
+            <div class="nav-links-wrapper">
+                <div class="nav-links" id="nav-links">
+                    <div class="nav-indicator" id="nav-indicator"></div>
+                    <a href="/#features" class="nav-link">Features</a>
+                    <a href="/#tech" class="nav-link">Technology</a>
+                    <a href="/#download" class="btn-nav-cta">Download</a>
+                    <a href="/admin-dashboard" target="_blank" class="admin-link nav-link"
+                        style="color: var(--primary-color); border: 1px solid rgba(0, 242, 255, 0.3); padding: 0.6rem 1.2rem; border-radius: 50px; font-weight: 700; font-size: 0.85rem;"><i
+                            class="fa-solid fa-lock" style="margin-right: 5px; font-size: 0.75rem;"></i> Admin</a>
+                </div>
             </div>
         </div>
     </nav>

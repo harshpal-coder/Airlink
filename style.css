@@ -205,56 +205,223 @@ section {
     padding: 80px 0;
 }
 
-/* Navbar */
+/* Navbar - Premium Floating Pill Design */
 nav {
     position: fixed;
-    top: 0;
-    width: 100%;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    max-width: 1200px;
     z-index: 1000;
-    padding: 1.5rem 0;
-    transition: background 0.3s ease;
+    padding: 0.75rem 1.5rem;
+    background: rgba(11, 14, 20, 0.4);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 100px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-nav.scrolled,
-.careers-page nav {
-    background: rgba(11, 14, 20, 0.8);
-    backdrop-filter: blur(10px);
+nav.scrolled {
+    top: 10px;
+    width: 90%;
+    background: rgba(11, 14, 20, 0.7);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 242, 255, 0.1);
+    border-color: rgba(0, 242, 255, 0.2);
 }
 
 .nav-content {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    max-width: none;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 1.5rem;
+    gap: 10px;
+    font-size: 1.4rem;
     font-weight: 800;
     text-decoration: none;
     color: var(--text-main);
+    z-index: 10;
 }
 
 .logo img {
     height: 32px;
+    filter: drop-shadow(0 0 8px var(--accent-glow));
+    transition: transform 0.3s ease;
+}
+
+.logo:hover img {
+    transform: rotate(10deg) scale(1.1);
+}
+
+.nav-links-wrapper {
+    position: relative;
 }
 
 .nav-links {
     display: flex;
-    gap: 2rem;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 6px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
 }
 
 .nav-links a {
     text-decoration: none;
     color: var(--text-dim);
-    font-weight: 500;
-    transition: color 0.3s ease;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
 }
 
-.nav-links a:hover {
+.nav-links a.active {
     color: var(--primary-color);
+}
+
+.nav-indicator {
+    position: absolute;
+    height: calc(100% - 12px);
+    background: rgba(0, 242, 255, 0.1);
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.15);
+    border-radius: 50px;
+    z-index: 1;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    pointer-events: none;
+}
+
+.btn-nav-cta {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    color: var(--bg-color) !important;
+    padding: 0.6rem 1.5rem !important;
+    border-radius: 50px;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3);
+    margin-left: 0.5rem;
+}
+
+.btn-nav-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 242, 255, 0.4);
+    filter: brightness(1.1);
+}
+
+/* Scroll Progress Bar - Enhanced Premium Version */
+.scroll-progress {
+    position: absolute;
+    bottom: 0;
+    left: 2rem;
+    right: 2rem;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.05); /* Stealthy track */
+    border-radius: 100px;
+    overflow: visible; /* Allow glow head to be seen */
+    z-index: 5;
+    pointer-events: none;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, 
+        rgba(0, 242, 255, 0) 0%, 
+        var(--primary-color) 100%
+    );
+    border-radius: 100px;
+    position: relative;
+    transition: width 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Glowing Head Feature */
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 
+        0 0 10px #fff,
+        0 0 20px var(--primary-color);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Only show head when there is progress */
+nav.scrolled .progress-bar::after {
+    opacity: 1;
+}
+
+/* Mobile Toggle Adjustment */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10;
+}
+
+@media (max-width: 992px) {
+    nav {
+        padding: 0.75rem 1.25rem;
+    }
+    
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-20px);
+        width: calc(100% - 40px);
+        background: rgba(11, 14, 20, 0.95);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 2rem;
+        gap: 1rem;
+        border-radius: 24px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.4s ease;
+        border: 1px solid var(--glass-border);
+    }
+
+    .nav-links.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .nav-indicator {
+        display: none;
+    }
 }
 
 /* Hero Section */
@@ -1235,6 +1402,44 @@ footer::before {
     max-width: 600px;
     margin: 0 auto;
     line-height: 1.6;
+}
+
+/* Goal Progress Bar */
+.goal-progress-wrapper {
+    width: 100%;
+    max-width: 500px;
+    margin: 1.5rem auto 0.5rem;
+}
+
+.goal-progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.8rem;
+    position: relative;
+    border: 1px solid var(--glass-border);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00F2FF, #7000FF);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+    border-radius: 10px;
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.goal-progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-weight: 500;
+}
+
+#goal-percent {
+    color: var(--primary-color);
+    font-weight: 700;
 }
 
 .supporters-cta {

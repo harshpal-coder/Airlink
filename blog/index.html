@@ -341,19 +341,23 @@
     <canvas id="canvas-mesh"></canvas>
 
     <nav id="navbar" class="scrolled">
+        <div class="scroll-progress"><div class="progress-bar" id="nav-progress"></div></div>
         <div class="container nav-content">
             <a href="/" class="logo">
                 <img src="/assets/logo.png" alt="Airlink Logo">
-                AirLink
+                <span>AirLink</span>
             </a>
             <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <div class="nav-links" id="nav-links">
-                <a href="/#features">Features</a>
-                <a href="/#tech">Technology</a>
-                <a href="/blog" class="active" style="color: var(--primary-color);">Blog</a>
-                <a href="/#download">Download</a>
+            <div class="nav-links-wrapper">
+                <div class="nav-links" id="nav-links">
+                    <div class="nav-indicator" id="nav-indicator"></div>
+                    <a href="/#features" class="nav-link">Features</a>
+                    <a href="/#tech" class="nav-link">Technology</a>
+                    <a href="/blog" class="nav-link active">Blog</a>
+                    <a href="/#download" class="btn-nav-cta">Download</a>
+                </div>
             </div>
         </div>
     </nav>

@@ -110,20 +110,24 @@
     <canvas id="canvas-mesh"></canvas>
 
     <nav id="navbar">
+        <div class="scroll-progress"><div class="progress-bar" id="nav-progress"></div></div>
         <div class="container nav-content">
             <a href="#" class="logo">
                 <img src="assets/logo.png" alt="Airlink Logo">
-                AirLink
+                <span>AirLink</span>
             </a>
             <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <div class="nav-links" id="nav-links">
-                <a href="#features">Features</a>
-                <a href="#mesh-lab">Mesh Lab</a>
-                <a href="#tech">Technology</a>
-                <a href="#supporters">Supporters</a>
-                <a href="#download">Download</a>
+            <div class="nav-links-wrapper">
+                <div class="nav-links" id="nav-links">
+                    <div class="nav-indicator" id="nav-indicator"></div>
+                    <a href="#features" class="nav-link active">Features</a>
+                    <a href="#mesh-lab" class="nav-link">Mesh Lab</a>
+                    <a href="#tech" class="nav-link">Technology</a>
+                    <a href="#supporters" class="nav-link">Supporters</a>
+                    <a href="#download" class="btn-nav-cta">Download</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -563,14 +567,27 @@
                         <span class="label">Total:</span>
                         <span id="total-money-amount" class="value">₹0</span>
                     </div>
+                    <div id="target-goal-container" class="stat-pill glass">
+                        <i class="fa-solid fa-bullseye" style="color: #FF4D6D;"></i>
+                        <span class="label">Goal:</span>
+                        <span id="target-goal-amount" class="value">₹2500</span>
+                    </div>
                 </div>
 
-                <p class="section-subtitle">Powering the future of decentralized communication.</p>
-                
+                <div class="goal-progress-wrapper" data-reveal>
+                    <div class="goal-progress-bar glass">
+                        <div id="goal-progress-fill" class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="goal-progress-labels">
+                        <span>Raising funds for Play Store publishing</span>
+                        <span id="goal-percent">0% reached</span>
+                    </div>
+                </div>
+
                 <div class="supporters-cta">
                     <button id="open-payment-modal-btn" class="btn-become-supporter">
                         <i class="fa-solid fa-heart"></i>
-                        <span>Become a Supporter</span>
+                        <span>Support the Launch</span>
                         <div class="btn-glow-ring"></div>
                     </button>
                 </div>
@@ -697,8 +714,8 @@
 
             <!-- STEP 2: Amount -->
             <div class="payment-step hidden" id="payment-step-2">
-                <h3 class="step-title">Choose Your Tier</h3>
-                <p class="step-subtitle">Select a preset amount or enter your own.</p>
+                <h3 class="step-title">Support the Launch</h3>
+                <p class="step-subtitle">Your donation directly funds our Play Store debut, covering developer account and publishing costs.</p>
                 <div class="tier-chips">
                     <button class="tier-chip" data-amount="11">
                         <span class="tier-amount">₹11</span>
