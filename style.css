@@ -976,8 +976,12 @@ nav.scrolled .progress-bar::after {
     overflow: hidden;
 }
 
+#newsletter .container {
+    max-width: 1400px;
+}
+
 .newsletter-wrapper {
-    padding: 4rem;
+    padding: 4rem 6rem;
     display: grid;
     grid-template-columns: 1fr 1.2fr;
     gap: 4rem;
