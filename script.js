@@ -177,49 +177,151 @@ window.addEventListener('resize', () => {
     if (active) updateNavIndicator(active);
 });
 
-// Scroll Progress & Navbar Effects
-window.addEventListener('scroll', () => {
-    // Navbar background & size
-    if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-    } else if (!document.body.classList.contains('blog-page') && 
-               !document.body.classList.contains('careers-page') && 
-               !document.body.classList.contains('pricing-page') &&
-               !document.body.classList.contains('legal-page')) {
-        // Only remove scrolled class if not a sub-page that requires it
-        navbar.classList.remove('scrolled');
-    }
 
-    // Scroll Progress
-    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const scrolled = (winScroll / height) * 100;
-    if (navProgress) navProgress.style.width = scrolled + "%";
+// --- PREMIUM SCROLL ANIMATIONS ---
+function initPremiumScrollAnimations() {
+    const heroMocks = document.querySelectorAll('.hero-image .phone-frame');
+    const focusSections = document.querySelectorAll('.focus-reveal');
+    const scrollGlows = document.querySelectorAll('.scroll-glow');
+    const scrollTracks = document.querySelectorAll('.scroll-content.horizontal');
+    const navbar = document.getElementById('navbar');
+    const navProgress = document.getElementById('nav-progress');
+    const navLinksItems = document.querySelectorAll('.nav-link');
+    
+    let lastScrollPos = window.pageYOffset || document.documentElement.scrollTop;
+    let trackVelocity = 0;
 
-    // ScrollSpy - Only if sections exist and we are on home
-    const sections = document.querySelectorAll('section[id]');
-    if (sections.length > 0 && window.location.pathname === '/') {
-        let current = "";
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            if (pageYOffset >= sectionTop - 150) {
-                current = section.getAttribute('id');
+    // Performance optimization: only run when tab is visible
+    let isTabVisible = true;
+    document.addEventListener('visibilitychange', () => {
+        isTabVisible = !document.hidden;
+    });
+
+    function animate() {
+        if (!isTabVisible) {
+            requestAnimationFrame(animate);
+            return;
+        }
+
+        const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+        const vh = window.innerHeight;
+
+        // Velocity for tracks
+        const delta = currentScrollY - lastScrollPos;
+        trackVelocity = (trackVelocity + delta * 0.15) * 0.9; 
+        lastScrollPos = currentScrollY;
+
+        // 1. Navbar & Scroll Progress (Restored Logic)
+        if (navbar) {
+            if (currentScrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else if (!document.body.classList.contains('blog-page') && 
+                       !document.body.classList.contains('careers-page') && 
+                       !document.body.classList.contains('pricing-page') &&
+                       !document.body.classList.contains('legal-page')) {
+                navbar.classList.remove('scrolled');
+            }
+        }
+
+        if (navProgress) {
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (currentScrollY / height) * 100;
+            navProgress.style.width = scrolled + "%";
+        }
+
+        // ScrollSpy logic integration
+        const sections = document.querySelectorAll('section[id]');
+        if (sections.length > 0 && (window.location.pathname === '/' || window.location.pathname.endsWith('index.html'))) {
+            let current = "";
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (currentScrollY >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            if (current) {
+                navLinksItems.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href && href.includes('#' + current)) {
+                        if (!link.classList.contains('active')) {
+                            navLinksItems.forEach(l => l.classList.remove('active'));
+                            link.classList.add('active');
+                            if (typeof updateNavIndicator === 'function') updateNavIndicator(link);
+                        }
+                    }
+                });
+            }
+        }
+
+        // 2. Hero Parallax (only if near top)
+        if (currentScrollY < vh * 1.2) {
+            heroMocks.forEach(mock => {
+                let speed = 0;
+                if (mock.classList.contains('center')) speed = 0.12;
+                else if (mock.classList.contains('left')) speed = 0.05;
+                else if (mock.classList.contains('right')) speed = 0.08;
+                
+                const yOffset = currentScrollY * speed;
+                mock.style.transform = getPhoneTransform(mock, yOffset);
+            });
+        }
+
+        // 3. Focus Zone Scaling & Section Glows
+        focusSections.forEach(sec => {
+            const rect = sec.getBoundingClientRect();
+            const secCenter = rect.top + rect.height / 2;
+            const viewCenter = vh / 2;
+            const distance = Math.abs(secCenter - viewCenter);
+            
+            if (distance < vh * 0.35) {
+                sec.classList.add('in-focus');
+            } else {
+                sec.classList.remove('in-focus');
             }
         });
 
-        if (current) {
-            navLinksItems.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href && href.includes('#' + current)) {
-                    navLinksItems.forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
-                    updateNavIndicator(link);
-                }
-            });
-        }
+        scrollGlows.forEach(glow => {
+            const rect = glow.getBoundingClientRect();
+            if (rect.top < vh * 0.7 && rect.bottom > vh * 0.3) {
+                glow.classList.add('active');
+            } else {
+                glow.classList.remove('active');
+            }
+        });
+
+        // 4. Track Shift (Supporters)
+        scrollTracks.forEach((track, i) => {
+            const direction = (i % 2 === 0) ? -1 : 1;
+            track.style.setProperty('--scroll-offset', `${trackVelocity * direction}px`);
+        });
+
+        requestAnimationFrame(animate);
     }
-});
+
+    // Helper to preserve base 3D transforms while adding parallax
+    function getPhoneTransform(el, yOffset) {
+        let base = '';
+        if (el.classList.contains('left')) {
+            base = `translateX(-160px) translateZ(-50px) rotateY(-20deg) rotateX(5deg) scale(0.85)`;
+        } else if (el.classList.contains('right')) {
+            base = `translateX(160px) translateZ(-50px) rotateY(20deg) rotateX(5deg) scale(0.85)`;
+        } else if (el.classList.contains('center')) {
+            base = `translateZ(100px)`;
+        }
+        
+        return `${base} translateY(${yOffset}px)`;
+    }
+
+    requestAnimationFrame(animate);
+}
+
+// Initialize animations
+if (document.readyState === 'complete') {
+    initPremiumScrollAnimations();
+} else {
+    window.addEventListener('load', initPremiumScrollAnimations);
+}
 
 // Intersection Observer for Reveal Animations
 const observerOptions = {
