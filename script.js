@@ -16,6 +16,141 @@ const canvas = document.getElementById('canvas-mesh');
 const ctx = canvas.getContext('2d');
 const navbar = document.getElementById('navbar');
 
+// --- DYNAMIC THEME MANAGER ---
+window.airlinkThemes = {
+    oceanic: {
+        primary: '#00F2FF',
+        secondary: '#7000FF',
+        glow: 'rgba(0, 242, 255, 0.3)',
+        rgb: '0, 242, 255',
+        secondaryRgb: '112, 0, 255'
+    },
+    amethyst: {
+        primary: '#A020F0',
+        secondary: '#FF00D4',
+        glow: 'rgba(160, 32, 240, 0.3)',
+        rgb: '160, 32, 240',
+        secondaryRgb: '255, 0, 212'
+    },
+    emerald: {
+        primary: '#00FF88',
+        secondary: '#00A3FF',
+        glow: 'rgba(0, 255, 136, 0.3)',
+        rgb: '0, 255, 136',
+        secondaryRgb: '0, 163, 255'
+    },
+    solar: {
+        primary: '#FFD700',
+        secondary: '#FF4D00',
+        glow: 'rgba(255, 215, 0, 0.3)',
+        rgb: '255, 215, 0',
+        secondaryRgb: '255, 77, 0'
+    }
+};
+
+window.currentThemeKey = localStorage.getItem('airlink-theme') || 'oceanic';
+
+// Initialize lerp states
+window.currentThemeRgbArray = window.airlinkThemes[window.currentThemeKey].rgb.split(',').map(Number);
+window.currentThemeSecondaryRgbArray = window.airlinkThemes[window.currentThemeKey].secondaryRgb.split(',').map(Number);
+
+window.airlinkLerp = {
+    primaryRgb: window.airlinkThemes[window.currentThemeKey].rgb,
+    secondaryRgb: window.airlinkThemes[window.currentThemeKey].secondaryRgb,
+    primary: `rgb(${window.airlinkThemes[window.currentThemeKey].rgb})`,
+    secondary: `rgb(${window.airlinkThemes[window.currentThemeKey].secondaryRgb})`
+};
+
+let isThemeLerpActive = true;
+function themeLerpLoop() {
+    if (!isThemeLerpActive) return;
+
+    const targetTheme = window.airlinkThemes[window.currentThemeKey];
+    const targetRgb = targetTheme.rgb.split(',').map(Number);
+    const targetSecRgb = targetTheme.secondaryRgb.split(',').map(Number);
+    
+    let changed = false;
+    const lerpFactor = 0.05;
+
+    for(let i=0; i<3; i++) {
+        const diff1 = targetRgb[i] - window.currentThemeRgbArray[i];
+        if (Math.abs(diff1) > 0.1) {
+            window.currentThemeRgbArray[i] += diff1 * lerpFactor;
+            changed = true;
+        } else {
+            window.currentThemeRgbArray[i] = targetRgb[i];
+        }
+        
+        const diff2 = targetSecRgb[i] - window.currentThemeSecondaryRgbArray[i];
+        if (Math.abs(diff2) > 0.1) {
+            window.currentThemeSecondaryRgbArray[i] += diff2 * lerpFactor;
+            changed = true;
+        } else {
+            window.currentThemeSecondaryRgbArray[i] = targetSecRgb[i];
+        }
+    }
+    
+    if (changed) {
+        const r1 = Math.round(window.currentThemeRgbArray[0]);
+        const g1 = Math.round(window.currentThemeRgbArray[1]);
+        const b1 = Math.round(window.currentThemeRgbArray[2]);
+        window.airlinkLerp.primaryRgb = `${r1}, ${g1}, ${b1}`;
+        window.airlinkLerp.primary = `rgb(${r1}, ${g1}, ${b1})`;
+        
+        const r2 = Math.round(window.currentThemeSecondaryRgbArray[0]);
+        const g2 = Math.round(window.currentThemeSecondaryRgbArray[1]);
+        const b2 = Math.round(window.currentThemeSecondaryRgbArray[2]);
+        window.airlinkLerp.secondaryRgb = `${r2}, ${g2}, ${b2}`;
+        window.airlinkLerp.secondary = `rgb(${r2}, ${g2}, ${b2})`;
+    } else {
+        isThemeLerpActive = false; // Pause loop when colors are stable
+    }
+    
+    requestAnimationFrame(themeLerpLoop);
+}
+// Start lerp loop
+themeLerpLoop();
+
+function applyTheme(themeKey, save = true) {
+    const theme = window.airlinkThemes[themeKey];
+    if (!theme) return;
+
+    window.currentThemeKey = themeKey;
+    isThemeLerpActive = true; // Re-active loop when theme changes
+    
+    document.body.classList.add('theme-transition');
+    
+    const root = document.documentElement;
+    
+    root.style.setProperty('--primary-color', theme.primary);
+    root.style.setProperty('--secondary-color', theme.secondary);
+    root.style.setProperty('--accent-glow', theme.glow);
+    
+    if (save) localStorage.setItem('airlink-theme', themeKey);
+    
+    setTimeout(() => {
+        document.body.classList.remove('theme-transition');
+    }, 600);
+}
+
+function cycleTheme() {
+    const themeKeys = Object.keys(window.airlinkThemes);
+    const currentIndex = themeKeys.indexOf(window.currentThemeKey);
+    const nextIndex = (currentIndex + 1) % themeKeys.length;
+    applyTheme(themeKeys[nextIndex]);
+}
+
+// Initialize Theme early
+applyTheme(window.currentThemeKey, false);
+
+// Event Listeners for Theme Switcher
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', cycleTheme);
+    }
+});
+
 // Set canvas size
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -70,18 +205,19 @@ class Particle {
         const disaster = window.isDisasterMode;
         ctx.beginPath();
         ctx.arc(this.x, this.y, disaster ? this.size * 1.8 : this.size, 0, Math.PI * 2);
-        ctx.fillStyle = disaster ? 'rgba(0, 242, 255, 0.95)' : 'rgba(0, 242, 255, 0.5)';
+        const rgb = window.airlinkLerp.primaryRgb;
+        ctx.fillStyle = disaster ? `rgba(${rgb}, 0.95)` : `rgba(${rgb}, 0.5)`;
         if (disaster) {
             ctx.shadowBlur = 18;
-            ctx.shadowColor = '#00F2FF';
+            ctx.shadowColor = window.airlinkLerp.primary;
         }
         ctx.fill();
         ctx.shadowBlur = 0;
     }
 }
 
-const particles = Array.from({ length: 80 }, () => new Particle());
-let isCanvasPaused = false;
+const particles = Array.from({ length: window.innerWidth < 768 ? 40 : 80 }, () => new Particle());
+let isCanvasPaused = true; // Start paused, IntersectionObserver will handle it
 
 function animate() {
     if (isCanvasPaused) {
@@ -107,7 +243,8 @@ function animate() {
                 ctx.beginPath();
                 ctx.moveTo(p.x, p.y);
                 ctx.lineTo(p2.x, p2.y);
-                ctx.strokeStyle = `rgba(0, 242, 255, ${alpha})`;
+                const rgb = window.airlinkLerp.primaryRgb;
+                ctx.strokeStyle = `rgba(${rgb}, ${alpha})`;
                 ctx.lineWidth = disaster ? 1.5 : 1;
                 ctx.stroke();
             }
@@ -124,7 +261,8 @@ function animate() {
                 ctx.beginPath();
                 ctx.moveTo(p.x, p.y);
                 ctx.lineTo(mouse.x, mouse.y);
-                ctx.strokeStyle = `rgba(0, 242, 255, ${alpha})`;
+                const rgb = window.airlinkLerp.primaryRgb;
+                ctx.strokeStyle = `rgba(${rgb}, ${alpha})`;
                 ctx.lineWidth = 0.8;
                 ctx.stroke();
             }
@@ -133,6 +271,14 @@ function animate() {
 
     requestAnimationFrame(animate);
 }
+
+// Intersection Observer for Background Canvas
+const canvasObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        isCanvasPaused = !entry.isIntersecting;
+    });
+}, { threshold: 0.1 });
+canvasObserver.observe(canvas);
 
 animate();
 
@@ -199,6 +345,7 @@ function initPremiumScrollAnimations() {
     
     let lastScrollPos = window.pageYOffset || document.documentElement.scrollTop;
     let trackVelocity = 0;
+    let isCheckingScroll = false; // Throttle flag
 
     // Performance optimization: only run when tab is visible
     let isTabVisible = true;
@@ -211,6 +358,14 @@ function initPremiumScrollAnimations() {
             requestAnimationFrame(animate);
             return;
         }
+
+        // Throttle check
+        if (isCheckingScroll) {
+            requestAnimationFrame(animate);
+            return;
+        }
+        isCheckingScroll = true;
+        setTimeout(() => { isCheckingScroll = false; }, 10);
 
         const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
         const vh = window.innerHeight;
@@ -304,6 +459,22 @@ function initPremiumScrollAnimations() {
             const direction = (i % 2 === 0) ? -1 : 1;
             track.style.setProperty('--scroll-offset', `${trackVelocity * direction}px`);
         });
+
+        // 5. Signal Path Animation
+        const signalPathActive = document.getElementById('signal-path-active');
+        const signalPathSection = document.getElementById('how-it-works');
+        if (signalPathActive && signalPathSection) {
+            const rect = signalPathSection.getBoundingClientRect();
+            const viewHeight = window.innerHeight;
+            
+            // Calculate progress based on scroll position within the section
+            let progress = (viewHeight * 0.8 - rect.top) / (rect.height + viewHeight * 0.4);
+            progress = Math.max(0, Math.min(1, progress));
+            
+            const pathLength = 1000; 
+            signalPathActive.style.strokeDashoffset = pathLength * (1 - progress);
+        }
+
 
         requestAnimationFrame(animate);
     }
@@ -407,6 +578,90 @@ if (testimonialsGrid && testimonialsPrev && testimonialsNext) {
         });
     });
 }
+
+// --- MESH ECOSYSTEM CONNECTIONS ---
+function initMeshEcosystem() {
+    const svg = document.getElementById('mesh-svg-connections');
+    const hub = document.querySelector('.mesh-hub');
+    const nodes = document.querySelectorAll('.mesh-node');
+    const container = document.querySelector('.mesh-ecosystem');
+
+    if (!svg || !hub || nodes.length === 0 || !container) return;
+
+    function drawConnections() {
+        // Only draw on desktop as mobile is stacked
+        if (window.innerWidth < 992) {
+            svg.innerHTML = '';
+            return;
+        }
+
+        svg.innerHTML = `
+            <defs>
+                <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:var(--primary-color);stop-opacity:0.05" />
+                    <stop offset="50%" style="stop-color:var(--primary-color);stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:var(--primary-color);stop-opacity:0.05" />
+                </linearGradient>
+            </defs>
+        `;
+
+        const hX = hub.offsetLeft + hub.offsetWidth / 2;
+        const hY = hub.offsetTop + hub.offsetHeight / 2;
+
+        nodes.forEach(node => {
+            const nX = node.offsetLeft + node.offsetWidth / 2;
+            const nY = node.offsetTop + node.offsetHeight / 2;
+
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", hX);
+            line.setAttribute("y1", hY);
+            line.setAttribute("x2", nX);
+            line.setAttribute("y2", nY);
+            line.setAttribute("stroke", "url(#line-grad)");
+            line.setAttribute("stroke-width", "1.5");
+            svg.appendChild(line);
+
+            // Add a small pulse dot on the line
+            const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            dot.setAttribute("r", "2");
+            dot.setAttribute("fill", "var(--primary-color)");
+            dot.style.filter = "blur(1px)";
+            
+            const anim = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+            anim.setAttribute("attributeName", "cx");
+            anim.setAttribute("from", hX);
+            anim.setAttribute("to", nX);
+            anim.setAttribute("dur", (Math.random() * 2 + 2) + "s");
+            anim.setAttribute("repeatCount", "indefinite");
+            
+            const animY = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+            animY.setAttribute("attributeName", "cy");
+            animY.setAttribute("from", hY);
+            animY.setAttribute("to", nY);
+            animY.setAttribute("dur", anim.getAttribute("dur"));
+            animY.setAttribute("repeatCount", "indefinite");
+
+            dot.appendChild(anim);
+            dot.appendChild(animY);
+            svg.appendChild(dot);
+        });
+    }
+
+    // Use ResizeObserver for more robust redraws
+    const ro = new ResizeObserver(() => {
+        drawConnections();
+    });
+    ro.observe(container);
+    
+    // Initial draw
+    setTimeout(drawConnections, 500); 
+}
+
+// Initialize on Load
+window.addEventListener('load', () => {
+    initMeshEcosystem();
+});
+
 
 // Smooth Scroll for local links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -536,17 +791,17 @@ if (labSection) {
             const disaster = window.isDisasterMode;
             let r = (isShape ? 3 : 6) + Math.sin(this.pulse) * (isShape ? 1 : 2);
             if (this.flash > 0) r += this.flash * 8;
-            if (disaster) r *= 1.6; // Nodes grow in disaster mode — they're alive!
+            if (disaster) r *= 1.6; // Nodes grow in disaster mode â€” they're alive!
 
             lctx.beginPath();
             lctx.arc(this.x, this.y, r, 0, Math.PI * 2);
-            lctx.fillStyle = this.flash > 0 ? `rgba(0, 242, 255, ${0.5 + this.flash})` : '#00F2FF';
+            lctx.fillStyle = this.flash > 0 ? `rgba(${window.airlinkLerp.primaryRgb}, ${0.5 + this.flash})` : window.airlinkLerp.primary;
             if (disaster) {
                 lctx.shadowBlur = 25;
-                lctx.shadowColor = '#00F2FF';
+                lctx.shadowColor = window.airlinkLerp.primary;
             }
             lctx.fill();
-            lctx.strokeStyle = `rgba(0, 242, 255, ${disaster ? 0.6 : (isShape ? 0.1 : 0.2)})`;
+            lctx.strokeStyle = `rgba(${window.airlinkLerp.primaryRgb}, ${disaster ? 0.6 : (isShape ? 0.1 : 0.2)})`;
             lctx.lineWidth = disaster ? 12 : (isShape ? 3 : 8);
             lctx.stroke();
             lctx.shadowBlur = 0;
@@ -849,13 +1104,26 @@ if (labSection) {
         }
     }
 
+    let isLabPaused = true;
+    const labObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            isLabPaused = !entry.isIntersecting;
+        });
+    }, { threshold: 0.1 });
+    labObserver.observe(labSection);
+
     function animateLab() {
+        if (isLabPaused) {
+            requestAnimationFrame(animateLab);
+            return;
+        }
         lctx.clearRect(0, 0, labCanvas.width, labCanvas.height);
 
         const isShape = meshMode !== 'random';
         labNodes.forEach(n => n.update());
 
-        lctx.strokeStyle = `rgba(0, 242, 255, ${isShape ? 0.04 : 0.1})`;
+        const rgb = window.airlinkLerp.primaryRgb;
+        lctx.strokeStyle = `rgba(${rgb}, ${isShape ? 0.04 : 0.1})`;
         lctx.lineWidth = 1;
         const connectionDist = isShape ? 80 : 180;
 
@@ -886,10 +1154,10 @@ if (labSection) {
         }
 
         if (path && path.length > 0) {
-            lctx.strokeStyle = '#7000FF';
+            lctx.strokeStyle = window.airlinkLerp.secondary;
             lctx.lineWidth = 3;
             lctx.shadowBlur = 15;
-            lctx.shadowColor = '#7000FF';
+            lctx.shadowColor = window.airlinkLerp.secondary;
             path.forEach(([u, v]) => {
                 lctx.beginPath();
                 lctx.moveTo(u.x, u.y);
@@ -909,7 +1177,7 @@ if (labSection) {
             if (idx === 0 || idx === labNodes.length - 1) {
                 lctx.beginPath();
                 lctx.arc(node.x, node.y, 12, 0, Math.PI * 2);
-                lctx.strokeStyle = idx === 0 ? '#00F2FF' : '#7000FF';
+                lctx.strokeStyle = idx === 0 ? window.airlinkLerp.primary : window.airlinkLerp.secondary;
                 lctx.lineWidth = 2;
                 lctx.stroke();
             }
@@ -962,7 +1230,19 @@ if (compareContainer) {
 
         const server = { x: canvas.width / 2, y: canvas.height / 2 };
 
+        let isCompPaused = true;
+        const compObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                isCompPaused = !entry.isIntersecting;
+            });
+        }, { threshold: 0.1 });
+        compObserver.observe(canvas);
+
         function draw() {
+            if (isCompPaused) {
+                requestAnimationFrame(draw);
+                return;
+            }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             nodes.forEach(n => {
@@ -973,7 +1253,7 @@ if (compareContainer) {
 
                 ctx.beginPath();
                 ctx.arc(n.x, n.y, 4, 0, Math.PI * 2);
-                ctx.fillStyle = '#00F2FF';
+                ctx.fillStyle = window.airlinkLerp.primary;
                 ctx.fill();
 
                 if (mode === 'centralized') {
@@ -989,7 +1269,9 @@ if (compareContainer) {
                             ctx.beginPath();
                             ctx.moveTo(n.x, n.y);
                             ctx.lineTo(n2.x, n2.y);
-                            ctx.strokeStyle = 'rgba(0, 242, 255, 0.2)';
+                            const rgb = window.airlinkLerp.primaryRgb;
+                            ctx.strokeStyle = `rgba(${rgb}, 0.2)`;
+                            ctx.lineWidth = 1.5;
                             ctx.stroke();
                         }
                     });
@@ -1037,7 +1319,7 @@ function createSupporterCard(name, amount, tier) {
     const card = document.createElement('div');
     card.className = `supporter-card glass ${tier}`;
     if (tier === 'tier-custom') {
-        card.setAttribute('data-amount', `₹${amount}`);
+        card.setAttribute('data-amount', `â‚¹${amount}`);
     }
     const init = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
     card.innerHTML = `
@@ -1117,10 +1399,10 @@ async function fetchSupporters() {
             // Update the live total money UI
             const totalMoneyEl = document.getElementById('total-money-amount');
             if (totalMoneyEl) {
-                totalMoneyEl.innerText = `₹${totalCollected}`;
+                totalMoneyEl.innerText = `â‚¹${totalCollected}`;
             }
 
-            // Update Goal Progress (Target: ₹2500)
+            // Update Goal Progress (Target: â‚¹2500)
             const GOAL_AMOUNT = 2500;
             const progressFill = document.getElementById('goal-progress-fill');
             const percentText = document.getElementById('goal-percent');
@@ -1381,9 +1663,9 @@ fetchSupporters(); // Initial sync on load
         }
         emailInput.style.borderColor = '';
         sendOtpBtn.disabled = true;
-        sendOtpBtn.textContent = 'Sending…';
+        sendOtpBtn.textContent = 'Sendingâ€¦';
         await sendOtp(email);
-        sendOtpBtn.textContent = '✓ Sent';
+        sendOtpBtn.textContent = 'âœ“ Sent';
         sendOtpBtn.classList.add('sent');
         otpSection.classList.remove('hidden');
         if (otpInputs[0]) otpInputs[0].focus();
@@ -1415,7 +1697,7 @@ fetchSupporters(); // Initial sync on load
     resendOtpBtn && resendOtpBtn.addEventListener('click', async () => {
         const email = emailInput.value.trim();
         resendOtpBtn.disabled = true;
-        otpStatus.textContent = 'Resending OTP…';
+        otpStatus.textContent = 'Resending OTPâ€¦';
         otpStatus.className = 'submission-status loading';
         await sendOtp(email);
         otpInputs.forEach(input => {
@@ -1485,7 +1767,7 @@ fetchSupporters(); // Initial sync on load
                 section.classList.remove('verifying');
                 if (otpValues === generatedOtp) {
                     emailVerified = true;
-                    otpStatus.textContent = '✅ Email verified!';
+                    otpStatus.textContent = 'âœ… Email verified!';
                     otpStatus.className = 'submission-status otp-status-success';
                     triggerHaptic('success');
 
@@ -1500,7 +1782,7 @@ fetchSupporters(); // Initial sync on load
                     }, 800);
                 } else {
                     emailVerified = false;
-                    otpStatus.textContent = '❌ Incorrect OTP. Please try again.';
+                    otpStatus.textContent = 'âŒ Incorrect OTP. Please try again.';
                     otpStatus.className = 'submission-status error';
                     triggerHaptic('error');
 
@@ -1567,7 +1849,7 @@ fetchSupporters(); // Initial sync on load
         if (!txnIdValid) {
             txnIdInput.focus();
             txnIdInput.style.borderColor = 'var(--error-color)';
-            submissionStatus.textContent = '⚠️ Please enter a valid 12-digit Transaction ID.';
+            submissionStatus.textContent = 'âš ï¸ Please enter a valid 12-digit Transaction ID.';
             submissionStatus.className = 'submission-status error';
             return;
         }
@@ -1575,7 +1857,7 @@ fetchSupporters(); // Initial sync on load
 
         // Disable and show loading
         submitBtn.disabled = true;
-        submissionStatus.textContent = '⏳ Submitting your details…';
+        submissionStatus.textContent = 'â³ Submitting your detailsâ€¦';
         submissionStatus.className = 'submission-status loading';
 
         const payload = {
@@ -1586,7 +1868,7 @@ fetchSupporters(); // Initial sync on load
         };
 
         try {
-            // Single GET request with URL params — reliable for Google Apps Script
+            // Single GET request with URL params â€” reliable for Google Apps Script
             const params = new URLSearchParams({
                 action: 'addSupporter',
                 name: payload.name,
@@ -1601,7 +1883,7 @@ fetchSupporters(); // Initial sync on load
             // Wait 2s then show success (can't read response in no-cors)
             setTimeout(() => goToStep(5), 2000);
         } catch (err) {
-            submissionStatus.textContent = '❌ Submission failed. Please try again.';
+            submissionStatus.textContent = 'âŒ Submission failed. Please try again.';
             submissionStatus.className = 'submission-status error';
             submitBtn.disabled = false;
         }
@@ -1918,7 +2200,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // =============================================
-// --- DISASTER MODE SIMULATOR — ENHANCED ---
+// --- DISASTER MODE SIMULATOR â€” ENHANCED ---
 // =============================================
 
 (function () {
@@ -2163,7 +2445,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Greet user on first interaction if empty
         if (messagesContainer.children.length === 0) {
             setTimeout(() => {
-                addMessage("bot", "Hi there! I'm Nyra, your AirLink guide. 👋 Need help understanding how our offline mesh works?");
+                addMessage("bot", "Hi there! I'm Nyra, your AirLink guide. ðŸ‘‹ Need help understanding how our offline mesh works?");
             }, 500);
         }
     }
@@ -2339,7 +2621,7 @@ if (newsletterForm) {
 
             // Since we use no-cors, we can't read the response body, 
             // but if it didn't throw an error, we assume success or handle it based on timeout.
-            showNewsletterStatus('Welcome to the mesh! Check your inbox soon. 🚀', 'success');
+            showNewsletterStatus('Welcome to the mesh! Check your inbox soon. ðŸš€', 'success');
             emailInput.value = '';
 
             // Celebration effect
@@ -2571,3 +2853,243 @@ if (window.innerWidth > 1024) {
     initCustomCursor();
 }
 
+// =============================================
+// --- SCENARIO SIMULATOR LOGIC ---
+// =============================================
+function initScenarioSimulator() {
+    const canvas = document.getElementById('scenario-canvas');
+    const atm = document.getElementById('scenario-atm');
+    const btns = document.querySelectorAll('.scenario-btn');
+    const title = document.getElementById('scenario-title');
+    const desc = document.getElementById('scenario-desc');
+    const densityStat = document.getElementById('stat-density');
+    const reliabilityStat = document.getElementById('stat-reliability');
+
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let activeScenario = 'wilderness';
+
+    const scenarios = {
+        wilderness: {
+            title: "Outdoor Adventure",
+            desc: "Stay in touch while hiking or camping in areas with zero cellular coverage. Long-range links bridge the gap.",
+            density: "Low",
+            reliability: "High",
+            color: "High",
+            particleCount: 15,
+            speed: 0.3,
+            linkDist: 250,
+            atmClass: "atm-wilderness"
+        },
+        emergency: {
+            title: "Emergency Response",
+            desc: "A lifeline during natural disasters. Urgent pulsing connections ensure critical data reaches rescuers.",
+            density: "Medium",
+            reliability: "Critical",
+            particleCount: 30,
+            speed: 1.2,
+            linkDist: 180,
+            atmClass: "atm-emergency"
+        },
+        festival: {
+            title: "Mass Events",
+            desc: "Bypass network congestion at music festivals or stadiums. High-density nodes create a resilient local web.",
+            density: "Extreme",
+            reliability: "Medium",
+            particleCount: 60,
+            speed: 0.8,
+            linkDist: 100,
+            atmClass: "atm-festival"
+        },
+        privacy: {
+            title: "Privacy Conscious",
+            desc: "True anonymity for sensitive environments. No central servers means no tracking or surveillance.",
+            density: "Stealth",
+            reliability: "Max",
+            particleCount: 20,
+            speed: 0.2,
+            linkDist: 150,
+            atmClass: "atm-privacy"
+        }
+    };
+
+    class SimParticle {
+        constructor(config) {
+            this.config = config;
+            this.reset();
+        }
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = (Math.random() - 0.5) * this.config.speed;
+            this.vy = (Math.random() - 0.5) * this.config.speed;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = activeScenario === 'emergency' ? '#FF4D4D' : 'var(--primary-color)';
+            ctx.fill();
+        }
+    }
+
+    function setupScenario(id) {
+        const config = scenarios[id];
+        activeScenario = id;
+        
+        // Update UI
+        btns.forEach(b => b.classList.toggle('active', b.dataset.scenario === id));
+        atm.className = 'scenario-atm-overlay ' + config.atmClass;
+        
+        // Update Text with fade
+        const info = document.querySelector('.scenario-info');
+        info.style.opacity = '0';
+        info.style.transform = 'translateY(10px)';
+        
+        setTimeout(() => {
+            title.textContent = config.title;
+            desc.textContent = config.desc;
+            densityStat.textContent = config.density;
+            reliabilityStat.textContent = config.reliability;
+            info.style.opacity = '1';
+            info.style.transform = 'translateY(0)';
+        }, 300);
+
+        // Reset Particles
+        particles = [];
+        for (let i = 0; i < config.particleCount; i++) {
+            particles.push(new SimParticle(config));
+        }
+    }
+
+    function resize() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        setupScenario(activeScenario);
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const config = scenarios[activeScenario];
+        
+        particles.forEach((p, i) => {
+            p.update();
+            p.draw();
+            
+            for (let j = i + 1; j < particles.length; j++) {
+                const p2 = particles[j];
+                const dx = p.x - p2.x;
+                const dy = p.y - p2.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < config.linkDist) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.strokeStyle = activeScenario === 'emergency' 
+                        ? `rgba(255, 77, 77, ${1 - dist / config.linkDist})`
+                    : `rgba(${window.airlinkLerp.primaryRgb}, ${1 - dist / config.linkDist})`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+        });
+        requestAnimationFrame(animate);
+    }
+
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => setupScenario(btn.dataset.scenario));
+    });
+
+    window.addEventListener('resize', resize);
+    resize();
+    animate();
+}
+
+// Initial Call
+document.addEventListener('DOMContentLoaded', () => {
+    initScenarioSimulator();
+});
+
+/* ==========================================================================
+   STICKY SCROLL USE CASES LOGIC
+   ========================================================================== */
+
+function initStickyUseCases() {
+    const wrapper = document.getElementById('sticky-wrapper');
+    const view = document.querySelector('.sticky-view');
+    const cards = gsap.utils.toArray('.scroll-card');
+    const labels = gsap.utils.toArray('.progress-labels .label');
+    const fill = document.getElementById('sticky-progress-fill');
+
+    if (!wrapper || !cards.length) return;
+
+    // Register ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Create a timeline for the sticky section
+    const tl = gsap.timeline({
+        scrollTrigger: {
+            trigger: wrapper,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 1,
+            onUpdate: (self) => {
+                // Update progress bar fill
+                if (fill) fill.style.height = (self.progress * 100) + "%";
+                
+                // Calculate which card is active (0 to 3)
+                // Use a slight offset to switch exactly in the middle of segments
+                const index = Math.min(
+                    Math.floor(self.progress * cards.length),
+                    cards.length - 1
+                );
+                
+                // Update active classes
+                cards.forEach((card, i) => {
+                    if (i === index) {
+                        if (!card.classList.contains('active')) {
+                            card.classList.add('active');
+                        }
+                    } else {
+                        card.classList.remove('active');
+                    }
+                });
+                
+                labels.forEach((label, i) => {
+                    if (i === index) {
+                        if (!label.classList.contains('active')) {
+                            label.classList.add('active');
+                        }
+                    } else {
+                        label.classList.remove('active');
+                    }
+                });
+            }
+        }
+    });
+
+    // Background subtle zoom effect
+    cards.forEach((card, i) => {
+        const bg = card.querySelector('.card-bg');
+        if (bg) {
+            tl.fromTo(bg, 
+                { scale: 1 }, 
+                { scale: 1.1, ease: "none", duration: 1 }, 
+                i // This maps the animation to the segment
+            );
+        }
+    });
+}
+
+// Initialize on Load
+window.addEventListener('load', () => {
+    initStickyUseCases();
+});

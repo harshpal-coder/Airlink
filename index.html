@@ -79,6 +79,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <!-- Font Awesome for Icons -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="style.css">
@@ -151,7 +152,7 @@
                     <!-- Left Phone (Secondary) -->
                     <div class="phone-frame side left">
                         <div class="phone-screen">
-                            <img src="assets/discovery.jpeg" alt="Discovery Screen">
+                            <img src="assets/discovery.jpeg" alt="Discovery Screen" loading="lazy" decoding="async">
                         </div>
                     </div>
 
@@ -159,13 +160,13 @@
                     <div class="phone-frame center">
                         <div class="phone-screen">
                             <img src="assets/splash.jpeg" alt="Splash Screen"
-                                style="width: 100%; height: 100%; object-fit: cover;">
+                                style="width: 100%; height: 100%; object-fit: cover;" decoding="async">
                         </div>
                     </div>
                     <!-- Right Phone (Secondary) -->
                     <div class="phone-frame side right">
                         <div class="phone-screen">
-                            <img src="assets/chat screen.jpeg" alt="Chat Screen Detail">
+                            <img src="assets/chat screen.jpeg" alt="Chat Screen Detail" loading="lazy" decoding="async">
                         </div>
                     </div>
                 </div>
@@ -180,58 +181,85 @@
                 <p style="color: var(--text-dim);">Built for privacy, resilience, and true decentralization.</p>
             </div>
 
-            <div class="features-grid">
-                <div class="feature-card glass" data-reveal>
-                    <div class="feature-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
-                    <h3>Offline Messaging</h3>
-                    <p>Chat with friends nearby using Bluetooth and Wi-Fi Direct. No internet connection required.</p>
-                </div>
-
-                <div class="feature-card glass" data-reveal>
-                    <div class="feature-icon"><i class="fa-solid fa-network-wired"></i></div>
-                    <h3>Mesh Networking</h3>
-                    <p>Messages hop through other devices to reach people beyond your direct range. The more users, the
-                        stronger the network.</p>
-                </div>
-
-                <div class="feature-card glass" data-reveal>
-                    <div class="feature-icon"><i class="fa-solid fa-lock"></i></div>
-                    <h3>Military Grade Encryption</h3>
-                    <p>Powered by the Signal Protocol. Your private conversations stay private with end-to-end
-                        encryption.</p>
-                </div>
-                <div class="feature-card glass" data-reveal>
-                    <div class="feature-icon"><i class="fa-solid fa-microphone-lines"></i></div>
-                    <h3>Voice Messaging</h3>
-                    <p>Crystal clear offline voice notes with real-time waveform visualization.</p>
-                    <div class="waveform-container"
-                        style="height: 30px; margin-top: 1rem; display: flex; align-items: flex-end; gap: 2px;">
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar"></div>
+            <div class="mesh-ecosystem">
+                <div class="mesh-hub" data-reveal>
+                    <div class="hub-core">
+                        <img src="assets/logo.png" alt="AirLink Core">
+                    </div>
+                    <div class="hub-rings">
+                        <div class="ring"></div>
+                        <div class="ring"></div>
+                        <div class="ring"></div>
                     </div>
                 </div>
 
-                <div class="feature-card glass" data-reveal>
-                    <div class="feature-icon"><i class="fa-solid fa-qrcode"></i></div>
-                    <h3>Seamless Pairing</h3>
-                    <p>Simply scan a QR code to securely link with new peers in seconds. No complex setup or manual data
-                        entry.</p>
+                <!-- Connectivity Node -->
+                <div class="mesh-node node-top-left" data-reveal>
+                    <div class="node-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
+                    <div class="node-content">
+                        <h3>Offline Messaging</h3>
+                        <p>Bluetooth & Wi-Fi Direct. No internet required.</p>
+                    </div>
                 </div>
 
-                <div class="feature-card glass" data-reveal>
-                    <div class="feature-icon"><i class="fa-solid fa-file-export"></i></div>
-                    <h3>Media Sharing</h3>
-                    <p>Share photos, videos, and documents at lightning speed using Wi-Fi Direct. Perfect for remote
-                        collaboration.</p>
+                <!-- Network Node -->
+                <div class="mesh-node node-top-right" data-reveal>
+                    <div class="node-icon"><i class="fa-solid fa-network-wired"></i></div>
+                    <div class="node-content">
+                        <h3>Mesh Networking</h3>
+                        <p>Messages hop through devices to extend range.</p>
+                    </div>
                 </div>
+
+                <!-- Encryption Node -->
+                <div class="mesh-node node-right" data-reveal>
+                    <div class="node-icon"><i class="fa-solid fa-lock"></i></div>
+                    <div class="node-content">
+                        <h3>Secure Encryption</h3>
+                        <p>Powered by Signal Protocol. True privacy.</p>
+                    </div>
+                </div>
+
+                <!-- Voice Node -->
+                <div class="mesh-node node-bottom-right" data-reveal>
+                    <div class="node-icon"><i class="fa-solid fa-microphone-lines"></i></div>
+                    <div class="node-content">
+                        <h3>Voice Messaging</h3>
+                        <p>Offline voice notes with real-time waveform.</p>
+                        <div class="waveform-container tiny">
+                            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pairing Node -->
+                <div class="mesh-node node-bottom-left" data-reveal>
+                    <div class="node-icon"><i class="fa-solid fa-qrcode"></i></div>
+                    <div class="node-content">
+                        <h3>Seamless Pairing</h3>
+                        <p>Scan QR code to securely link with new peers.</p>
+                    </div>
+                </div>
+
+                <!-- Media Node -->
+                <div class="mesh-node node-left" data-reveal>
+                    <div class="node-icon"><i class="fa-solid fa-file-export"></i></div>
+                    <div class="node-content">
+                        <h3>Media Sharing</h3>
+                        <p>Photos and docs at lightning speed via P2P.</p>
+                    </div>
+                </div>
+
+                <!-- SVG Connections Layer -->
+                <svg class="mesh-connections" id="mesh-svg-connections">
+                    <defs>
+                        <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:var(--primary-color);stop-opacity:0.2" />
+                            <stop offset="50%" style="stop-color:var(--primary-color);stop-opacity:0.5" />
+                            <stop offset="100%" style="stop-color:var(--primary-color);stop-opacity:0.2" />
+                        </linearGradient>
+                    </defs>
+                </svg>
             </div>
         </div>
     </section>
@@ -242,21 +270,34 @@
                 <h2 style="font-size: 2.5rem;">How AirLink Works</h2>
                 <p style="color: var(--text-dim);">The journey of a message in a decentralized world.</p>
             </div>
-            <div class="infographic-grid">
-                <div class="info-step" data-reveal>
-                    <div class="step-num">01</div>
-                    <h4>Discover</h4>
-                    <p>Airlink finds nearby devices automatically using Bluetooth and Wi-Fi Direct.</p>
-                </div>
-                <div class="info-step" data-reveal>
-                    <div class="step-num">02</div>
-                    <h4>Connect</h4>
-                    <p>Pair securely via QR code to establish a trusted end-to-end encrypted channel.</p>
-                </div>
-                <div class="info-step" data-reveal>
-                    <div class="step-num">03</div>
-                    <h4>Mesh</h4>
-                    <p>Messages hop through available nodes to reach peers even if they're out of range.</p>
+            <div class="signal-path-container">
+                <svg class="main-path-svg" viewBox="0 0 1000 400">
+                    <path d="M50,200 C200,200 300,100 500,200 C700,300 800,200 950,200" id="signal-path-line" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="4" stroke-dasharray="10 10" />
+                    <path d="M50,200 C200,200 300,100 500,200 C700,300 800,200 950,200" id="signal-path-active" fill="none" stroke="var(--primary-color)" stroke-width="4" stroke-dasharray="1000" stroke-dashoffset="1000" />
+                </svg>
+                
+                <div class="path-steps">
+                    <div class="path-step s1" data-reveal>
+                        <div class="step-blob"><i class="fa-solid fa-search"></i></div>
+                        <div class="step-info">
+                            <h4>Discover</h4>
+                            <p>Nearby devices detected via Bluetooth & Wi-Fi.</p>
+                        </div>
+                    </div>
+                    <div class="path-step s2" data-reveal>
+                        <div class="step-blob"><i class="fa-solid fa-link"></i></div>
+                        <div class="step-info">
+                            <h4>Connect</h4>
+                            <p>Secure QR pairing for trusted channels.</p>
+                        </div>
+                    </div>
+                    <div class="path-step s3" data-reveal>
+                        <div class="step-blob"><i class="fa-solid fa-share-nodes"></i></div>
+                        <div class="step-info">
+                            <h4>Mesh</h4>
+                            <p>Decentralized hops bypass network barriers.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -399,35 +440,43 @@
                 <p style="color: var(--text-dim);">Designed for the moments when traditional networks let you down.</p>
             </div>
 
-            <div class="use-cases-grid">
-                <div class="use-case-card glass" data-reveal>
-                    <div class="use-case-icon"><i class="fa-solid fa-mountain-sun"></i></div>
-                    <h3>Outdoor Adventure</h3>
-                    <p>Stay in touch with your group while hiking, skiing, or camping in remote areas with zero cellular
-                        coverage.</p>
+            <div class="scenario-simulator" data-reveal>
+                <div class="scenario-controls">
+                    <button class="scenario-btn active" data-scenario="wilderness">
+                        <i class="fa-solid fa-mountain-sun"></i>
+                        <span>Wilderness</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="emergency">
+                        <i class="fa-solid fa-house-fire"></i>
+                        <span>Emergency</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="festival">
+                        <i class="fa-solid fa-users-rays"></i>
+                        <span>Mass Events</span>
+                    </button>
+                    <button class="scenario-btn" data-scenario="privacy">
+                        <i class="fa-solid fa-user-secret"></i>
+                        <span>Privacy</span>
+                    </button>
                 </div>
 
-                <div class="use-case-card glass" data-reveal>
-                    <div class="use-case-icon"><i class="fa-solid fa-house-fire"></i></div>
-                    <h3>Emergency Response</h3>
-                    <p>A lifeline during natural disasters. Communicate with family and rescuers when cell towers are
-                        offline.</p>
-                </div>
-
-                <div class="use-case-card glass" data-reveal>
-                    <div class="use-case-icon"><i class="fa-solid fa-users-rays"></i></div>
-                    <h3>Mass Gatherings</h3>
-                    <p>Avoid network congestion at music festivals, sports stadiums, or protests. Mesh keeps the data
-                        flowing.</p>
-                </div>
-
-                <div class="use-case-card glass" data-reveal>
-                    <div class="use-case-icon"><i class="fa-solid fa-user-secret"></i></div>
-                    <h3>Privacy Conscious</h3>
-                    <p>For those who value true anonymity. No central servers means no data tracking or surveillance.
-                    </p>
+                <div class="scenario-viewport">
+                    <div class="scenario-atm-overlay" id="scenario-atm"></div>
+                    <canvas id="scenario-canvas"></canvas>
+                    
+                    <div class="scenario-info glass">
+                        <div id="scenario-text">
+                            <h3 id="scenario-title">Outdoor Adventure</h3>
+                            <p id="scenario-desc">Stay in touch while hiking or camping in areas with zero cellular coverage.</p>
+                        </div>
+                        <div class="scenario-stats">
+                            <div class="stat"><span class="label">Mesh Density:</span> <span id="stat-density">Low</span></div>
+                            <div class="stat"><span class="label">Reliability:</span> <span id="stat-reliability" style="color: var(--success-color);">High</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </div>
     </section>
 
@@ -454,7 +503,7 @@
                         </div>
                         <div class="testimonial-user">
                             <div class="user-avatar-placeholder">
-                                <img src="assets/avatars/sarah.png" alt="Sarah Jenkins">
+                                <img src="assets/avatars/sarah.png" alt="Sarah Jenkins" loading="lazy" decoding="async">
                             </div>
                             <div class="user-meta">
                                 <strong>Sarah Jenkins</strong>
@@ -477,7 +526,7 @@
                         </div>
                         <div class="testimonial-user">
                             <div class="user-avatar-placeholder">
-                                <img src="assets/avatars/marcus.png" alt="Marcus Chen">
+                                <img src="assets/avatars/marcus.png" alt="Marcus Chen" loading="lazy" decoding="async">
                             </div>
                             <div class="user-meta">
                                 <strong>Marcus Chen</strong>
@@ -500,7 +549,7 @@
                         </div>
                         <div class="testimonial-user">
                             <div class="user-avatar-placeholder">
-                                <img src="assets/avatars/amara.png" alt="Dr. Amara Okafor">
+                                <img src="assets/avatars/amara.png" alt="Dr. Amara Okafor" loading="lazy" decoding="async">
                             </div>
                             <div class="user-meta">
                                 <strong>Dr. Amara Okafor</strong>
@@ -523,7 +572,7 @@
                         </div>
                         <div class="testimonial-user">
                             <div class="user-avatar-placeholder">
-                                <img src="assets/avatars/leo.png" alt="Leo Van der Berg">
+                                <img src="assets/avatars/leo.png" alt="Leo Van der Berg" loading="lazy" decoding="async">
                             </div>
                             <div class="user-meta">
                                 <strong>Leo Van der Berg</strong>
@@ -1132,6 +1181,15 @@
     <!-- Custom Premium Cursor -->
     <div class="cursor-dot" id="cursor-dot"></div>
     <div class="cursor-outline" id="cursor-outline"></div>
+
+    <!-- Dynamic Theme Switcher -->
+    <div class="theme-switcher-wrapper">
+        <div class="theme-switcher" id="theme-switcher">
+            <div class="theme-toggle" id="theme-toggle" title="Cycle Theme">
+                <i class="fa-solid fa-palette"></i>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
