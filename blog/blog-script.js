@@ -1,7 +1,7 @@
 // AirLink Blog Frontend Logic
 // Fetches posts from GAS backend and handles the UI
 
-const BLOG_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxEzjn6GZ9JD9XH32zny1hgKgNO9anjIrNBMjG-gmLobMSMi0EsoQg3wjRW0M4792ejlA/exec';
+const BLOG_BACKEND_URL = '/api/blog';
 
 let blogPosts = [];
 
@@ -42,15 +42,31 @@ async function fetchPosts() {
  */
 function renderPosts(posts) {
     const grid = document.getElementById('blog-grid');
-    grid.innerHTML = ''; // Clear loader
+    
+    // Remove loader but keep static SEO content
+    const loader = grid.querySelector('.loader-container');
+    if (loader) loader.remove();
 
     if (posts.length === 0) {
-        grid.innerHTML = '<div class="loader-container"><p>No posts found on Blogger.</p></div>';
+        if (!grid.querySelector('.blog-card')) {
+            grid.innerHTML += '<div class="loader-container"><p>No posts found on Blogger.</p></div>';
+        }
         return;
     }
 
     posts.forEach((post, index) => {
-        const card = document.createElement('div');
+        // Check if this post already exists as static HTML (hydration)
+        let card = document.getElementById(`post-${post.id}`);
+        
+        if (card) {
+            // Post exists (e.g. Featured Post), just attach the live event listener
+            card.addEventListener('click', () => openPost(post));
+            return;
+        }
+
+        // Create new card for additional posts
+        card = document.createElement('div');
+        card.id = `post-${post.id}`;
         card.className = 'blog-card glass';
         card.style.animationDelay = `${index * 0.1}s`;
         
