@@ -13,6 +13,28 @@ window.addEventListener('load', () => {
 });
 
 const canvas = document.getElementById('canvas-mesh');
+
+// --- SMOOTH SCROLLING (LENIS) ---
+const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+    orientation: 'vertical',
+    gestureOrientation: 'vertical',
+    smoothWheel: true,
+    wheelMultiplier: 1,
+    smoothTouch: false,
+    touchMultiplier: 2,
+    infinite: false,
+});
+
+window.airlinkLenis = lenis;
+
+function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+}
+
+requestAnimationFrame(raf);
 const ctx = canvas.getContext('2d');
 const navbar = document.getElementById('navbar');
 
@@ -318,9 +340,9 @@ if (logo) {
     logo.addEventListener('click', (e) => {
         if (window.location.pathname === '/' || window.location.pathname.endsWith('index.html')) {
             e.preventDefault();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
+            lenis.scrollTo(0, {
+                duration: 1.5,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
             });
         }
     });
@@ -682,24 +704,29 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         e.preventDefault();
 
         // Close mobile menu if open
-        if (navLinks.classList.contains('active')) {
+        if (typeof navLinks !== 'undefined' && navLinks && navLinks.classList.contains('active')) {
             navLinks.classList.remove('active');
-            const icon = menuToggle.querySelector('i');
-            icon.classList.add('fa-bars');
-            icon.classList.remove('fa-times');
+            if (typeof menuToggle !== 'undefined' && menuToggle) {
+                const icon = menuToggle.querySelector('i');
+                if (icon) {
+                    icon.classList.add('fa-bars');
+                    icon.classList.remove('fa-times');
+                }
+            }
         }
 
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            const offset = 0; // Section padding already accounts for the fixed header
-            const bodyRect = document.body.getBoundingClientRect().top;
-            const elementRect = target.getBoundingClientRect().top;
-            const elementPosition = elementRect - bodyRect;
-            const offsetPosition = elementPosition - offset;
+        const href = this.getAttribute('href');
+        if (href === '#') {
+            lenis.scrollTo(0);
+            return;
+        }
 
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
+        const target = document.querySelector(href);
+        if (target) {
+            lenis.scrollTo(target, {
+                offset: 0,
+                duration: 1.5,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
             });
         }
     });
