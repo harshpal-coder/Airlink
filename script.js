@@ -307,7 +307,8 @@ animate();
 // --- PREMIUM NAVBAR LOGIC ---
 const navIndicator = document.getElementById('nav-indicator');
 const navLinksItems = document.querySelectorAll('.nav-link');
-const navProgress = document.getElementById('nav-progress');
+const navBorderPath = document.getElementById('nav-border-path');
+const navBorderTrack = document.getElementById('nav-border-track');
 
 function updateNavIndicator(element) {
     if (!navIndicator || !element) return;
@@ -362,7 +363,8 @@ function initPremiumScrollAnimations() {
     const scrollGlows = document.querySelectorAll('.scroll-glow');
     const scrollTracks = document.querySelectorAll('.scroll-content.horizontal');
     const navbar = document.getElementById('navbar');
-    const navProgress = document.getElementById('nav-progress');
+    const navBorderPath = document.getElementById('nav-border-path');
+    const navBorderTrack = document.getElementById('nav-border-track');
     const navLinksItems = document.querySelectorAll('.nav-link');
     
     let lastScrollPos = window.pageYOffset || document.documentElement.scrollTop;
@@ -409,10 +411,29 @@ function initPremiumScrollAnimations() {
             }
         }
 
-        if (navProgress) {
+        if (navBorderPath && navbar) {
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrolled = (currentScrollY / height) * 100;
-            navProgress.style.width = scrolled + "%";
+            
+            // Dynamic Path & Dot Sync
+            const rect = navbar.getBoundingClientRect();
+            const w = rect.width;
+            const h = rect.height;
+            const r = Math.min(w, h) / 2;
+            
+            // Custom Path: Start from top-center and go clockwise
+            const d = `M ${w/2},0 L ${w-r},0 A ${r},${r} 0 0 1 ${w},${r} L ${w},${h-r} A ${r},${r} 0 0 1 ${w-r},${h} L ${r},${h} A ${r},${r} 0 0 1 0,${h-r} L 0,${r} A ${r},${r} 0 0 1 ${r},0 L ${w/2},0`;
+            
+            navBorderPath.setAttribute('d', d);
+            if (navBorderTrack) navBorderTrack.setAttribute('d', d);
+            
+            try {
+                const pathLength = navBorderPath.getTotalLength();
+                navBorderPath.style.strokeDasharray = pathLength;
+                navBorderPath.style.strokeDashoffset = pathLength - (pathLength * (scrolled / 100));
+            } catch(e) {
+                // Total length might fail if SVG is not yet in DOM/rendered, but usually fine here
+            }
         }
 
         // ScrollSpy logic integration

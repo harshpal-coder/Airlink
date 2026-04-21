@@ -128,10 +128,14 @@
     </div>
 
     <nav id="navbar">
-        <div class="scroll-progress"><div class="progress-bar" id="nav-progress"></div></div>
+        <!-- Circular Border Progress -->
+        <svg class="nav-border-progress" id="nav-border-svg">
+            <path id="nav-border-track" fill="none" />
+            <path id="nav-border-path" fill="none" />
+        </svg>
         <div class="container nav-content">
-            <a href="#" class="logo">
-                <img src="assets/logo.png" alt="Airlink Logo">
+            <a href="/" class="logo">
+                <img src="/assets/logo.png" alt="Airlink Logo">
                 <span>AirLink</span>
             </a>
             <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
@@ -140,11 +144,11 @@
             <div class="nav-links-wrapper">
                 <div class="nav-links" id="nav-links">
                     <div class="nav-indicator" id="nav-indicator"></div>
-                    <a href="#features" class="nav-link active">Features</a>
-                    <a href="#mesh-lab" class="nav-link">Mesh Lab</a>
-                    <a href="#tech" class="nav-link">Technology</a>
-                    <a href="#supporters" class="nav-link">Supporters</a>
-                    <a href="#download" class="btn-nav-cta">Download</a>
+                    <a href="/#features" class="nav-link active">Features</a>
+                    <a href="/#mesh-lab" class="nav-link">Mesh Lab</a>
+                    <a href="/#tech" class="nav-link">Technology</a>
+                    <a href="/#supporters" class="nav-link">Supporters</a>
+                    <a href="/#download" class="btn-nav-cta">Download</a>
                 </div>
             </div>
         </div>

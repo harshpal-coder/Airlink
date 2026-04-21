@@ -413,53 +413,39 @@ nav.scrolled {
 }
 
 /* Scroll Progress Bar - Enhanced Premium Version */
-.scroll-progress {
+/* Circular Border Progress - Ultimate Version */
+.nav-border-progress {
     position: absolute;
-    bottom: 0;
-    left: 2rem;
-    right: 2rem;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.05); /* Stealthy track */
-    border-radius: 100px;
-    overflow: visible; /* Allow glow head to be seen */
-    z-index: 5;
-    pointer-events: none;
-}
-
-.progress-bar {
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, 
-        rgba(0, 242, 255, 0) 0%, 
-        var(--primary-color) 100%
-    );
-    border-radius: 100px;
-    position: relative;
-    transition: width 0.2s cubic-bezier(0.22, 1, 0.36, 1);
-    box-shadow: 0 0 10px var(--accent-glow);
+    pointer-events: none;
+    z-index: 1; /* Behind nav content but above background */
+    overflow: visible;
 }
 
-/* Glowing Head Feature */
-.progress-bar::after {
-    content: '';
-    position: absolute;
-    right: -4px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 8px;
-    height: 8px;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 
-        0 0 10px #fff,
-        0 0 20px var(--primary-color);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+#nav-border-track {
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 2px;
 }
 
-/* Only show head when there is progress */
-nav.scrolled .progress-bar::after {
+#nav-border-path {
+    stroke: var(--primary-color);
+    stroke-width: 2px;
+    stroke-linecap: round;
+    transition: stroke 0.3s ease;
+    opacity: 0; /* Hidden by default when no progress */
+    filter: drop-shadow(0 0 5px var(--accent-glow));
+}
+
+nav.scrolled #nav-border-path {
     opacity: 1;
+}
+
+/* Hide the old static border when progress is active to avoid overlap */
+nav.scrolled {
+    border-color: rgba(0, 242, 255, 0.05); /* Dimmer base border */
 }
 
 /* Mobile Toggle Adjustment */

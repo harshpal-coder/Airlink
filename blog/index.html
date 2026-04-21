@@ -133,6 +133,7 @@
             margin-bottom: 1.5rem;
             display: -webkit-box;
             -webkit-line-clamp: 3;
+            line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -301,6 +302,7 @@
             margin-bottom: 1.5rem;
             background: linear-gradient(90deg, var(--primary-color), white);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -340,8 +342,12 @@
 
     <canvas id="canvas-mesh"></canvas>
 
-    <nav id="navbar" class="scrolled">
-        <div class="scroll-progress"><div class="progress-bar" id="nav-progress"></div></div>
+    <nav id="navbar">
+        <!-- Circular Border Progress -->
+        <svg class="nav-border-progress" id="nav-border-svg">
+            <path id="nav-border-track" fill="none" />
+            <path id="nav-border-path" fill="none" />
+        </svg>
         <div class="container nav-content">
             <a href="/" class="logo">
                 <img src="/assets/logo.png" alt="Airlink Logo">
@@ -354,8 +360,9 @@
                 <div class="nav-links" id="nav-links">
                     <div class="nav-indicator" id="nav-indicator"></div>
                     <a href="/#features" class="nav-link">Features</a>
+                    <a href="/#mesh-lab" class="nav-link">Mesh Lab</a>
                     <a href="/#tech" class="nav-link">Technology</a>
-                    <a href="/blog" class="nav-link active">Blog</a>
+                    <a href="/#supporters" class="nav-link">Supporters</a>
                     <a href="/#download" class="btn-nav-cta">Download</a>
                 </div>
             </div>
