@@ -5209,8 +5209,12 @@ body.disaster-flicker nav {
 }
 
 /* --- CUSTOM PREMIUM CURSOR --- */
-html, body {
-    cursor: none !important;
+/* --- CUSTOM PREMIUM CURSOR --- */
+@media (min-width: 1025px) {
+    html.custom-cursor-active,
+    html.custom-cursor-active body {
+        cursor: none !important;
+    }
 }
 
 /* Ensure interactive elements also hide the cursor */
@@ -5581,3 +5585,57 @@ body.cursor-active .cursor-outline {
         gap: 1.5rem;
     }
 }
+
+/* ===== Legal Pages (Privacy & Terms) ===== */
+.legal-page {
+    padding-top: 160px;
+    padding-bottom: 80px;
+    min-height: 100vh;
+}
+
+.legal-content {
+    padding: 4rem;
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+
+.legal-content h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.legal-content h2 {
+    font-size: 1.6rem;
+    margin: 2.5rem 0 1rem;
+    color: var(--primary-color);
+}
+
+.legal-content p {
+    color: var(--text-dim);
+    margin-bottom: 1.2rem;
+}
+
+.legal-content ul {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    color: var(--text-dim);
+}
+
+.legal-content li {
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .legal-content {
+        padding: 2.5rem 1.5rem;
+    }
+    .legal-content h1 {
+        font-size: 2.2rem;
+    }
+}
+

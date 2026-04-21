@@ -12,30 +12,41 @@ window.addEventListener('load', () => {
     }
 });
 
-const canvas = document.getElementById('canvas-mesh');
+let canvas, ctx, lenis;
 
-// --- SMOOTH SCROLLING (LENIS) ---
-const lenis = new Lenis({
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
-    orientation: 'vertical',
-    gestureOrientation: 'vertical',
-    smoothWheel: true,
-    wheelMultiplier: 1,
-    smoothTouch: false,
-    touchMultiplier: 2,
-    infinite: false,
-});
+try {
+    // --- SMOOTH SCROLLING (LENIS) ---
+    lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+        direction: 'vertical',
+        gestureDirection: 'vertical',
+        smooth: true,
+        mouseMultiplier: 1,
+        smoothTouch: false,
+        touchMultiplier: 2,
+        infinite: false,
+    });
 
-window.airlinkLenis = lenis;
+    if (lenis) {
+        window.airlinkLenis = lenis;
 
-function raf(time) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+    }
+} catch (e) {
+    console.error("Lenis init failed:", e);
+    document.documentElement.classList.add('no-lenis');
 }
 
-requestAnimationFrame(raf);
-const ctx = canvas.getContext('2d');
+// --- CANVAS SETUP ---
+canvas = document.getElementById('canvas-mesh');
+if (canvas) {
+    ctx = canvas.getContext('2d');
+}
 const navbar = document.getElementById('navbar');
 
 // --- DYNAMIC THEME MANAGER ---
@@ -2819,6 +2830,9 @@ function initCustomCursor() {
     const body = document.body;
 
     if (!dot || !outline) return;
+    
+    // Safety: Only hide the real cursor if we have the custom one ready
+    document.documentElement.classList.add('custom-cursor-active');
 
     let mouseX = 0;
     let mouseY = 0;
@@ -3159,5 +3173,9 @@ function initStickyUseCases() {
 
 // Initialize on Load
 window.addEventListener('load', () => {
-    initStickyUseCases();
+    try {
+        initStickyUseCases();
+    } catch (e) {
+        console.warn("Sticky Use Cases init skipped or failed:", e.message);
+    }
 });
