@@ -804,7 +804,7 @@ if (labSection) {
             const disaster = window.isDisasterMode;
             let r = (isShape ? 3 : 6) + Math.sin(this.pulse) * (isShape ? 1 : 2);
             if (this.flash > 0) r += this.flash * 8;
-            if (disaster) r *= 1.6; // Nodes grow in disaster mode â€” they're alive!
+            if (disaster) r *= 1.6; // Nodes grow in disaster mode \u2014 they're alive!
 
             lctx.beginPath();
             lctx.arc(this.x, this.y, r, 0, Math.PI * 2);
@@ -1332,7 +1332,7 @@ function createSupporterCard(name, amount, tier) {
     const card = document.createElement('div');
     card.className = `supporter-card glass ${tier}`;
     if (tier === 'tier-custom') {
-        card.setAttribute('data-amount', `â‚¹${amount}`);
+        card.setAttribute('data-amount', `\u20B9${amount}`);
     }
     const init = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
     card.innerHTML = `
@@ -1412,10 +1412,10 @@ async function fetchSupporters() {
             // Update the live total money UI
             const totalMoneyEl = document.getElementById('total-money-amount');
             if (totalMoneyEl) {
-                totalMoneyEl.innerText = `â‚¹${totalCollected}`;
+                totalMoneyEl.innerText = `\u20B9${totalCollected}`;
             }
 
-            // Update Goal Progress (Target: â‚¹2500)
+            // Update Goal Progress (Target: \u20B92500)
             const GOAL_AMOUNT = 2500;
             const progressFill = document.getElementById('goal-progress-fill');
             const percentText = document.getElementById('goal-percent');
@@ -1676,9 +1676,9 @@ fetchSupporters(); // Initial sync on load
         }
         emailInput.style.borderColor = '';
         sendOtpBtn.disabled = true;
-        sendOtpBtn.textContent = 'Sendingâ€¦';
+        sendOtpBtn.textContent = 'Sending\u2026';
         await sendOtp(email);
-        sendOtpBtn.textContent = 'âœ“ Sent';
+        sendOtpBtn.textContent = '\u2713 Sent';
         sendOtpBtn.classList.add('sent');
         otpSection.classList.remove('hidden');
         if (otpInputs[0]) otpInputs[0].focus();
@@ -1710,7 +1710,7 @@ fetchSupporters(); // Initial sync on load
     resendOtpBtn && resendOtpBtn.addEventListener('click', async () => {
         const email = emailInput.value.trim();
         resendOtpBtn.disabled = true;
-        otpStatus.textContent = 'Resending OTPâ€¦';
+        otpStatus.textContent = 'Resending OTP\u2026';
         otpStatus.className = 'submission-status loading';
         await sendOtp(email);
         otpInputs.forEach(input => {
@@ -1780,7 +1780,7 @@ fetchSupporters(); // Initial sync on load
                 section.classList.remove('verifying');
                 if (otpValues === generatedOtp) {
                     emailVerified = true;
-                    otpStatus.textContent = 'âœ… Email verified!';
+                    otpStatus.textContent = '\u2705 Email verified!';
                     otpStatus.className = 'submission-status otp-status-success';
                     triggerHaptic('success');
 
@@ -1795,7 +1795,7 @@ fetchSupporters(); // Initial sync on load
                     }, 800);
                 } else {
                     emailVerified = false;
-                    otpStatus.textContent = 'âŒ Incorrect OTP. Please try again.';
+                    otpStatus.textContent = '\u274C Incorrect OTP. Please try again.';
                     otpStatus.className = 'submission-status error';
                     triggerHaptic('error');
 
@@ -1862,7 +1862,7 @@ fetchSupporters(); // Initial sync on load
         if (!txnIdValid) {
             txnIdInput.focus();
             txnIdInput.style.borderColor = 'var(--error-color)';
-            submissionStatus.textContent = 'âš ï¸ Please enter a valid 12-digit Transaction ID.';
+            submissionStatus.textContent = '\u26A0\uFE0F Please enter a valid 12-digit Transaction ID.';
             submissionStatus.className = 'submission-status error';
             return;
         }
@@ -1870,7 +1870,7 @@ fetchSupporters(); // Initial sync on load
 
         // Disable and show loading
         submitBtn.disabled = true;
-        submissionStatus.textContent = 'â³ Submitting your detailsâ€¦';
+        submissionStatus.textContent = '\u23F3 Submitting your details\u2026';
         submissionStatus.className = 'submission-status loading';
 
         const payload = {
@@ -1881,7 +1881,7 @@ fetchSupporters(); // Initial sync on load
         };
 
         try {
-            // Single GET request with URL params â€” reliable for Google Apps Script
+            // Single GET request with URL params \u2014 reliable for Google Apps Script
             const params = new URLSearchParams({
                 action: 'addSupporter',
                 name: payload.name,
@@ -1896,7 +1896,7 @@ fetchSupporters(); // Initial sync on load
             // Wait 2s then show success (can't read response in no-cors)
             setTimeout(() => goToStep(5), 2000);
         } catch (err) {
-            submissionStatus.textContent = 'âŒ Submission failed. Please try again.';
+            submissionStatus.textContent = '\u274C Submission failed. Please try again.';
             submissionStatus.className = 'submission-status error';
             submitBtn.disabled = false;
         }
@@ -2213,7 +2213,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // =============================================
-// --- DISASTER MODE SIMULATOR â€” ENHANCED ---
+// --- DISASTER MODE SIMULATOR \u2014 ENHANCED ---
 // =============================================
 
 (function () {

@@ -1968,7 +1968,7 @@ footer::before {
     animation-delay: -5s;
 }
 
-/* Slowest (â‚¹50+) */
+/* Slowest (₹50+) */
 .track-2 .scroll-content.horizontal {
     animation-duration: 50s;
     animation-direction: reverse;
@@ -1986,7 +1986,7 @@ footer::before {
     animation-delay: -25s;
 }
 
-/* Fastest (â‚¹1-10) */
+/* Fastest (₹1-10) */
 .track-5 .scroll-content.horizontal {
     animation-duration: 45s;
     animation-delay: -12s;
@@ -2017,9 +2017,9 @@ footer::before {
     /* Slightly shorter for 4 rows */
 }
 
-/* --- TIERED SIZING (â‚¹-BASED) --- */
+/* --- TIERED SIZING (₹-BASED) --- */
 
-/* Track 1: â‚¹50+ (Platinum) */
+/* Track 1: ₹50+ (Platinum) */
 .supporter-card.tier-platinum {
     min-width: 300px;
     padding: 0 2.5rem;
@@ -2032,7 +2032,7 @@ footer::before {
     height: 48px;
 }
 
-/* Track 2: â‚¹26-50 (Gold) */
+/* Track 2: ₹26-50 (Gold) */
 .supporter-card.tier-gold {
     min-width: 260px;
     padding: 0 2rem;
@@ -2045,7 +2045,7 @@ footer::before {
     background: linear-gradient(135deg, #FFD700, #FFA500);
 }
 
-/* Track 3: â‚¹11-25 (Silver) */
+/* Track 3: ₹11-25 (Silver) */
 .supporter-card.tier-silver {
     min-width: 220px;
     padding: 0 1.5rem;
@@ -2058,7 +2058,7 @@ footer::before {
     background: linear-gradient(135deg, #bdc3c7, #2c3e50);
 }
 
-/* Track 4: â‚¹1-10 (Community) */
+/* Track 4: ₹1-10 (Community) */
 .supporter-card.tier-community {
     min-width: 180px;
     padding: 0 1rem;
@@ -3560,7 +3560,7 @@ body.intro-revealed .hero-image {
 
 
 /* ============================================
-   DISASTER MODE SIMULATOR â€” ENHANCED
+   DISASTER MODE SIMULATOR — ENHANCED
    ============================================ */
 
 /* 1. Global Variable Overrides */
