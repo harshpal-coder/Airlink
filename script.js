@@ -497,6 +497,13 @@ function initPremiumScrollAnimations() {
             signalPathActive.style.strokeDashoffset = pathLength * (1 - progress);
         }
 
+        // 6. 3D Parallax Background Layers
+        const parallaxLayers = document.querySelectorAll('.parallax-layer');
+        parallaxLayers.forEach(layer => {
+            const speed = parseFloat(layer.getAttribute('data-speed')) || 0;
+            const yOffset = currentScrollY * speed;
+            layer.style.transform = `translateY(${yOffset}px)`;
+        });
 
         requestAnimationFrame(animate);
     }

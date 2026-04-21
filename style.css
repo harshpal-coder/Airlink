@@ -598,6 +598,71 @@ nav.scrolled .progress-bar::after {
     transform: translateY(-3px);
 }
 
+/* --- 3D Parallax Background Layers --- */
+.parallax-bg-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.parallax-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200vh; /* Taller to allow extensive scrolling */
+    will-change: transform;
+}
+
+.parallax-shape {
+    position: absolute;
+    filter: blur(80px);
+    opacity: 0.15;
+    animation: floatShape 20s infinite alternate ease-in-out;
+}
+
+/* Orbs */
+.orb {
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--primary-color), transparent 70%);
+}
+
+.orb-1 { width: 400px; height: 400px; top: 10%; left: -5%; }
+.orb-2 { width: 600px; height: 600px; top: 40%; right: -10%; opacity: 0.1; background: radial-gradient(circle at 70% 70%, var(--secondary-color), transparent 70%); }
+.orb-3 { width: 300px; height: 300px; top: 70%; left: 15%; animation-duration: 25s; }
+.orb-4 { width: 500px; height: 500px; top: 85%; right: 20%; animation-duration: 15s; background: radial-gradient(circle at 50% 50%, var(--primary-color), var(--secondary-color), transparent 70%); opacity: 0.2; filter: blur(60px); }
+
+/* Glass Cubes (with 3D rotation) */
+.cube {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    filter: none;
+    border-radius: 20px;
+    opacity: 0.3;
+    animation: rotateShape 30s infinite linear;
+}
+
+.cube-1 { width: 100px; height: 100px; top: 25%; left: 20%; }
+.cube-2 { width: 150px; height: 150px; top: 60%; right: 15%; animation-duration: 40s; animation-direction: reverse; }
+.cube-3 { width: 80px; height: 80px; top: 90%; left: 40%; animation-duration: 20s; }
+
+@keyframes floatShape {
+    0% { transform: translateY(0) translateX(0); }
+    100% { transform: translateY(-50px) translateX(30px); }
+}
+
+@keyframes rotateShape {
+    0% { transform: rotate3d(1, 1, 1, 0deg); }
+    100% { transform: rotate3d(1, 1, 1, 360deg); }
+}
+
 /* Background Animation Placeholder */
 #canvas-mesh {
     position: fixed;
