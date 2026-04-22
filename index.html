@@ -1200,6 +1200,95 @@
     <div class="cursor-dot" id="cursor-dot"></div>
     <div class="cursor-outline" id="cursor-outline"></div>
 
+    <!-- AirLink Handshake FAB -->
+    <button id="handshake-fab" class="handshake-fab" title="AirLink Handshake: Sync with your phone">
+        <div class="handshake-icon-wrapper">
+            <i class="fa-solid fa-mobile-screen"></i>
+            <span class="handshake-signal-ring ring-1"></span>
+            <span class="handshake-signal-ring ring-2"></span>
+            <span class="handshake-signal-ring ring-3"></span>
+        </div>
+        <span class="handshake-fab-label">Sync Phone</span>
+    </button>
+
+    <!-- AirLink Handshake Modal -->
+    <div id="handshake-modal" class="handshake-modal-overlay" aria-hidden="true">
+        <div class="handshake-modal-box glass">
+            <div class="handshake-modal-header">
+                <div class="handshake-modal-title">
+                    <i class="fa-solid fa-link" style="color: var(--primary-color);"></i>
+                    <span>AirLink <strong>Handshake</strong></span>
+                </div>
+                <button id="handshake-modal-close" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="handshake-modal-body">
+                <!-- State: Initializing -->
+                <div id="hs-state-init" class="hs-state">
+                    <div class="hs-spinner">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <p class="hs-status-text">Generating secure peer ID...</p>
+                </div>
+
+                <!-- State: Ready (show QR) -->
+                <div id="hs-state-ready" class="hs-state hidden">
+                    <p class="hs-instruction">Scan with your <strong>phone</strong> to begin the handshake</p>
+                    <div class="hs-qr-frame">
+                        <div class="hs-qr-corner tl"></div>
+                        <div class="hs-qr-corner tr"></div>
+                        <div class="hs-qr-corner bl"></div>
+                        <div class="hs-qr-corner br"></div>
+                        <img id="hs-qr-img" src="" alt="Handshake QR Code" />
+                    </div>
+                    <div class="hs-peer-id-display">
+                        <span class="hs-peer-id-label">PEER ID</span>
+                        <code id="hs-peer-id-text">—</code>
+                    </div>
+                    <p class="hs-waiting-text">
+                        <span class="status-pulse" style="display:inline-block; margin-right:6px;"></span>
+                        Waiting for phone to connect...
+                    </p>
+                </div>
+
+                <!-- State: Connected -->
+                <div id="hs-state-connected" class="hs-state hidden">
+                    <div class="hs-success-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span class="hs-success-ring"></span>
+                    </div>
+                    <h3 class="hs-connected-title">Handshake Complete!</h3>
+                    <p class="hs-connected-sub">Your phone is now synced. <br>Swipe up/down on your phone to scroll this page.</p>
+                    <div class="hs-live-indicator">
+                        <span class="hs-live-dot"></span>
+                        <span>P2P Channel Active</span>
+                    </div>
+                    <div class="hs-scroll-hint">
+                        <i class="fa-solid fa-hand-point-up"></i>
+                        <span id="hs-swipe-counter">0 swipes received</span>
+                    </div>
+                    <button id="hs-disconnect-btn" class="hs-disconnect-btn">
+                        <i class="fa-solid fa-link-slash"></i> Disconnect
+                    </button>
+                </div>
+
+                <!-- State: Error -->
+                <div id="hs-state-error" class="hs-state hidden">
+                    <i class="fa-solid fa-circle-xmark" style="font-size:3rem; color:#ff4d6d; margin-bottom:1rem;"></i>
+                    <p class="hs-status-text">Connection failed. <br>Please try again.</p>
+                    <button id="hs-retry-btn" class="btn btn-primary" style="margin-top:1rem;">Retry</button>
+                </div>
+            </div>
+
+            <div class="handshake-modal-footer">
+                <i class="fa-solid fa-lock" style="color:var(--primary-color); font-size:0.75rem;"></i>
+                <span>End-to-end encrypted via WebRTC — No servers involved</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Dynamic Theme Switcher -->
     <div class="theme-switcher-wrapper">
         <div class="theme-switcher" id="theme-switcher">
@@ -1209,6 +1298,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
     <script src="script.js"></script>
 </body>

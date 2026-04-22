@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AirLink Handshake — Remote</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00F2FF;
+            --bg: #0B0E14;
+            --surface: rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.1);
+            --text: #ffffff;
+            --dim: #B0B0B0;
+            --success: #00FF88;
+            --error: #FF4D6D;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body {
+            width: 100%; height: 100%;
+            background: var(--bg);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text);
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        /* Ambient glow background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 30%, rgba(0,242,255,0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .remote-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 2rem;
+            gap: 0;
+            position: relative;
+        }
+
+        /* Logo */
+        .remote-logo {
+            position: absolute;
+            top: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text);
+            opacity: 0.8;
+        }
+        .remote-logo i { color: var(--primary); font-size: 1rem; }
+
+        /* Status Badge */
+        .status-badge {
+            position: absolute;
+            top: 1.4rem;
+            right: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s ease;
+        }
+        .status-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--dim);
+            transition: background 0.4s;
+        }
+        .status-badge.connecting .status-dot { background: #FFD700; animation: blink 0.8s infinite; }
+        .status-badge.connected  .status-dot { background: var(--success); }
+        .status-badge.connected  { border-color: rgba(0,255,136,0.3); color: var(--success); }
+        .status-badge.error      .status-dot { background: var(--error); }
+
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+        /* Center Card */
+        .center-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        /* State: Connecting */
+        #view-connecting { }
+        .conn-spinner {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            border: 3px solid rgba(0,242,255,0.15);
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            filter: drop-shadow(0 0 12px var(--primary));
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .conn-title { font-size: 1.3rem; font-weight: 700; }
+        .conn-sub   { font-size: 0.85rem; color: var(--dim); }
+
+        /* State: Connected (Touch Pad) */
+        #view-connected { display: none; flex-direction: column; align-items: center; gap: 1.5rem; }
+        .touchpad-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+        #touchpad {
+            width: min(85vw, 340px);
+            height: min(55vh, 380px);
+            background: var(--surface);
+            border: 1px solid rgba(0,242,255,0.2);
+            border-radius: 28px;
+            position: relative;
+            overflow: hidden;
+            cursor: none;
+            touch-action: none;
+            box-shadow: 0 0 40px rgba(0,242,255,0.08), inset 0 0 80px rgba(0,0,0,0.3);
+            transition: box-shadow 0.2s;
+        }
+        #touchpad.active {
+            box-shadow: 0 0 60px rgba(0,242,255,0.22), inset 0 0 80px rgba(0,0,0,0.3);
+            border-color: rgba(0,242,255,0.45);
+        }
+
+        /* Crosshair grid lines */
+        #touchpad::before, #touchpad::after {
+            content: '';
+            position: absolute;
+            background: rgba(0,242,255,0.05);
+            pointer-events: none;
+        }
+        #touchpad::before { width: 1px; height: 100%; top: 0; left: 50%; }
+        #touchpad::after  { width: 100%; height: 1px; top: 50%; left: 0; }
+
+        /* Finger ripple */
+        .touch-ripple {
+            position: absolute;
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,242,255,0.4) 0%, transparent 70%);
+            transform: translate(-50%,-50%) scale(0);
+            animation: rippleOut 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+        @keyframes rippleOut {
+            to { transform: translate(-50%,-50%) scale(2.5); opacity: 0; }
+        }
+
+        /* Touch trail dot */
+        .trail-dot {
+            position: absolute;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            transform: translate(-50%,-50%);
+            pointer-events: none;
+            transition: transform 0.1s ease;
+        }
+
+        .touchpad-hint {
+            font-size: 0.8rem;
+            color: var(--dim);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .touchpad-hint i { color: var(--primary); }
+
+        /* Swipe counter */
+        .swipe-counter-badge {
+            font-size: 0.72rem;
+            color: var(--dim);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            padding: 0.25rem 0.9rem;
+            border-radius: 50px;
+            letter-spacing: 0.05em;
+        }
+
+        /* State: Error */
+        #view-error { display: none; flex-direction: column; align-items: center; gap: 1rem; }
+        .error-icon { font-size: 3.5rem; color: var(--error); }
+        .error-title { font-size: 1.2rem; font-weight: 700; }
+        .error-sub   { font-size: 0.85rem; color: var(--dim); max-width: 260px; }
+        .btn-retry {
+            margin-top: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), #7000FF);
+            color: #0B0E14;
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0,242,255,0.3);
+            transition: all 0.25s ease;
+        }
+        .btn-retry:hover { transform: translateY(-2px); }
+
+        /* Footer */
+        .remote-footer {
+            position: absolute;
+            bottom: 1.5rem;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .remote-footer i { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="remote-wrapper">
+        <!-- Logo -->
+        <div class="remote-logo">
+            <i class="fa-solid fa-link"></i>
+            AirLink Remote
+        </div>
+
+        <!-- Status Badge -->
+        <div class="status-badge connecting" id="status-badge">
+            <span class="status-dot"></span>
+            <span id="status-text">Connecting…</span>
+        </div>
+
+        <!-- View: Connecting -->
+        <div class="center-card" id="view-connecting">
+            <div class="conn-spinner"></div>
+            <p class="conn-title">Establishing P2P Link</p>
+            <p class="conn-sub">Connecting to your desktop<br>via WebRTC…</p>
+        </div>
+
+        <!-- View: Connected — Touch Pad -->
+        <div class="center-card" id="view-connected">
+            <span class="touchpad-label">Swipe to Scroll Desktop</span>
+            <div id="touchpad"></div>
+            <p class="touchpad-hint">
+                <i class="fa-solid fa-hand-point-up"></i>
+                Swipe up or down on the pad
+            </p>
+            <span class="swipe-counter-badge" id="swipe-count-label">0 swipes sent</span>
+        </div>
+
+        <!-- View: Error -->
+        <div class="center-card" id="view-error">
+            <i class="fa-solid fa-circle-xmark error-icon"></i>
+            <p class="error-title">Connection Failed</p>
+            <p class="error-sub">Could not connect to the desktop. Make sure you scanned the latest QR code.</p>
+            <button class="btn-retry" onclick="location.reload()">
+                <i class="fa-solid fa-rotate-right"></i> Retry
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="remote-footer">
+            <i class="fa-solid fa-lock"></i>
+            End-to-end encrypted via WebRTC
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script>
+    (function() {
+        const params = new URLSearchParams(window.location.search);
+        const hostPeerId = params.get('peer');
+
+        const statusBadge   = document.getElementById('status-badge');
+        const statusText    = document.getElementById('status-text');
+        const viewConn      = document.getElementById('view-connecting');
+        const viewConnected = document.getElementById('view-connected');
+        const viewError     = document.getElementById('view-error');
+        const touchpad      = document.getElementById('touchpad');
+        const swipeLabel    = document.getElementById('swipe-count-label');
+
+        let swipeCount = 0;
+
+        function showView(view) {
+            [viewConn, viewConnected, viewError].forEach(v => v.style.display = 'none');
+            view.style.display = 'flex';
+        }
+
+        function setStatus(type, text) {
+            statusBadge.className = 'status-badge ' + type;
+            statusText.textContent = text;
+        }
+
+        if (!hostPeerId) {
+            setStatus('error', 'No peer ID');
+            showView(viewError);
+            return;
+        }
+
+        if (typeof Peer === 'undefined') {
+            setStatus('error', 'PeerJS failed');
+            showView(viewError);
+            return;
+        }
+
+        showView(viewConn);
+        setStatus('connecting', 'Connecting…');
+
+        const peer = new Peer({ debug: 0 });
+
+        peer.on('open', () => {
+            const conn = peer.connect(hostPeerId, { reliable: true });
+
+            conn.on('open', () => {
+                setStatus('connected', 'Connected');
+                showView(viewConnected);
+                setupTouchpad(conn);
+            });
+
+            conn.on('error', () => {
+                setStatus('error', 'Link error');
+                showView(viewError);
+            });
+
+            conn.on('close', () => {
+                setStatus('error', 'Disconnected');
+                showView(viewError);
+            });
+        });
+
+        peer.on('error', (err) => {
+            console.warn('Peer error:', err.type);
+            setStatus('error', 'Failed');
+            showView(viewError);
+        });
+
+        function setupTouchpad(conn) {
+            let lastY = null;
+            let trailDot = null;
+
+            function createRipple(x, y) {
+                const r = document.createElement('div');
+                r.className = 'touch-ripple';
+                r.style.left = x + 'px';
+                r.style.top  = y + 'px';
+                touchpad.appendChild(r);
+                r.addEventListener('animationend', () => r.remove());
+            }
+
+            function moveDot(x, y) {
+                if (!trailDot) {
+                    trailDot = document.createElement('div');
+                    trailDot.className = 'trail-dot';
+                    touchpad.appendChild(trailDot);
+                }
+                trailDot.style.left = x + 'px';
+                trailDot.style.top  = y + 'px';
+            }
+
+            function removeDot() {
+                if (trailDot) { trailDot.remove(); trailDot = null; }
+            }
+
+            touchpad.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = touchpad.getBoundingClientRect();
+                const lx = touch.clientX - rect.left;
+                const ly = touch.clientY - rect.top;
+                lastY = touch.clientY;
+                touchpad.classList.add('active');
+                createRipple(lx, ly);
+                moveDot(lx, ly);
+            }, { passive: false });
+
+            touchpad.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = touchpad.getBoundingClientRect();
+                const lx = touch.clientX - rect.left;
+                const ly = touch.clientY - rect.top;
+                moveDot(lx, ly);
+
+                if (lastY !== null) {
+                    const delta = touch.clientY - lastY;
+                    lastY = touch.clientY;
+
+                    // Send scroll delta to desktop
+                    if (Math.abs(delta) > 1 && conn.open) {
+                        conn.send({ action: 'scroll', delta: -delta * 3 }); // invert: swipe up = scroll up
+                        swipeCount++;
+                        swipeLabel.textContent = `${swipeCount} swipe${swipeCount !== 1 ? 's' : ''} sent`;
+                    }
+                }
+            }, { passive: false });
+
+            touchpad.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                lastY = null;
+                touchpad.classList.remove('active');
+                removeDot();
+            }, { passive: false });
+        }
+    })();
+    </script>
+</body>
+</html>

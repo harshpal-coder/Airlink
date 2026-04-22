@@ -3179,3 +3179,160 @@ window.addEventListener('load', () => {
         console.warn("Sticky Use Cases init skipped or failed:", e.message);
     }
 });
+
+// ===== AIRLINK HANDSHAKE =====
+(function initAirLinkHandshake() {
+    const fab          = document.getElementById('handshake-fab');
+    const modal        = document.getElementById('handshake-modal');
+    const closeBtn     = document.getElementById('handshake-modal-close');
+    const retryBtn     = document.getElementById('hs-retry-btn');
+    const disconnectBtn= document.getElementById('hs-disconnect-btn');
+
+    const stateInit    = document.getElementById('hs-state-init');
+    const stateReady   = document.getElementById('hs-state-ready');
+    const stateConn    = document.getElementById('hs-state-connected');
+    const stateError   = document.getElementById('hs-state-error');
+
+    const qrImg        = document.getElementById('hs-qr-img');
+    const peerIdText   = document.getElementById('hs-peer-id-text');
+    const swipeCounter = document.getElementById('hs-swipe-counter');
+
+    if (!fab || !modal) return; // Not on homepage, bail
+
+    let peer = null;
+    let activeConn = null;
+    let swipeCount = 0;
+    let peerReady = false;
+
+    // --- Show / Hide State ---
+    function showState(state) {
+        [stateInit, stateReady, stateConn, stateError].forEach(s => s.classList.add('hidden'));
+        state.classList.remove('hidden');
+    }
+
+    // --- Open Modal ---
+    function openModal() {
+        modal.setAttribute('aria-hidden', 'false');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        if (!peerReady) initPeer();
+    }
+
+    // --- Close Modal ---
+    function closeModal() {
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    // --- Build QR Code URL ---
+    function buildRemoteUrl(peerId) {
+        const base = window.location.origin;
+        const remoteUrl = `${base}/remote?peer=${peerId}`;
+        const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&bgcolor=ffffff&color=000000&data=${encodeURIComponent(remoteUrl)}`;
+        return { qrApi, remoteUrl };
+    }
+
+    // --- Initialize PeerJS ---
+    function initPeer() {
+        if (typeof Peer === 'undefined') {
+            console.error('PeerJS not loaded');
+            showState(stateError);
+            return;
+        }
+
+        showState(stateInit);
+        peerReady = false;
+
+        // Destroy old peer if exists
+        if (peer && !peer.destroyed) { peer.destroy(); }
+
+        try {
+            peer = new Peer({ debug: 0 });
+        } catch(e) {
+            showState(stateError);
+            return;
+        }
+
+        peer.on('open', (id) => {
+            peerReady = true;
+            const { qrApi } = buildRemoteUrl(id);
+
+            // Display the short peer ID
+            peerIdText.textContent = id.substring(0, 8) + '…';
+
+            // Load QR image
+            qrImg.src = qrApi;
+            qrImg.onload = () => showState(stateReady);
+            qrImg.onerror = () => showState(stateError);
+        });
+
+        peer.on('connection', (conn) => {
+            activeConn = conn;
+            swipeCount = 0;
+            swipeCounter.textContent = '0 swipes received';
+
+            conn.on('open', () => {
+                showState(stateConn);
+                conn.send({ type: 'ack', msg: 'Desktop connected. Ready to receive swipes!' });
+            });
+
+            conn.on('data', (data) => {
+                if (data && data.action === 'scroll') {
+                    swipeCount++;
+                    swipeCounter.textContent = `${swipeCount} swipe${swipeCount !== 1 ? 's' : ''} received`;
+
+                    // Use Lenis for buttery smooth scroll
+                    const lenis = window.airlinkLenis;
+                    if (lenis) {
+                        const delta = data.delta * 1.8; // amplify slightly
+                        const current = window.scrollY;
+                        lenis.scrollTo(current + delta, {
+                            duration: 0.6,
+                            easing: (t) => 1 - Math.pow(1 - t, 3)
+                        });
+                    } else {
+                        window.scrollBy({ top: data.delta * 1.8, behavior: 'smooth' });
+                    }
+                }
+            });
+
+            conn.on('close', () => {
+                showState(stateReady);
+                activeConn = null;
+            });
+
+            conn.on('error', () => {
+                showState(stateReady);
+                activeConn = null;
+            });
+        });
+
+        peer.on('error', (err) => {
+            console.warn('PeerJS error:', err.type);
+            showState(stateError);
+            peerReady = false;
+        });
+    }
+
+    // --- Disconnect ---
+    function disconnect() {
+        if (activeConn && activeConn.open) activeConn.close();
+        activeConn = null;
+        showState(stateReady);
+    }
+
+    // --- Event Listeners ---
+    fab.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    retryBtn.addEventListener('click', initPeer);
+    disconnectBtn.addEventListener('click', disconnect);
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+    });
+})();
