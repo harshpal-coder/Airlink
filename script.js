@@ -3204,12 +3204,12 @@ window.addEventListener('load', () => {
     if (!remoteCursor) {
         remoteCursor = document.createElement('div');
         remoteCursor.id = 'airlink-remote-cursor';
-        remoteCursor.innerHTML = '<div class="cursor-ring"></div><div class="cursor-dot"></div>';
         document.body.appendChild(remoteCursor);
     }
     // Cursor position state — starts at screen center
     let remoteCursorX = window.innerWidth  / 2;
     let remoteCursorY = window.innerHeight / 2;
+    let lastHoveredElement = null;
 
     // --- MQTT config ---
     const MQTT_BROKER = 'wss://broker.hivemq.com:8884/mqtt';
@@ -3319,6 +3319,19 @@ window.addEventListener('load', () => {
                     remoteCursor.style.top  = remoteCursorY + 'px';
                     remoteCursor.classList.add('visible');
                     remoteCursor.classList.remove('clicking');
+
+                    // --- Hover Simulation ---
+                    const target = document.elementFromPoint(remoteCursorX, remoteCursorY);
+                    if (target !== lastHoveredElement) {
+                        if (lastHoveredElement) {
+                            lastHoveredElement.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
+                        }
+                        if (target) {
+                            target.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+                        }
+                        lastHoveredElement = target;
+                    }
+
                     swipeCount++;
                     swipeCounter.textContent = `${swipeCount} action${swipeCount !== 1 ? 's' : ''} received`;
                 }
