@@ -3180,34 +3180,143 @@ window.addEventListener('load', () => {
     }
 });
 
-// ===== AIRLINK HANDSHAKE =====
+// ===== AIRLINK HANDSHAKE (MQTT) =====
 (function initAirLinkHandshake() {
-    const fab          = document.getElementById('handshake-fab');
-    const modal        = document.getElementById('handshake-modal');
-    const closeBtn     = document.getElementById('handshake-modal-close');
-    const retryBtn     = document.getElementById('hs-retry-btn');
-    const disconnectBtn= document.getElementById('hs-disconnect-btn');
+    const fab           = document.getElementById('handshake-fab');
+    const modal         = document.getElementById('handshake-modal');
+    const closeBtn      = document.getElementById('handshake-modal-close');
+    const retryBtn      = document.getElementById('hs-retry-btn');
+    const disconnectBtn = document.getElementById('hs-disconnect-btn');
 
-    const stateInit    = document.getElementById('hs-state-init');
-    const stateReady   = document.getElementById('hs-state-ready');
-    const stateConn    = document.getElementById('hs-state-connected');
-    const stateError   = document.getElementById('hs-state-error');
+    const stateInit  = document.getElementById('hs-state-init');
+    const stateReady = document.getElementById('hs-state-ready');
+    const stateConn  = document.getElementById('hs-state-connected');
+    const stateError = document.getElementById('hs-state-error');
 
     const qrImg        = document.getElementById('hs-qr-img');
     const peerIdText   = document.getElementById('hs-peer-id-text');
     const swipeCounter = document.getElementById('hs-swipe-counter');
 
-    if (!fab || !modal) return; // Not on homepage, bail
+    if (!fab || !modal) return;
 
-    let peer = null;
-    let activeConn = null;
-    let swipeCount = 0;
-    let peerReady = false;
+    // --- MQTT config ---
+    const MQTT_BROKER = 'wss://broker.hivemq.com:8884/mqtt';
+    let mqttClient  = null;
+    let sessionId   = null;
+    let sessionReady = false;
+    let phoneConnected = false;
+    let swipeCount  = 0;
 
-    // --- Show / Hide State ---
+    // --- Helpers ---
     function showState(state) {
         [stateInit, stateReady, stateConn, stateError].forEach(s => s.classList.add('hidden'));
         state.classList.remove('hidden');
+    }
+
+    function generateSessionId() {
+        // 6-char uppercase alphanumeric code
+        return Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
+
+    function buildRemoteUrl(sid) {
+        const base = window.location.origin;
+        const remoteUrl = `${base}/remote?session=${sid}`;
+        const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&bgcolor=ffffff&color=000000&data=${encodeURIComponent(remoteUrl)}`;
+        return { qrApi, remoteUrl };
+    }
+
+    // --- Init MQTT session ---
+    function initSession() {
+        if (typeof mqtt === 'undefined') {
+            console.error('[AirLink] MQTT.js not loaded');
+            showState(stateError);
+            return;
+        }
+
+        showState(stateInit);
+        sessionReady = false;
+        phoneConnected = false;
+        swipeCount = 0;
+
+        // Clean up old client
+        if (mqttClient) { try { mqttClient.end(true); } catch(e) {} mqttClient = null; }
+
+        // New session code
+        sessionId = generateSessionId();
+        const scrollTopic = `airlink/${sessionId}/scroll`;
+        const ackTopic    = `airlink/${sessionId}/ack`;
+
+        mqttClient = mqtt.connect(MQTT_BROKER, {
+            clientId: `al-desktop-${sessionId}-${Math.random().toString(36).substring(2,6)}`,
+            clean: true,
+            connectTimeout: 10000,
+            reconnectPeriod: 0  // No auto-reconnect — we handle it manually
+        });
+
+        mqttClient.on('connect', () => {
+            mqttClient.subscribe(scrollTopic, { qos: 0 }, (err) => {
+                if (err) { showState(stateError); return; }
+
+                sessionReady = true;
+                peerIdText.textContent = sessionId;
+
+                const { qrApi } = buildRemoteUrl(sessionId);
+                qrImg.onload = () => showState(stateReady);
+                qrImg.onerror = () => showState(stateError);
+                qrImg.src = qrApi;
+            });
+        });
+
+        mqttClient.on('message', (topic, message) => {
+            if (topic !== scrollTopic) return;
+            try {
+                const data = JSON.parse(message.toString());
+
+                // Phone connected — first message is a ping
+                if (!phoneConnected) {
+                    phoneConnected = true;
+                    swipeCount = 0;
+                    swipeCounter.textContent = '0 swipes received';
+                    showState(stateConn);
+                    // Send ack back
+                    if (mqttClient && mqttClient.connected) {
+                        mqttClient.publish(ackTopic, JSON.stringify({ ok: true }), { qos: 0 });
+                    }
+                }
+
+                if (data.action === 'scroll' && typeof data.delta === 'number') {
+                    swipeCount++;
+                    swipeCounter.textContent = `${swipeCount} swipe${swipeCount !== 1 ? 's' : ''} received`;
+
+                    const lenis = window.airlinkLenis;
+                    if (lenis) {
+                        lenis.scrollTo(window.scrollY + data.delta, {
+                            duration: 0.5,
+                            easing: t => 1 - Math.pow(1 - t, 3)
+                        });
+                    } else {
+                        window.scrollBy({ top: data.delta, behavior: 'smooth' });
+                    }
+                }
+
+                if (data.action === 'disconnect') {
+                    phoneConnected = false;
+                    showState(stateReady);
+                }
+            } catch(e) { /* ignore malformed */ }
+        });
+
+        mqttClient.on('error', (err) => {
+            console.warn('[AirLink MQTT] Error:', err.message || err);
+            showState(stateError);
+        });
+
+        mqttClient.on('close', () => {
+            if (phoneConnected) {
+                phoneConnected = false;
+                if (modal.classList.contains('active')) showState(stateReady);
+            }
+        });
     }
 
     // --- Open Modal ---
@@ -3215,224 +3324,52 @@ window.addEventListener('load', () => {
         modal.setAttribute('aria-hidden', 'false');
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
-        // If peer was never started or was fully destroyed, re-init
-        if (!peerReady || !peer || peer.destroyed) {
-            initPeer();
+
+        if (!sessionReady || !mqttClient || !mqttClient.connected) {
+            initSession();
         } else {
-            // Peer is alive — just show the ready state again with existing QR
+            // Session alive — just re-show the QR
             showState(stateReady);
         }
     }
 
-    // --- Close Modal (does NOT destroy peer — keeps it alive for phone) ---
+    // --- Close Modal (session stays alive) ---
     function closeModal() {
         modal.classList.remove('active');
         modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
-        // NOTE: We intentionally do NOT destroy the peer here.
-        // The peer stays alive so the phone can still connect after modal is closed.
     }
 
-    // --- Detect if running on localhost ---
-    function isLocalhost() {
-        const h = window.location.hostname;
-        return h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0';
-    }
-
-    // --- Get local network IP via WebRTC ICE candidates ---
-    function getLocalIp() {
-        return new Promise((resolve) => {
-            const timeout = setTimeout(() => resolve(null), 2000); // 2s max
-            try {
-                const pc = new RTCPeerConnection({ iceServers: [] });
-                pc.createDataChannel('');
-                pc.createOffer().then(offer => pc.setLocalDescription(offer));
-                pc.onicecandidate = (e) => {
-                    if (!e || !e.candidate) return;
-                    const ipMatch = e.candidate.candidate.match(
-                        /(?:^|(?:\s))(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?:\s|$)/
-                    );
-                    if (ipMatch && !ipMatch[1].startsWith('127.')) {
-                        clearTimeout(timeout);
-                        pc.close();
-                        resolve(ipMatch[1]);
-                    }
-                };
-            } catch(e) {
-                clearTimeout(timeout);
-                resolve(null);
-            }
-        });
-    }
-
-    // --- Build QR Code URL ---
-    async function buildRemoteUrl(peerId) {
-        let base = window.location.origin;
-
-        // On localhost, try to find the real LAN IP for the phone
-        if (isLocalhost()) {
-            const localIp = await getLocalIp();
-            if (localIp) {
-                base = `http://${localIp}:${window.location.port || 5500}`;
-            }
-        }
-
-        const remoteUrl = `${base}/remote?peer=${peerId}`;
-        const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&bgcolor=ffffff&color=000000&data=${encodeURIComponent(remoteUrl)}`;
-        return { qrApi, remoteUrl, base };
-    }
-
-    // --- Initialize PeerJS ---
-    function initPeer() {
-        if (typeof Peer === 'undefined') {
-            console.error('PeerJS not loaded');
-            showState(stateError);
-            return;
-        }
-
-        showState(stateInit);
-        peerReady = false;
-        activeConn = null;
-
-        // Destroy old peer only if truly dead
-        if (peer && !peer.destroyed) { try { peer.destroy(); } catch(e) {} }
-
-        try {
-            peer = new Peer({
-                debug: 0,
-                config: {
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun.relay.metered.ca:80' },
-                        {
-                            urls: 'turn:global.relay.metered.ca:80',
-                            username: 'e9d3ef5c5e17b4a7cdc9b1a8',
-                            credential: 'uK3DkJ8J2pmVfkLp'
-                        },
-                        {
-                            urls: 'turn:global.relay.metered.ca:80?transport=tcp',
-                            username: 'e9d3ef5c5e17b4a7cdc9b1a8',
-                            credential: 'uK3DkJ8J2pmVfkLp'
-                        },
-                        {
-                            urls: 'turn:global.relay.metered.ca:443',
-                            username: 'e9d3ef5c5e17b4a7cdc9b1a8',
-                            credential: 'uK3DkJ8J2pmVfkLp'
-                        },
-                        {
-                            urls: 'turns:global.relay.metered.ca:443?transport=tcp',
-                            username: 'e9d3ef5c5e17b4a7cdc9b1a8',
-                            credential: 'uK3DkJ8J2pmVfkLp'
-                        }
-                    ]
-                }
-            });
-        } catch(e) {
-            showState(stateError);
-            return;
-        }
-
-        peer.on('open', async (id) => {
-            peerReady = true;
-            const { qrApi, base } = await buildRemoteUrl(id);
-
-            // Display the short peer ID
-            peerIdText.textContent = id.substring(0, 8) + '…';
-
-            // If still on localhost after IP detection, warn in console
-            if (base.includes('127.0.0.1') || base.includes('localhost')) {
-                console.warn('[AirLink Handshake] Could not auto-detect LAN IP. Phone must be on same Wi-Fi network. QR may not work on mobile until deployed.');
-            }
-
-            // Load QR image
-            qrImg.src = qrApi;
-            qrImg.onload = () => showState(stateReady);
-            qrImg.onerror = () => showState(stateError);
-        });
-
-        peer.on('connection', (conn) => {
-            activeConn = conn;
-            swipeCount = 0;
-            swipeCounter.textContent = '0 swipes received';
-
-            conn.on('open', () => {
-                showState(stateConn);
-                conn.send({ type: 'ack', msg: 'Desktop connected. Ready to receive swipes!' });
-            });
-
-            conn.on('data', (data) => {
-                if (data && data.action === 'scroll') {
-                    swipeCount++;
-                    swipeCounter.textContent = `${swipeCount} swipe${swipeCount !== 1 ? 's' : ''} received`;
-
-                    // Use Lenis for buttery smooth scroll
-                    const lenis = window.airlinkLenis;
-                    if (lenis) {
-                        const delta = data.delta * 1.8; // amplify slightly
-                        const current = window.scrollY;
-                        lenis.scrollTo(current + delta, {
-                            duration: 0.6,
-                            easing: (t) => 1 - Math.pow(1 - t, 3)
-                        });
-                    } else {
-                        window.scrollBy({ top: data.delta * 1.8, behavior: 'smooth' });
-                    }
-                }
-            });
-
-            conn.on('close', () => {
-                showState(stateReady);
-                activeConn = null;
-            });
-
-            conn.on('error', () => {
-                showState(stateReady);
-                activeConn = null;
-            });
-        });
-
-        peer.on('error', (err) => {
-            console.warn('PeerJS error:', err.type);
-            showState(stateError);
-            peerReady = false;
-        });
-    }
-
-    // --- Disconnect (closes conn but keeps peer alive) ---
+    // --- Disconnect phone but keep session ---
     function disconnect() {
-        if (activeConn && activeConn.open) activeConn.close();
-        activeConn = null;
+        phoneConnected = false;
         swipeCount = 0;
         showState(stateReady);
     }
 
-    // --- Full Reset (destroys peer, generates new QR) ---
+    // --- Full reset (new session, new QR) ---
     function fullReset() {
-        activeConn = null;
+        phoneConnected = false;
         swipeCount = 0;
-        peerReady = false;
-        initPeer();
+        sessionReady = false;
+        initSession();
     }
 
-    // --- Event Listeners ---
+    // --- Events ---
     fab.addEventListener('click', openModal);
     closeBtn.addEventListener('click', closeModal);
     retryBtn.addEventListener('click', fullReset);
     disconnectBtn.addEventListener('click', disconnect);
-
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-
-    document.addEventListener('keydown', (e) => {
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
     });
 
-    // --- Auto-init peer on page load (warm it up early!) ---
+    // --- Auto-start session on page load ---
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initPeer);
+        document.addEventListener('DOMContentLoaded', initSession);
     } else {
-        initPeer();
+        initSession();
     }
 })();
+

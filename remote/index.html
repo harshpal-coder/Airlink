@@ -27,8 +27,6 @@
             overflow: hidden;
             touch-action: none;
         }
-
-        /* Ambient glow background */
         body::before {
             content: '';
             position: fixed;
@@ -36,7 +34,6 @@
             background: radial-gradient(ellipse at 50% 30%, rgba(0,242,255,0.07) 0%, transparent 70%);
             pointer-events: none;
         }
-
         .remote-wrapper {
             display: flex;
             flex-direction: column;
@@ -44,11 +41,8 @@
             justify-content: center;
             height: 100%;
             padding: 2rem;
-            gap: 0;
             position: relative;
         }
-
-        /* Logo */
         .remote-logo {
             position: absolute;
             top: 1.5rem;
@@ -61,10 +55,9 @@
             font-weight: 800;
             color: var(--text);
             opacity: 0.8;
+            white-space: nowrap;
         }
         .remote-logo i { color: var(--primary); font-size: 1rem; }
-
-        /* Status Badge */
         .status-badge {
             position: absolute;
             top: 1.4rem;
@@ -91,21 +84,15 @@
         .status-badge.connected  .status-dot { background: var(--success); }
         .status-badge.connected  { border-color: rgba(0,255,136,0.3); color: var(--success); }
         .status-badge.error      .status-dot { background: var(--error); }
-
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
-        /* Center Card */
         .center-card {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 1.5rem;
             text-align: center;
-            transition: all 0.4s ease;
         }
-
-        /* State: Connecting */
-        #view-connecting { }
         .conn-spinner {
             width: 70px; height: 70px;
             border-radius: 50%;
@@ -118,7 +105,6 @@
         .conn-title { font-size: 1.3rem; font-weight: 700; }
         .conn-sub   { font-size: 0.85rem; color: var(--dim); }
 
-        /* State: Connected (Touch Pad) */
         #view-connected { display: none; flex-direction: column; align-items: center; gap: 1.5rem; }
         .touchpad-label {
             font-size: 0.75rem;
@@ -143,8 +129,6 @@
             box-shadow: 0 0 60px rgba(0,242,255,0.22), inset 0 0 80px rgba(0,0,0,0.3);
             border-color: rgba(0,242,255,0.45);
         }
-
-        /* Crosshair grid lines */
         #touchpad::before, #touchpad::after {
             content: '';
             position: absolute;
@@ -153,8 +137,6 @@
         }
         #touchpad::before { width: 1px; height: 100%; top: 0; left: 50%; }
         #touchpad::after  { width: 100%; height: 1px; top: 50%; left: 0; }
-
-        /* Finger ripple */
         .touch-ripple {
             position: absolute;
             width: 60px; height: 60px;
@@ -164,11 +146,7 @@
             animation: rippleOut 0.5s ease-out forwards;
             pointer-events: none;
         }
-        @keyframes rippleOut {
-            to { transform: translate(-50%,-50%) scale(2.5); opacity: 0; }
-        }
-
-        /* Touch trail dot */
+        @keyframes rippleOut { to { transform: translate(-50%,-50%) scale(2.5); opacity: 0; } }
         .trail-dot {
             position: absolute;
             width: 12px; height: 12px;
@@ -177,9 +155,7 @@
             box-shadow: 0 0 10px var(--primary);
             transform: translate(-50%,-50%);
             pointer-events: none;
-            transition: transform 0.1s ease;
         }
-
         .touchpad-hint {
             font-size: 0.8rem;
             color: var(--dim);
@@ -188,8 +164,6 @@
             gap: 0.5rem;
         }
         .touchpad-hint i { color: var(--primary); }
-
-        /* Swipe counter */
         .swipe-counter-badge {
             font-size: 0.72rem;
             color: var(--dim);
@@ -199,12 +173,10 @@
             border-radius: 50px;
             letter-spacing: 0.05em;
         }
-
-        /* State: Error */
         #view-error { display: none; flex-direction: column; align-items: center; gap: 1rem; }
-        .error-icon { font-size: 3.5rem; color: var(--error); }
+        .error-icon  { font-size: 3.5rem; color: var(--error); }
         .error-title { font-size: 1.2rem; font-weight: 700; }
-        .error-sub   { font-size: 0.85rem; color: var(--dim); max-width: 260px; }
+        .error-sub   { font-size: 0.85rem; color: var(--dim); max-width: 260px; line-height: 1.5; }
         .btn-retry {
             margin-top: 0.5rem;
             background: linear-gradient(135deg, var(--primary), #7000FF);
@@ -220,8 +192,6 @@
             transition: all 0.25s ease;
         }
         .btn-retry:hover { transform: translateY(-2px); }
-
-        /* Footer */
         .remote-footer {
             position: absolute;
             bottom: 1.5rem;
@@ -236,26 +206,23 @@
 </head>
 <body>
     <div class="remote-wrapper">
-        <!-- Logo -->
         <div class="remote-logo">
             <i class="fa-solid fa-link"></i>
             AirLink Remote
         </div>
-
-        <!-- Status Badge -->
         <div class="status-badge connecting" id="status-badge">
             <span class="status-dot"></span>
             <span id="status-text">Connecting…</span>
         </div>
 
-        <!-- View: Connecting -->
+        <!-- Connecting view -->
         <div class="center-card" id="view-connecting">
             <div class="conn-spinner"></div>
-            <p class="conn-title">Establishing P2P Link</p>
-            <p class="conn-sub">Connecting to your desktop<br>via WebRTC…</p>
+            <p class="conn-title">Establishing Link</p>
+            <p class="conn-sub">Connecting to your desktop…</p>
         </div>
 
-        <!-- View: Connected — Touch Pad -->
+        <!-- Connected / touchpad view -->
         <div class="center-card" id="view-connected">
             <span class="touchpad-label">Swipe to Scroll Desktop</span>
             <div id="touchpad"></div>
@@ -266,28 +233,27 @@
             <span class="swipe-counter-badge" id="swipe-count-label">0 swipes sent</span>
         </div>
 
-        <!-- View: Error -->
+        <!-- Error view -->
         <div class="center-card" id="view-error">
             <i class="fa-solid fa-circle-xmark error-icon"></i>
             <p class="error-title">Connection Failed</p>
-            <p class="error-sub" id="error-sub-msg">Desktop pe "Sync Phone" button dobara press karo, nayi QR generate karo aur scan karo.</p>
+            <p class="error-sub" id="error-sub-msg">Desktop pe "Sync Phone" button press karo, nayi QR generate karo aur scan karo.</p>
             <button class="btn-retry" onclick="location.reload()">
                 <i class="fa-solid fa-rotate-right"></i> Retry
             </button>
         </div>
 
-        <!-- Footer -->
         <div class="remote-footer">
             <i class="fa-solid fa-lock"></i>
-            End-to-end encrypted via WebRTC
+            Encrypted session relay
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <script>
     (function() {
-        const params = new URLSearchParams(window.location.search);
-        const hostPeerId = params.get('peer');
+        const params    = new URLSearchParams(window.location.search);
+        const sessionId = params.get('session');
 
         const statusBadge   = document.getElementById('status-badge');
         const statusText    = document.getElementById('status-text');
@@ -296,6 +262,7 @@
         const viewError     = document.getElementById('view-error');
         const touchpad      = document.getElementById('touchpad');
         const swipeLabel    = document.getElementById('swipe-count-label');
+        const errorMsg      = document.getElementById('error-sub-msg');
 
         let swipeCount = 0;
 
@@ -303,103 +270,77 @@
             [viewConn, viewConnected, viewError].forEach(v => v.style.display = 'none');
             view.style.display = 'flex';
         }
-
         function setStatus(type, text) {
             statusBadge.className = 'status-badge ' + type;
             statusText.textContent = text;
         }
-
-        if (!hostPeerId) {
-            setStatus('error', 'No peer ID');
+        function fail(msg) {
+            clearTimeout(connectionTimer);
+            setStatus('error', 'Failed');
+            if (msg) errorMsg.textContent = msg;
             showView(viewError);
-            return;
         }
 
-        if (typeof Peer === 'undefined') {
-            setStatus('error', 'PeerJS failed');
-            showView(viewError);
+        if (!sessionId) {
+            fail('No session ID in URL. Scan the QR again from the desktop.');
+            return;
+        }
+        if (typeof mqtt === 'undefined') {
+            fail('MQTT library failed to load. Check your internet connection.');
             return;
         }
 
         showView(viewConn);
         setStatus('connecting', 'Connecting…');
 
-        // --- 15-second timeout — stop spinning forever ---
+        // 20 second timeout
         let connectionTimer = setTimeout(() => {
-            setStatus('error', 'Timed out');
-            document.getElementById('error-sub-msg').textContent =
-                'Desktop ka modal open nahi tha ya QR expire ho gaya. Desktop pe "Sync Phone" dobara press karo aur nayi QR scan karo.';
-            showView(viewError);
-        }, 15000);
+            fail('Timed out. Desktop pe "Sync Phone" dobara press karo aur fresh QR scan karo.');
+        }, 20000);
 
-        const peer = new Peer({
-            debug: 0,
-            config: {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun1.l.google.com:19302' },
-                    { urls: 'stun:stun.relay.metered.ca:80' },
-                    {
-                        urls: 'turn:global.relay.metered.ca:80',
-                        username: 'e9d3ef5c5e17b4a7cdc9b1a8',
-                        credential: 'uK3DkJ8J2pmVfkLp'
-                    },
-                    {
-                        urls: 'turn:global.relay.metered.ca:80?transport=tcp',
-                        username: 'e9d3ef5c5e17b4a7cdc9b1a8',
-                        credential: 'uK3DkJ8J2pmVfkLp'
-                    },
-                    {
-                        urls: 'turn:global.relay.metered.ca:443',
-                        username: 'e9d3ef5c5e17b4a7cdc9b1a8',
-                        credential: 'uK3DkJ8J2pmVfkLp'
-                    },
-                    {
-                        urls: 'turns:global.relay.metered.ca:443?transport=tcp',
-                        username: 'e9d3ef5c5e17b4a7cdc9b1a8',
-                        credential: 'uK3DkJ8J2pmVfkLp'
-                    }
-                ]
-            }
+        const MQTT_BROKER  = 'wss://broker.hivemq.com:8884/mqtt';
+        const scrollTopic  = `airlink/${sessionId}/scroll`;
+        const ackTopic     = `airlink/${sessionId}/ack`;
+
+        const client = mqtt.connect(MQTT_BROKER, {
+            clientId: `al-phone-${sessionId}-${Math.random().toString(36).substring(2,6)}`,
+            clean: true,
+            connectTimeout: 12000,
+            reconnectPeriod: 0
         });
 
-        peer.on('open', () => {
+        client.on('connect', () => {
             setStatus('connecting', 'Handshaking…');
-            const conn = peer.connect(hostPeerId, {
-                reliable: true,
-                serialization: 'json'
-            });
 
-            conn.on('open', () => {
+            // Subscribe to desktop ack
+            client.subscribe(ackTopic, { qos: 0 });
+
+            // Send ping — desktop will see this and transition to "connected"
+            client.publish(scrollTopic, JSON.stringify({ action: 'ping' }), { qos: 0 });
+        });
+
+        client.on('message', (topic, message) => {
+            if (topic === ackTopic) {
+                // Desktop acknowledged — we're fully connected
                 clearTimeout(connectionTimer);
                 setStatus('connected', 'Connected');
                 showView(viewConnected);
-                setupTouchpad(conn);
-            });
-
-            conn.on('error', () => {
-                clearTimeout(connectionTimer);
-                setStatus('error', 'Link error');
-                showView(viewError);
-            });
-
-            conn.on('close', () => {
-                clearTimeout(connectionTimer);
-                setStatus('error', 'Disconnected');
-                showView(viewError);
-            });
+                setupTouchpad();
+            }
         });
 
-        peer.on('error', (err) => {
-            clearTimeout(connectionTimer);
-            console.warn('Peer error:', err.type);
-            setStatus('error', 'Failed');
-            document.getElementById('error-sub-msg').textContent =
-                `WebRTC error: ${err.type}. Desktop pe nayi QR generate karo.`;
+        client.on('error', (err) => {
+            console.warn('MQTT error:', err);
+            fail('MQTT broker connection failed. Check internet and retry.');
+        });
+
+        client.on('close', () => {
+            if (!viewConnected.style.display || viewConnected.style.display === 'none') return;
+            setStatus('error', 'Disconnected');
             showView(viewError);
         });
 
-        function setupTouchpad(conn) {
+        function setupTouchpad() {
             let lastY = null;
             let trailDot = null;
 
@@ -411,7 +352,6 @@
                 touchpad.appendChild(r);
                 r.addEventListener('animationend', () => r.remove());
             }
-
             function moveDot(x, y) {
                 if (!trailDot) {
                     trailDot = document.createElement('div');
@@ -421,7 +361,6 @@
                 trailDot.style.left = x + 'px';
                 trailDot.style.top  = y + 'px';
             }
-
             function removeDot() {
                 if (trailDot) { trailDot.remove(); trailDot = null; }
             }
@@ -429,30 +368,26 @@
             touchpad.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 const touch = e.touches[0];
-                const rect = touchpad.getBoundingClientRect();
-                const lx = touch.clientX - rect.left;
-                const ly = touch.clientY - rect.top;
+                const rect  = touchpad.getBoundingClientRect();
                 lastY = touch.clientY;
                 touchpad.classList.add('active');
-                createRipple(lx, ly);
-                moveDot(lx, ly);
+                createRipple(touch.clientX - rect.left, touch.clientY - rect.top);
+                moveDot(touch.clientX - rect.left, touch.clientY - rect.top);
             }, { passive: false });
 
             touchpad.addEventListener('touchmove', (e) => {
                 e.preventDefault();
                 const touch = e.touches[0];
-                const rect = touchpad.getBoundingClientRect();
-                const lx = touch.clientX - rect.left;
-                const ly = touch.clientY - rect.top;
-                moveDot(lx, ly);
+                const rect  = touchpad.getBoundingClientRect();
+                moveDot(touch.clientX - rect.left, touch.clientY - rect.top);
 
                 if (lastY !== null) {
-                    const delta = touch.clientY - lastY;
+                    const raw   = touch.clientY - lastY;
                     lastY = touch.clientY;
+                    const delta = -raw * 3; // invert: swipe up → scroll up
 
-                    // Send scroll delta to desktop
-                    if (Math.abs(delta) > 1 && conn.open) {
-                        conn.send({ action: 'scroll', delta: -delta * 3 }); // invert: swipe up = scroll up
+                    if (Math.abs(delta) > 2 && client.connected) {
+                        client.publish(scrollTopic, JSON.stringify({ action: 'scroll', delta }), { qos: 0 });
                         swipeCount++;
                         swipeLabel.textContent = `${swipeCount} swipe${swipeCount !== 1 ? 's' : ''} sent`;
                     }
