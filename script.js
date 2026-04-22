@@ -3207,6 +3207,9 @@ window.addEventListener('load', () => {
         remoteCursor.innerHTML = '<div class="cursor-ring"></div><div class="cursor-dot"></div>';
         document.body.appendChild(remoteCursor);
     }
+    // Cursor position state — starts at screen center
+    let remoteCursorX = window.innerWidth  / 2;
+    let remoteCursorY = window.innerHeight / 2;
 
     // --- MQTT config ---
     const MQTT_BROKER = 'wss://broker.hivemq.com:8884/mqtt';
@@ -3295,58 +3298,60 @@ window.addEventListener('load', () => {
 
                 if (data.action === 'scroll' && typeof data.delta === 'number') {
                     swipeCount++;
-                    swipeCounter.textContent = `${swipeCount} swipe${swipeCount !== 1 ? 's' : ''} received`;
+                    swipeCounter.textContent = `${swipeCount} action${swipeCount !== 1 ? 's' : ''} received`;
 
                     const lenis = window.airlinkLenis;
                     if (lenis) {
-                        lenis.scrollTo(window.scrollY + (data.delta * 2), {
-                            duration: 0.3,
+                        lenis.scrollTo(window.scrollY + data.delta, {
+                            duration: 0.25,
                             easing: t => 1 - Math.pow(1 - t, 3)
                         });
                     } else {
-                        window.scrollBy({ top: data.delta * 2, behavior: 'smooth' });
+                        window.scrollBy({ top: data.delta, behavior: 'smooth' });
                     }
                 }
 
-                // --- Remote cursor: move ---
-                if (data.action === 'move' && typeof data.px === 'number') {
-                    const x = data.px * window.innerWidth;
-                    const y = data.py * window.innerHeight;
-                    remoteCursor.style.left = x + 'px';
-                    remoteCursor.style.top  = y + 'px';
+                // --- Remote cursor: relative move (dx/dy) ---
+                if (data.action === 'move' && typeof data.dx === 'number') {
+                    remoteCursorX = Math.max(0, Math.min(window.innerWidth,  remoteCursorX + data.dx));
+                    remoteCursorY = Math.max(0, Math.min(window.innerHeight, remoteCursorY + data.dy));
+                    remoteCursor.style.left = remoteCursorX + 'px';
+                    remoteCursor.style.top  = remoteCursorY + 'px';
                     remoteCursor.classList.add('visible');
                     remoteCursor.classList.remove('clicking');
+                    swipeCount++;
+                    swipeCounter.textContent = `${swipeCount} action${swipeCount !== 1 ? 's' : ''} received`;
                 }
 
-                // --- Remote cursor: click ---
-                if (data.action === 'click' && typeof data.px === 'number') {
-                    const x = data.px * window.innerWidth;
-                    const y = data.py * window.innerHeight;
-                    remoteCursor.style.left = x + 'px';
-                    remoteCursor.style.top  = y + 'px';
+                // --- Remote cursor: click at current position ---
+                if (data.action === 'click') {
                     remoteCursor.classList.add('clicking');
-                    setTimeout(() => remoteCursor.classList.remove('clicking'), 250);
+                    setTimeout(() => remoteCursor.classList.remove('clicking'), 220);
 
                     // Click ripple
                     const ripple = document.createElement('div');
                     ripple.className = 'airlink-click-ripple';
-                    ripple.style.left = x + 'px';
-                    ripple.style.top  = y + 'px';
+                    ripple.style.left = remoteCursorX + 'px';
+                    ripple.style.top  = remoteCursorY + 'px';
                     document.body.appendChild(ripple);
                     ripple.addEventListener('animationend', () => ripple.remove());
 
-                    // Fire real click at coordinates
-                    const target = document.elementFromPoint(x, y);
+                    // Fire real click at cursor coords
+                    const target = document.elementFromPoint(remoteCursorX, remoteCursorY);
                     if (target) target.click();
+
+                    swipeCount++;
+                    swipeCounter.textContent = `${swipeCount} action${swipeCount !== 1 ? 's' : ''} received`;
                 }
 
-                // --- Cursor hidden when phone disconnects ---
-                if (data.action === 'cursor_leave') {
-                    remoteCursor.classList.remove('visible');
-                }
+                // --- Show / hide cursor ---
+                if (data.action === 'cursor_show') remoteCursor.classList.add('visible');
+                if (data.action === 'cursor_hide') remoteCursor.classList.remove('visible');
+                if (data.action === 'cursor_leave') remoteCursor.classList.remove('visible');
 
                 if (data.action === 'disconnect') {
                     phoneConnected = false;
+                    remoteCursor.classList.remove('visible');
                     showState(stateReady);
                 }
             } catch(e) { /* ignore malformed */ }
