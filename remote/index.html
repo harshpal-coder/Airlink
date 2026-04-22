@@ -161,26 +161,31 @@
             display: flex;
         }
 
-        /* Right edge scroll strip */
+        /* Scroll strips (edges) */
         .scroll-strip {
             position: absolute;
-            right: 0;
             top: 0;
             bottom: 0;
-            width: 50px;
-            background: linear-gradient(to left, rgba(0,242,255,0.05), transparent);
-            border-left: 1px dashed rgba(0,242,255,0.1);
+            width: 25%;
+            background: linear-gradient(to left, rgba(0,242,255,0.06), transparent);
+            border-left: 1px dashed rgba(0,242,255,0.12);
             z-index: 2;
             display: flex;
             align-items: center;
             justify-content: center;
             pointer-events: none;
         }
+        .scroll-strip-right { right: 0; }
+        .scroll-strip-left { 
+            left: 0; 
+            background: linear-gradient(to right, rgba(0,242,255,0.05), transparent);
+            border-left: none;
+            border-right: 1px dashed rgba(0,242,255,0.1);
+        }
         .scroll-strip i {
             font-size: 1.2rem;
             color: var(--primary);
             opacity: 0.3;
-            transform: rotate(0deg);
         }
 
         /* Inner content */
@@ -316,7 +321,10 @@
         <!-- Main trackpad surface -->
         <div id="trackpad">
             <div class="pad-grid"></div>
-            <div class="scroll-strip">
+            <div class="scroll-strip scroll-strip-left">
+                <i class="fa-solid fa-arrows-up-down"></i>
+            </div>
+            <div class="scroll-strip scroll-strip-right">
                 <i class="fa-solid fa-arrows-up-down"></i>
             </div>
             <div class="pad-idle-hint">
@@ -481,15 +489,15 @@
                 trackpad.classList.add('active');
                 const rect = trackpad.getBoundingClientRect();
                 
-                // Detection for Scroll Zone (right 15% of the screen)
-                const scrollZoneWidth = rect.width * 0.15;
+                // Detection for Scroll Zones (25% width on each side)
+                const scrollZoneWidth = rect.width * 0.25;
                 
                 Array.from(e.changedTouches).forEach(t => {
                     const lx = t.clientX - rect.left;
                     const ly = t.clientY - rect.top;
                     
-                    // If touch starts in the scroll zone, mark it as a scroll-intent touch
-                    const isEdgeTouch = (lx > rect.width - scrollZoneWidth);
+                    // If touch starts in either the left or right scroll zone (15% width)
+                    const isEdgeTouch = (lx < scrollZoneWidth || lx > rect.width - scrollZoneWidth);
                     const isMultiTouch = e.touches.length >= 2;
                     const isScroll = isEdgeTouch || isMultiTouch;
                     
