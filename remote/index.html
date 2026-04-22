@@ -461,9 +461,25 @@
             // Per-touch tracking
             let touches = {}; // id → { startX, startY, startTime, lastX, lastY, dot }
 
+            // Throttling for smooth movement
+            let pendingDx = 0;
+            let pendingDy = 0;
+            let lastSendTime = 0;
+            const THROTTLE_MS = 20; // Send movement every 20ms
+
             function send(data) {
                 if (client.connected) client.publish(scrollTopic, JSON.stringify(data), { qos: 0 });
                 incCount();
+            }
+
+            function flushMove() {
+                const now = Date.now();
+                if (now - lastSendTime > THROTTLE_MS && (pendingDx !== 0 || pendingDy !== 0)) {
+                    send({ action: 'move', dx: pendingDx * CURSOR_SENS, dy: pendingDy * CURSOR_SENS });
+                    pendingDx = 0;
+                    pendingDy = 0;
+                    lastSendTime = now;
+                }
             }
 
             function createFingerDot(x, y, isScroll) {
@@ -561,18 +577,18 @@
                         if (!tr) return;
                         const lx = t.clientX - rect.left;
                         const ly = t.clientY - rect.top;
-                        const dx = lx - tr.lastX;
-                        const dy = ly - tr.lastY;
+                        
+                        pendingDx += lx - tr.lastX;
+                        pendingDy += ly - tr.lastY;
+                        
                         tr.lastX = lx; tr.lastY = ly;
                         if (tr.dot) { 
                             tr.dot.className = 'finger-dot'; 
                             tr.dot.style.left = lx+'px'; 
                             tr.dot.style.top = ly+'px'; 
                         }
-                        if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
-                            send({ action: 'move', dx: dx * CURSOR_SENS, dy: dy * CURSOR_SENS });
-                        }
                     });
+                    flushMove();
                 }
             }, { passive: false });
 

@@ -5969,7 +5969,7 @@ body.cursor-active .cursor-outline {
     /* Use a standard cursor arrow SVG */
     background: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.5 3.5L5.5 20.4L10.1 15.8L13.1 22.1L15.9 20.8L12.9 14.5L19.5 14.5L5.5 3.5Z' fill='white' stroke='black' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
     background-size: contain;
-    transition: left 0.08s linear, top 0.08s linear;
+    transition: left 0.05s linear, top 0.05s linear;
     display: none;
 }
 #airlink-remote-cursor.visible { display: block; }
