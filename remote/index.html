@@ -53,7 +53,6 @@
             gap: 8px;
             font-size: 1.1rem;
             font-weight: 800;
-            color: var(--text);
             opacity: 0.8;
             white-space: nowrap;
         }
@@ -90,7 +89,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1.5rem;
+            gap: 1.2rem;
             text-align: center;
         }
         .conn-spinner {
@@ -105,16 +104,49 @@
         .conn-title { font-size: 1.3rem; font-weight: 700; }
         .conn-sub   { font-size: 0.85rem; color: var(--dim); }
 
-        #view-connected { display: none; flex-direction: column; align-items: center; gap: 1.5rem; }
+        #view-connected { display: none; flex-direction: column; align-items: center; gap: 1rem; width: 100%; }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 4px;
+            gap: 4px;
+        }
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--dim);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.25s ease;
+            letter-spacing: 0.03em;
+        }
+        .mode-btn.active {
+            background: linear-gradient(135deg, rgba(0,242,255,0.2), rgba(112,0,255,0.2));
+            border: 1px solid rgba(0,242,255,0.4);
+            color: var(--primary);
+        }
+        .mode-btn i { font-size: 0.8rem; }
+
         .touchpad-label {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             letter-spacing: 0.12em;
             text-transform: uppercase;
             color: var(--dim);
         }
         #touchpad {
             width: min(85vw, 340px);
-            height: min(55vh, 380px);
+            height: min(52vh, 360px);
             background: var(--surface);
             border: 1px solid rgba(0,242,255,0.2);
             border-radius: 28px;
@@ -123,12 +155,13 @@
             cursor: none;
             touch-action: none;
             box-shadow: 0 0 40px rgba(0,242,255,0.08), inset 0 0 80px rgba(0,0,0,0.3);
-            transition: box-shadow 0.2s;
+            transition: box-shadow 0.2s, border-color 0.2s;
         }
         #touchpad.active {
             box-shadow: 0 0 60px rgba(0,242,255,0.22), inset 0 0 80px rgba(0,0,0,0.3);
             border-color: rgba(0,242,255,0.45);
         }
+        /* Grid crosshair */
         #touchpad::before, #touchpad::after {
             content: '';
             position: absolute;
@@ -137,6 +170,26 @@
         }
         #touchpad::before { width: 1px; height: 100%; top: 0; left: 50%; }
         #touchpad::after  { width: 100%; height: 1px; top: 50%; left: 0; }
+
+        /* Cursor mode indicator inside pad */
+        .pad-mode-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0.18;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .pad-mode-indicator i { font-size: 2.5rem; color: var(--primary); }
+        .pad-mode-indicator span { font-size: 0.7rem; letter-spacing: 0.1em; color: var(--primary); }
+        #touchpad.active .pad-mode-indicator { opacity: 0.05; }
+
+        /* Touch ripple */
         .touch-ripple {
             position: absolute;
             width: 60px; height: 60px;
@@ -147,6 +200,8 @@
             pointer-events: none;
         }
         @keyframes rippleOut { to { transform: translate(-50%,-50%) scale(2.5); opacity: 0; } }
+
+        /* Trail dot (scroll mode) */
         .trail-dot {
             position: absolute;
             width: 12px; height: 12px;
@@ -156,14 +211,33 @@
             transform: translate(-50%,-50%);
             pointer-events: none;
         }
+
+        /* Cursor dot (cursor mode) */
+        .cursor-pointer {
+            position: absolute;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: rgba(0,242,255,0.85);
+            box-shadow: 0 0 12px rgba(0,242,255,0.9), 0 0 24px rgba(0,242,255,0.4);
+            border: 2px solid white;
+            transform: translate(-50%,-50%);
+            pointer-events: none;
+            transition: transform 0.05s;
+        }
+        .cursor-pointer.clicking {
+            transform: translate(-50%,-50%) scale(0.6);
+            background: white;
+        }
+
         .touchpad-hint {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--dim);
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
         .touchpad-hint i { color: var(--primary); }
+
         .swipe-counter-badge {
             font-size: 0.72rem;
             color: var(--dim);
@@ -173,6 +247,7 @@
             border-radius: 50px;
             letter-spacing: 0.05em;
         }
+
         #view-error { display: none; flex-direction: column; align-items: center; gap: 1rem; }
         .error-icon  { font-size: 3.5rem; color: var(--error); }
         .error-title { font-size: 1.2rem; font-weight: 700; }
@@ -192,6 +267,7 @@
             transition: all 0.25s ease;
         }
         .btn-retry:hover { transform: translateY(-2px); }
+
         .remote-footer {
             position: absolute;
             bottom: 1.5rem;
@@ -222,22 +298,38 @@
             <p class="conn-sub">Connecting to your desktop…</p>
         </div>
 
-        <!-- Connected / touchpad view -->
+        <!-- Connected view -->
         <div class="center-card" id="view-connected">
-            <span class="touchpad-label">Swipe to Scroll Desktop</span>
-            <div id="touchpad"></div>
-            <p class="touchpad-hint">
+            <!-- Mode Toggle -->
+            <div class="mode-toggle">
+                <button class="mode-btn active" id="mode-scroll" onclick="setMode('scroll')">
+                    <i class="fa-solid fa-arrows-up-down"></i> Scroll
+                </button>
+                <button class="mode-btn" id="mode-cursor" onclick="setMode('cursor')">
+                    <i class="fa-solid fa-arrow-pointer"></i> Cursor
+                </button>
+            </div>
+
+            <!-- Touchpad -->
+            <span class="touchpad-label" id="pad-label">Swipe to Scroll</span>
+            <div id="touchpad">
+                <div class="pad-mode-indicator" id="pad-icon">
+                    <i class="fa-solid fa-arrows-up-down"></i>
+                    <span>SCROLL</span>
+                </div>
+            </div>
+            <p class="touchpad-hint" id="pad-hint">
                 <i class="fa-solid fa-hand-point-up"></i>
-                Swipe up or down on the pad
+                Swipe up or down
             </p>
-            <span class="swipe-counter-badge" id="swipe-count-label">0 swipes sent</span>
+            <span class="swipe-counter-badge" id="swipe-count-label">0 actions sent</span>
         </div>
 
         <!-- Error view -->
         <div class="center-card" id="view-error">
             <i class="fa-solid fa-circle-xmark error-icon"></i>
             <p class="error-title">Connection Failed</p>
-            <p class="error-sub" id="error-sub-msg">Desktop pe "Sync Phone" button press karo, nayi QR generate karo aur scan karo.</p>
+            <p class="error-sub" id="error-sub-msg">Desktop pe "Sync Phone" dobara press karo aur nayi QR scan karo.</p>
             <button class="btn-retry" onclick="location.reload()">
                 <i class="fa-solid fa-rotate-right"></i> Retry
             </button>
@@ -263,8 +355,36 @@
         const touchpad      = document.getElementById('touchpad');
         const swipeLabel    = document.getElementById('swipe-count-label');
         const errorMsg      = document.getElementById('error-sub-msg');
+        const padLabel      = document.getElementById('pad-label');
+        const padHint       = document.getElementById('pad-hint');
+        const padIcon       = document.getElementById('pad-icon');
 
         let swipeCount = 0;
+        let currentMode = 'scroll'; // 'scroll' | 'cursor'
+
+        // Expose setMode globally for onclick
+        window.setMode = function(mode) {
+            currentMode = mode;
+            document.getElementById('mode-scroll').classList.toggle('active', mode === 'scroll');
+            document.getElementById('mode-cursor').classList.toggle('active', mode === 'cursor');
+
+            if (mode === 'scroll') {
+                padLabel.textContent = 'Swipe to Scroll';
+                padHint.innerHTML = '<i class="fa-solid fa-arrows-up-down" style="color:var(--primary)"></i> Swipe up or down';
+                padIcon.innerHTML = '<i class="fa-solid fa-arrows-up-down"></i><span>SCROLL</span>';
+            } else {
+                padLabel.textContent = 'Move to Control Cursor';
+                padHint.innerHTML = '<i class="fa-solid fa-arrow-pointer" style="color:var(--primary)"></i> Move & tap to click';
+                padIcon.innerHTML = '<i class="fa-solid fa-arrow-pointer"></i><span>CURSOR</span>';
+                // Hide cursor on desktop when switching away from cursor mode
+                if (client && client.connected) {
+                    client.publish(scrollTopic, JSON.stringify({ action: 'cursor_enter' }), { qos: 0 });
+                }
+            }
+            if (mode === 'scroll' && client && client.connected) {
+                client.publish(scrollTopic, JSON.stringify({ action: 'cursor_leave' }), { qos: 0 });
+            }
+        };
 
         function showView(view) {
             [viewConn, viewConnected, viewError].forEach(v => v.style.display = 'none');
@@ -281,26 +401,19 @@
             showView(viewError);
         }
 
-        if (!sessionId) {
-            fail('No session ID in URL. Scan the QR again from the desktop.');
-            return;
-        }
-        if (typeof mqtt === 'undefined') {
-            fail('MQTT library failed to load. Check your internet connection.');
-            return;
-        }
+        if (!sessionId) { fail('No session ID. Scan the QR again.'); return; }
+        if (typeof mqtt === 'undefined') { fail('MQTT library failed to load.'); return; }
 
         showView(viewConn);
         setStatus('connecting', 'Connecting…');
 
-        // 20 second timeout
         let connectionTimer = setTimeout(() => {
             fail('Timed out. Desktop pe "Sync Phone" dobara press karo aur fresh QR scan karo.');
         }, 20000);
 
-        const MQTT_BROKER  = 'wss://broker.hivemq.com:8884/mqtt';
-        const scrollTopic  = `airlink/${sessionId}/scroll`;
-        const ackTopic     = `airlink/${sessionId}/ack`;
+        const MQTT_BROKER = 'wss://broker.hivemq.com:8884/mqtt';
+        const scrollTopic = `airlink/${sessionId}/scroll`;
+        const ackTopic    = `airlink/${sessionId}/ack`;
 
         const client = mqtt.connect(MQTT_BROKER, {
             clientId: `al-phone-${sessionId}-${Math.random().toString(36).substring(2,6)}`,
@@ -311,17 +424,12 @@
 
         client.on('connect', () => {
             setStatus('connecting', 'Handshaking…');
-
-            // Subscribe to desktop ack
             client.subscribe(ackTopic, { qos: 0 });
-
-            // Send ping — desktop will see this and transition to "connected"
             client.publish(scrollTopic, JSON.stringify({ action: 'ping' }), { qos: 0 });
         });
 
         client.on('message', (topic, message) => {
             if (topic === ackTopic) {
-                // Desktop acknowledged — we're fully connected
                 clearTimeout(connectionTimer);
                 setStatus('connected', 'Connected');
                 showView(viewConnected);
@@ -329,20 +437,21 @@
             }
         });
 
-        client.on('error', (err) => {
-            console.warn('MQTT error:', err);
-            fail('MQTT broker connection failed. Check internet and retry.');
-        });
-
+        client.on('error', () => fail('MQTT broker error. Retry.'));
         client.on('close', () => {
-            if (!viewConnected.style.display || viewConnected.style.display === 'none') return;
-            setStatus('error', 'Disconnected');
-            showView(viewError);
+            if (viewConnected.style.display !== 'none') {
+                setStatus('error', 'Disconnected');
+                showView(viewError);
+            }
         });
 
         function setupTouchpad() {
             let lastY = null;
             let trailDot = null;
+            let cursorPointer = null;
+
+            // Touch start position for tap detection (cursor mode)
+            let tapStartX = 0, tapStartY = 0, tapStartTime = 0;
 
             function createRipple(x, y) {
                 const r = document.createElement('div');
@@ -352,7 +461,9 @@
                 touchpad.appendChild(r);
                 r.addEventListener('animationend', () => r.remove());
             }
-            function moveDot(x, y) {
+
+            // Scroll mode: trail dot
+            function moveTrailDot(x, y) {
                 if (!trailDot) {
                     trailDot = document.createElement('div');
                     trailDot.className = 'trail-dot';
@@ -361,44 +472,114 @@
                 trailDot.style.left = x + 'px';
                 trailDot.style.top  = y + 'px';
             }
-            function removeDot() {
+            function removeTrailDot() {
                 if (trailDot) { trailDot.remove(); trailDot = null; }
+            }
+
+            // Cursor mode: cursor pointer dot
+            function moveCursorPointer(x, y) {
+                if (!cursorPointer) {
+                    cursorPointer = document.createElement('div');
+                    cursorPointer.className = 'cursor-pointer';
+                    touchpad.appendChild(cursorPointer);
+                }
+                cursorPointer.style.left = x + 'px';
+                cursorPointer.style.top  = y + 'px';
+            }
+            function removeCursorPointer() {
+                if (cursorPointer) { cursorPointer.remove(); cursorPointer = null; }
             }
 
             touchpad.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 const touch = e.touches[0];
                 const rect  = touchpad.getBoundingClientRect();
-                lastY = touch.clientY;
+                const lx = touch.clientX - rect.left;
+                const ly = touch.clientY - rect.top;
+
                 touchpad.classList.add('active');
-                createRipple(touch.clientX - rect.left, touch.clientY - rect.top);
-                moveDot(touch.clientX - rect.left, touch.clientY - rect.top);
+                createRipple(lx, ly);
+
+                if (currentMode === 'scroll') {
+                    lastY = touch.clientY;
+                    moveTrailDot(lx, ly);
+                } else {
+                    // Cursor mode — record tap start
+                    tapStartX = lx; tapStartY = ly;
+                    tapStartTime = Date.now();
+                    moveCursorPointer(lx, ly);
+                    // Send initial position
+                    const px = lx / rect.width;
+                    const py = ly / rect.height;
+                    if (client.connected) client.publish(scrollTopic, JSON.stringify({ action: 'move', px, py }), { qos: 0 });
+                }
             }, { passive: false });
 
             touchpad.addEventListener('touchmove', (e) => {
                 e.preventDefault();
                 const touch = e.touches[0];
                 const rect  = touchpad.getBoundingClientRect();
-                moveDot(touch.clientX - rect.left, touch.clientY - rect.top);
+                const lx = touch.clientX - rect.left;
+                const ly = touch.clientY - rect.top;
 
-                if (lastY !== null) {
-                    const raw   = touch.clientY - lastY;
-                    lastY = touch.clientY;
-                    const delta = -raw * 10; // 10x — snappy scroll feel
-
-                    if (Math.abs(delta) > 1 && client.connected) {
-                        client.publish(scrollTopic, JSON.stringify({ action: 'scroll', delta }), { qos: 0 });
+                if (currentMode === 'scroll') {
+                    moveTrailDot(lx, ly);
+                    if (lastY !== null) {
+                        const raw   = touch.clientY - lastY;
+                        lastY = touch.clientY;
+                        const delta = -raw * 10;
+                        if (Math.abs(delta) > 1 && client.connected) {
+                            client.publish(scrollTopic, JSON.stringify({ action: 'scroll', delta }), { qos: 0 });
+                            swipeCount++;
+                            swipeLabel.textContent = `${swipeCount} action${swipeCount !== 1 ? 's' : ''} sent`;
+                        }
+                    }
+                } else {
+                    // Cursor mode — send absolute position as percentage
+                    moveCursorPointer(lx, ly);
+                    const px = Math.max(0, Math.min(1, lx / rect.width));
+                    const py = Math.max(0, Math.min(1, ly / rect.height));
+                    if (client.connected) {
+                        client.publish(scrollTopic, JSON.stringify({ action: 'move', px, py }), { qos: 0 });
                         swipeCount++;
-                        swipeLabel.textContent = `${swipeCount} swipe${swipeCount !== 1 ? 's' : ''} sent`;
+                        swipeLabel.textContent = `${swipeCount} action${swipeCount !== 1 ? 's' : ''} sent`;
                     }
                 }
             }, { passive: false });
 
             touchpad.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                lastY = null;
                 touchpad.classList.remove('active');
-                removeDot();
+
+                if (currentMode === 'scroll') {
+                    lastY = null;
+                    removeTrailDot();
+                } else {
+                    const rect = touchpad.getBoundingClientRect();
+                    const lx = tapStartX;
+                    const ly = tapStartY;
+                    const elapsed = Date.now() - tapStartTime;
+                    const touch = e.changedTouches[0];
+                    const moveX = Math.abs((touch.clientX - rect.left) - tapStartX);
+                    const moveY = Math.abs((touch.clientY - rect.top) - tapStartY);
+
+                    // Tap = moved < 12px AND held < 400ms
+                    if (elapsed < 400 && moveX < 12 && moveY < 12) {
+                        const px = lx / rect.width;
+                        const py = ly / rect.height;
+                        if (client.connected) {
+                            client.publish(scrollTopic, JSON.stringify({ action: 'click', px, py }), { qos: 0 });
+                            // Visual click on cursor pointer
+                            if (cursorPointer) {
+                                cursorPointer.classList.add('clicking');
+                                setTimeout(() => cursorPointer && cursorPointer.classList.remove('clicking'), 250);
+                            }
+                            swipeCount++;
+                            swipeLabel.textContent = `${swipeCount} action${swipeCount !== 1 ? 's' : ''} sent`;
+                        }
+                    }
+                    removeCursorPointer();
+                }
             }, { passive: false });
         }
     })();

@@ -3199,6 +3199,15 @@ window.addEventListener('load', () => {
 
     if (!fab || !modal) return;
 
+    // --- Create remote cursor element ---
+    let remoteCursor = document.getElementById('airlink-remote-cursor');
+    if (!remoteCursor) {
+        remoteCursor = document.createElement('div');
+        remoteCursor.id = 'airlink-remote-cursor';
+        remoteCursor.innerHTML = '<div class="cursor-ring"></div><div class="cursor-dot"></div>';
+        document.body.appendChild(remoteCursor);
+    }
+
     // --- MQTT config ---
     const MQTT_BROKER = 'wss://broker.hivemq.com:8884/mqtt';
     let mqttClient  = null;
@@ -3297,6 +3306,43 @@ window.addEventListener('load', () => {
                     } else {
                         window.scrollBy({ top: data.delta * 2, behavior: 'smooth' });
                     }
+                }
+
+                // --- Remote cursor: move ---
+                if (data.action === 'move' && typeof data.px === 'number') {
+                    const x = data.px * window.innerWidth;
+                    const y = data.py * window.innerHeight;
+                    remoteCursor.style.left = x + 'px';
+                    remoteCursor.style.top  = y + 'px';
+                    remoteCursor.classList.add('visible');
+                    remoteCursor.classList.remove('clicking');
+                }
+
+                // --- Remote cursor: click ---
+                if (data.action === 'click' && typeof data.px === 'number') {
+                    const x = data.px * window.innerWidth;
+                    const y = data.py * window.innerHeight;
+                    remoteCursor.style.left = x + 'px';
+                    remoteCursor.style.top  = y + 'px';
+                    remoteCursor.classList.add('clicking');
+                    setTimeout(() => remoteCursor.classList.remove('clicking'), 250);
+
+                    // Click ripple
+                    const ripple = document.createElement('div');
+                    ripple.className = 'airlink-click-ripple';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top  = y + 'px';
+                    document.body.appendChild(ripple);
+                    ripple.addEventListener('animationend', () => ripple.remove());
+
+                    // Fire real click at coordinates
+                    const target = document.elementFromPoint(x, y);
+                    if (target) target.click();
+                }
+
+                // --- Cursor hidden when phone disconnects ---
+                if (data.action === 'cursor_leave') {
+                    remoteCursor.classList.remove('visible');
                 }
 
                 if (data.action === 'disconnect') {

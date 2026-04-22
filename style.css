@@ -5958,3 +5958,54 @@ body.cursor-active .cursor-outline {
     .handshake-fab { bottom: 6rem; left: 1rem; }
     .handshake-modal-box { max-width: calc(100vw - 2rem); margin: 1rem; }
 }
+
+/* ===== AIRLINK REMOTE CURSOR ===== */
+#airlink-remote-cursor {
+    position: fixed;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 999999;
+    transform: translate(-50%, -50%);
+    display: none;
+    transition: left 0.06s linear, top 0.06s linear;
+}
+#airlink-remote-cursor.visible { display: block; }
+#airlink-remote-cursor .cursor-dot {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: rgba(0,242,255,0.9);
+    box-shadow: 0 0 10px rgba(0,242,255,1), 0 0 24px rgba(0,242,255,0.5), 0 0 48px rgba(0,242,255,0.2);
+    border: 2px solid rgba(255,255,255,0.8);
+    transition: transform 0.1s ease, background 0.1s;
+}
+#airlink-remote-cursor.clicking .cursor-dot {
+    transform: scale(0.6);
+    background: #ffffff;
+}
+#airlink-remote-cursor .cursor-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0,242,255,0.4);
+    animation: cursorRingPulse 2s ease-in-out infinite;
+}
+@keyframes cursorRingPulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.15); }
+}
+.airlink-click-ripple {
+    position: fixed;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,242,255,0.9);
+    pointer-events: none;
+    z-index: 999998;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+    animation: airlinkClickRipple 0.45s ease-out forwards;
+}
+@keyframes airlinkClickRipple {
+    to { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+}
