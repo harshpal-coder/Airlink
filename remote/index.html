@@ -158,6 +158,29 @@
             touch-action: none;
             cursor: none;
             overflow: hidden;
+            display: flex;
+        }
+
+        /* Right edge scroll strip */
+        .scroll-strip {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 50px;
+            background: linear-gradient(to left, rgba(0,242,255,0.05), transparent);
+            border-left: 1px dashed rgba(0,242,255,0.1);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .scroll-strip i {
+            font-size: 1.2rem;
+            color: var(--primary);
+            opacity: 0.3;
+            transform: rotate(0deg);
         }
 
         /* Inner content */
@@ -286,13 +309,16 @@
         <!-- Gesture hints -->
         <div class="hints-bar">
             <div class="hint-chip"><i class="fa-solid fa-hand-pointer"></i> 1 finger = cursor</div>
-            <div class="hint-chip"><i class="fa-solid fa-hand-dots"></i> 2 fingers = scroll</div>
+            <div class="hint-chip"><i class="fa-solid fa-arrows-up-down"></i> Edge = Scroll</div>
             <div class="hint-chip"><i class="fa-solid fa-hand"></i> Tap = click</div>
         </div>
 
         <!-- Main trackpad surface -->
         <div id="trackpad">
             <div class="pad-grid"></div>
+            <div class="scroll-strip">
+                <i class="fa-solid fa-arrows-up-down"></i>
+            </div>
             <div class="pad-idle-hint">
                 <i class="fa-solid fa-hand-point-up"></i>
                 <span>TRACKPAD</span>
@@ -453,45 +479,64 @@
             trackpad.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 trackpad.classList.add('active');
-                const isScroll = e.touches.length >= 2;
-                setModeUI(isScroll);
-
+                const rect = trackpad.getBoundingClientRect();
+                
+                // Detection for Scroll Zone (right 15% of the screen)
+                const scrollZoneWidth = rect.width * 0.15;
+                
                 Array.from(e.changedTouches).forEach(t => {
-                    const rect = trackpad.getBoundingClientRect();
                     const lx = t.clientX - rect.left;
                     const ly = t.clientY - rect.top;
+                    
+                    // If touch starts in the scroll zone, mark it as a scroll-intent touch
+                    const isEdgeTouch = (lx > rect.width - scrollZoneWidth);
+                    const isMultiTouch = e.touches.length >= 2;
+                    const isScroll = isEdgeTouch || isMultiTouch;
+                    
+                    setModeUI(isScroll);
+
                     const dot = createFingerDot(lx, ly, isScroll);
                     touches[t.identifier] = {
                         startX: lx, startY: ly,
                         lastX: lx,  lastY: ly,
                         startTime: Date.now(),
+                        isScroll: isScroll,
                         dot
                     };
                 });
 
-                // Announce cursor is active
-                if (!isScroll) send({ action: 'cursor_show' });
+                // Announce cursor is active if not in scroll mode
+                if (!e.touches[0].isScroll) send({ action: 'cursor_show' });
             }, { passive: false });
 
             trackpad.addEventListener('touchmove', (e) => {
                 e.preventDefault();
-                const isScroll = e.touches.length >= 2;
-                setModeUI(isScroll);
+                const rect = trackpad.getBoundingClientRect();
+                
+                // Determine if we are in scroll mode based on any active scroll touches or multitouch
+                let activeScroll = e.touches.length >= 2;
+                Array.from(e.touches).forEach(t => {
+                    if (touches[t.identifier] && touches[t.identifier].isScroll) activeScroll = true;
+                });
+                
+                setModeUI(activeScroll);
 
-                if (isScroll) {
-                    // ── TWO FINGER SCROLL ──
-                    // Average Y movement of all active touches
+                if (activeScroll) {
+                    // ── SCROLL MODE (Edge or 2-finger) ──
                     let totalDy = 0;
                     let movedCount = 0;
                     Array.from(e.changedTouches).forEach(t => {
                         const tr = touches[t.identifier];
                         if (!tr) return;
-                        const rect = trackpad.getBoundingClientRect();
                         const lx = t.clientX - rect.left;
                         const ly = t.clientY - rect.top;
                         totalDy += ly - tr.lastY;
                         tr.lastX = lx; tr.lastY = ly;
-                        if (tr.dot) { tr.dot.className = 'finger-dot scroll-mode'; tr.dot.style.left = lx+'px'; tr.dot.style.top = ly+'px'; }
+                        if (tr.dot) { 
+                            tr.dot.className = 'finger-dot scroll-mode'; 
+                            tr.dot.style.left = lx+'px'; 
+                            tr.dot.style.top = ly+'px'; 
+                        }
                         movedCount++;
                     });
                     if (movedCount > 0) {
@@ -502,18 +547,21 @@
                         }
                     }
                 } else {
-                    // ── ONE FINGER CURSOR ──
+                    // ── CURSOR MODE ──
                     Array.from(e.changedTouches).forEach(t => {
                         const tr = touches[t.identifier];
                         if (!tr) return;
-                        const rect = trackpad.getBoundingClientRect();
                         const lx = t.clientX - rect.left;
                         const ly = t.clientY - rect.top;
                         const dx = lx - tr.lastX;
                         const dy = ly - tr.lastY;
                         tr.lastX = lx; tr.lastY = ly;
-                        if (tr.dot) { tr.dot.className = 'finger-dot'; tr.dot.style.left = lx+'px'; tr.dot.style.top = ly+'px'; }
-                        if (Math.abs(dx) > 0.2 || Math.abs(dy) > 0.2) {
+                        if (tr.dot) { 
+                            tr.dot.className = 'finger-dot'; 
+                            tr.dot.style.left = lx+'px'; 
+                            tr.dot.style.top = ly+'px'; 
+                        }
+                        if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
                             send({ action: 'move', dx: dx * CURSOR_SENS, dy: dy * CURSOR_SENS });
                         }
                     });
