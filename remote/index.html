@@ -166,9 +166,9 @@
             position: absolute;
             top: 0;
             bottom: 0;
-            width: 25%;
-            background: linear-gradient(to left, rgba(0,242,255,0.06), transparent);
-            border-left: 1px dashed rgba(0,242,255,0.12);
+            width: 65px;
+            background: linear-gradient(to left, rgba(0,242,255,0.05), transparent);
+            border-left: 1px dashed rgba(0,242,255,0.1);
             z-index: 2;
             display: flex;
             align-items: center;
@@ -489,8 +489,8 @@
                 trackpad.classList.add('active');
                 const rect = trackpad.getBoundingClientRect();
                 
-                // Detection for Scroll Zones (25% width on each side)
-                const scrollZoneWidth = rect.width * 0.25;
+                // Detection for Scroll Zone (right 20% of the screen)
+                const scrollZoneWidth = rect.width * 0.20;
                 
                 Array.from(e.changedTouches).forEach(t => {
                     const lx = t.clientX - rect.left;
