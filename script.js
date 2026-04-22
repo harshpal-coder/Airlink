@@ -3290,12 +3290,12 @@ window.addEventListener('load', () => {
 
                     const lenis = window.airlinkLenis;
                     if (lenis) {
-                        lenis.scrollTo(window.scrollY + data.delta, {
-                            duration: 0.5,
+                        lenis.scrollTo(window.scrollY + (data.delta * 2), {
+                            duration: 0.3,
                             easing: t => 1 - Math.pow(1 - t, 3)
                         });
                     } else {
-                        window.scrollBy({ top: data.delta, behavior: 'smooth' });
+                        window.scrollBy({ top: data.delta * 2, behavior: 'smooth' });
                     }
                 }
 

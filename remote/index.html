@@ -384,9 +384,9 @@
                 if (lastY !== null) {
                     const raw   = touch.clientY - lastY;
                     lastY = touch.clientY;
-                    const delta = -raw * 3; // invert: swipe up → scroll up
+                    const delta = -raw * 10; // 10x — snappy scroll feel
 
-                    if (Math.abs(delta) > 2 && client.connected) {
+                    if (Math.abs(delta) > 1 && client.connected) {
                         client.publish(scrollTopic, JSON.stringify({ action: 'scroll', delta }), { qos: 0 });
                         swipeCount++;
                         swipeLabel.textContent = `${swipeCount} swipe${swipeCount !== 1 ? 's' : ''} sent`;
