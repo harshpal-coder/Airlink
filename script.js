@@ -3225,12 +3225,53 @@ window.addEventListener('load', () => {
         document.body.style.overflow = '';
     }
 
+    // --- Detect if running on localhost ---
+    function isLocalhost() {
+        const h = window.location.hostname;
+        return h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0';
+    }
+
+    // --- Get local network IP via WebRTC ICE candidates ---
+    function getLocalIp() {
+        return new Promise((resolve) => {
+            const timeout = setTimeout(() => resolve(null), 2000); // 2s max
+            try {
+                const pc = new RTCPeerConnection({ iceServers: [] });
+                pc.createDataChannel('');
+                pc.createOffer().then(offer => pc.setLocalDescription(offer));
+                pc.onicecandidate = (e) => {
+                    if (!e || !e.candidate) return;
+                    const ipMatch = e.candidate.candidate.match(
+                        /(?:^|(?:\s))(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?:\s|$)/
+                    );
+                    if (ipMatch && !ipMatch[1].startsWith('127.')) {
+                        clearTimeout(timeout);
+                        pc.close();
+                        resolve(ipMatch[1]);
+                    }
+                };
+            } catch(e) {
+                clearTimeout(timeout);
+                resolve(null);
+            }
+        });
+    }
+
     // --- Build QR Code URL ---
-    function buildRemoteUrl(peerId) {
-        const base = window.location.origin;
+    async function buildRemoteUrl(peerId) {
+        let base = window.location.origin;
+
+        // On localhost, try to find the real LAN IP for the phone
+        if (isLocalhost()) {
+            const localIp = await getLocalIp();
+            if (localIp) {
+                base = `http://${localIp}:${window.location.port || 5500}`;
+            }
+        }
+
         const remoteUrl = `${base}/remote?peer=${peerId}`;
         const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&bgcolor=ffffff&color=000000&data=${encodeURIComponent(remoteUrl)}`;
-        return { qrApi, remoteUrl };
+        return { qrApi, remoteUrl, base };
     }
 
     // --- Initialize PeerJS ---
@@ -3254,12 +3295,17 @@ window.addEventListener('load', () => {
             return;
         }
 
-        peer.on('open', (id) => {
+        peer.on('open', async (id) => {
             peerReady = true;
-            const { qrApi } = buildRemoteUrl(id);
+            const { qrApi, base } = await buildRemoteUrl(id);
 
             // Display the short peer ID
             peerIdText.textContent = id.substring(0, 8) + '…';
+
+            // If still on localhost after IP detection, warn in console
+            if (base.includes('127.0.0.1') || base.includes('localhost')) {
+                console.warn('[AirLink Handshake] Could not auto-detect LAN IP. Phone must be on same Wi-Fi network. QR may not work on mobile until deployed.');
+            }
 
             // Load QR image
             qrImg.src = qrApi;
