@@ -3215,14 +3215,22 @@ window.addEventListener('load', () => {
         modal.setAttribute('aria-hidden', 'false');
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
-        if (!peerReady) initPeer();
+        // If peer was never started or was fully destroyed, re-init
+        if (!peerReady || !peer || peer.destroyed) {
+            initPeer();
+        } else {
+            // Peer is alive — just show the ready state again with existing QR
+            showState(stateReady);
+        }
     }
 
-    // --- Close Modal ---
+    // --- Close Modal (does NOT destroy peer — keeps it alive for phone) ---
     function closeModal() {
         modal.classList.remove('active');
         modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+        // NOTE: We intentionally do NOT destroy the peer here.
+        // The peer stays alive so the phone can still connect after modal is closed.
     }
 
     // --- Detect if running on localhost ---
@@ -3284,12 +3292,21 @@ window.addEventListener('load', () => {
 
         showState(stateInit);
         peerReady = false;
+        activeConn = null;
 
-        // Destroy old peer if exists
-        if (peer && !peer.destroyed) { peer.destroy(); }
+        // Destroy old peer only if truly dead
+        if (peer && !peer.destroyed) { try { peer.destroy(); } catch(e) {} }
 
         try {
-            peer = new Peer({ debug: 0 });
+            peer = new Peer({
+                debug: 0,
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
+                }
+            });
         } catch(e) {
             showState(stateError);
             return;
@@ -3361,17 +3378,26 @@ window.addEventListener('load', () => {
         });
     }
 
-    // --- Disconnect ---
+    // --- Disconnect (closes conn but keeps peer alive) ---
     function disconnect() {
         if (activeConn && activeConn.open) activeConn.close();
         activeConn = null;
+        swipeCount = 0;
         showState(stateReady);
+    }
+
+    // --- Full Reset (destroys peer, generates new QR) ---
+    function fullReset() {
+        activeConn = null;
+        swipeCount = 0;
+        peerReady = false;
+        initPeer();
     }
 
     // --- Event Listeners ---
     fab.addEventListener('click', openModal);
     closeBtn.addEventListener('click', closeModal);
-    retryBtn.addEventListener('click', initPeer);
+    retryBtn.addEventListener('click', fullReset);
     disconnectBtn.addEventListener('click', disconnect);
 
     modal.addEventListener('click', (e) => {
@@ -3381,4 +3407,11 @@ window.addEventListener('load', () => {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
     });
+
+    // --- Auto-init peer on page load (warm it up early!) ---
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initPeer);
+    } else {
+        initPeer();
+    }
 })();

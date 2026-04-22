@@ -270,7 +270,7 @@
         <div class="center-card" id="view-error">
             <i class="fa-solid fa-circle-xmark error-icon"></i>
             <p class="error-title">Connection Failed</p>
-            <p class="error-sub">Could not connect to the desktop. Make sure you scanned the latest QR code.</p>
+            <p class="error-sub" id="error-sub-msg">Desktop pe "Sync Phone" button dobara press karo, nayi QR generate karo aur scan karo.</p>
             <button class="btn-retry" onclick="location.reload()">
                 <i class="fa-solid fa-rotate-right"></i> Retry
             </button>
@@ -324,31 +324,58 @@
         showView(viewConn);
         setStatus('connecting', 'Connecting…');
 
-        const peer = new Peer({ debug: 0 });
+        // --- 15-second timeout — stop spinning forever ---
+        let connectionTimer = setTimeout(() => {
+            setStatus('error', 'Timed out');
+            document.getElementById('error-sub-msg').textContent =
+                'Desktop ka modal open nahi tha ya QR expire ho gaya. Desktop pe "Sync Phone" dobara press karo aur nayi QR scan karo.';
+            showView(viewError);
+        }, 15000);
+
+        const peer = new Peer({
+            debug: 0,
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:global.stun.twilio.com:3478' }
+                ]
+            }
+        });
 
         peer.on('open', () => {
-            const conn = peer.connect(hostPeerId, { reliable: true });
+            setStatus('connecting', 'Handshaking…');
+            const conn = peer.connect(hostPeerId, {
+                reliable: true,
+                serialization: 'json'
+            });
 
             conn.on('open', () => {
+                clearTimeout(connectionTimer);
                 setStatus('connected', 'Connected');
                 showView(viewConnected);
                 setupTouchpad(conn);
             });
 
             conn.on('error', () => {
+                clearTimeout(connectionTimer);
                 setStatus('error', 'Link error');
                 showView(viewError);
             });
 
             conn.on('close', () => {
+                clearTimeout(connectionTimer);
                 setStatus('error', 'Disconnected');
                 showView(viewError);
             });
         });
 
         peer.on('error', (err) => {
+            clearTimeout(connectionTimer);
             console.warn('Peer error:', err.type);
             setStatus('error', 'Failed');
+            document.getElementById('error-sub-msg').textContent =
+                `WebRTC error: ${err.type}. Desktop pe nayi QR generate karo.`;
             showView(viewError);
         });
 
