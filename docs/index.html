@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P347BXJRDS"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-P347BXJRDS');
+    </script>
+
+    <title>Technical Documentation | AirLink Mesh Protocol</title>
+    <meta name="description" content="Deep dive into the technical foundations of AirLink: Mesh routing, Signal Protocol encryption, and decentralized P2P systems.">
+    <meta name="keywords" content="mesh networking documentation, Signal Protocol deep dive, P2P encryption technical, Dijkstra mesh routing, X3DH Double Ratchet">
+    <link rel="canonical" href="https://myairlink.vercel.app/docs">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7387155885182247"
+        crossorigin="anonymous"></script>
+</head>
+
+<body class="docs-page">
+    <canvas id="canvas-mesh"></canvas>
+
+    <nav id="navbar">
+        <svg class="nav-border-progress" id="nav-border-svg">
+            <path id="nav-border-track" fill="none" />
+            <path id="nav-border-path" fill="none" />
+        </svg>
+        <div class="container nav-content">
+            <a href="/" class="logo">
+                <img src="/assets/logo.png" alt="Airlink Logo">
+                <span>AirLink</span>
+            </a>
+            <div class="nav-links-wrapper">
+                <div class="nav-links" id="nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/docs" class="nav-link active">Docs</a>
+                    <a href="/pricing" class="nav-link">Pricing</a>
+                    <a href="/#download" class="btn-nav-cta">Download</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="docs-layout container">
+        <aside class="docs-sidebar glass" data-reveal>
+            <div class="sidebar-section">
+                <h5>Getting Started</h5>
+                <a href="#intro">Introduction</a>
+                <a href="#installation">Installation</a>
+                <a href="#pairing">Device Pairing</a>
+            </div>
+            <div class="sidebar-section">
+                <h5>Mesh Networking</h5>
+                <a href="#routing">Routing Logic</a>
+                <a href="#discovery">Node Discovery</a>
+                <a href="#resilience">Self-Healing</a>
+            </div>
+            <div class="sidebar-section">
+                <h5>Security</h5>
+                <a href="#encryption">E2EE Overview</a>
+                <a href="#signal">Signal Protocol</a>
+                <a href="#keys">Key Management</a>
+            </div>
+        </aside>
+
+        <main class="docs-main">
+            <header class="docs-header" data-reveal>
+                <h1>Technical <span class="gradient-text">Documentation</span></h1>
+                <p>Welcome to the AirLink technical knowledge base. Here you will find in-depth explanations of the protocols and systems that power our decentralized network.</p>
+            </header>
+
+            <section id="intro" class="docs-section" data-reveal>
+                <h2>Introduction to Mesh</h2>
+                <p>AirLink operates as a decentralized autonomous mesh network. Unlike traditional star-topology networks where all devices connect to a central access point (like a Wi-Fi router or cell tower), mesh networking allows every device to act as a router for every other device.</p>
+                <p>This approach offers unprecedented resilience. In a star network, if the central node fails, the entire network dies. In an AirLink mesh, the network dynamically adapts. If a node moves out of range or loses power, the surrounding nodes automatically identify new paths to ensure message delivery continues uninterrupted.</p>
+            </section>
+
+            <section id="routing" class="docs-section" data-reveal>
+                <h2>Advanced Mesh Routing</h2>
+                <p>AirLink utilizes a proprietary adaptation of the **Dijkstra algorithm** optimized for dynamic, low-power radio environments. Our routing protocol considers several factors when determining the "cost" of a path:</p>
+                <ul>
+                    <li>**Signal Strength (RSSI):** Stronger links are prioritized for stability.</li>
+                    <li>**Hop Count:** Fewer hops are preferred to reduce latency.</li>
+                    <li>**Node Battery Life:** Nodes with low battery are avoided for heavy relay tasks.</li>
+                    <li>**Network Congestion:** Busy nodes are bypassed to maintain high throughput.</li>
+                </ul>
+                <div class="code-snippet glass">
+                    <pre><code>// Pseudocode for AirLink Routing Cost
+function calculatePathCost(link) {
+    let rssiFactor = normalize(link.rssi);
+    let batteryFactor = link.node.batteryLevel;
+    return (1 / rssiFactor) * (1 / batteryFactor);
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="signal" class="docs-section" data-reveal>
+                <h2>Signal Protocol Deep Dive</h2>
+                <p>Security is not an afterthought in AirLink; it is the foundation. We have implemented a full version of the **Signal Protocol** tailored for asynchronous, peer-to-peer environments.</p>
+                <h3>X3DH (Extended Triple Diffie-Hellman)</h3>
+                <p>When you pair with a new peer via QR code, AirLink performs an X3DH key exchange. This allows two parties to establish a shared secret without ever having to communicate through a central server. It provides mutual authentication and forward secrecy.</p>
+                <h3>The Double Ratchet Algorithm</h3>
+                <p>Once a session is established, every single message sent uses a new set of keys derived from the Double Ratchet. This ensures that even if a specific message key is compromised, future messages remain secure, and past messages cannot be decrypted (Post-Compromise Security).</p>
+            </section>
+
+            <section id="discovery" class="docs-section" data-reveal>
+                <h2>Neighbor Discovery Protocol</h2>
+                <p>AirLink uses a hybrid discovery mechanism combining **Bluetooth Low Energy (BLE)** for continuous background presence and **Wi-Fi Direct** for high-bandwidth data bursts. Nodes periodically broadcast "Heartbeat" packets containing their unique ID and a summary of their routing table. This allows the mesh to stay up-to-date with its local topology with minimal energy consumption.</p>
+            </section>
+
+            <section id="faq-docs" class="docs-section" data-reveal>
+                <h2>Developer FAQ</h2>
+                <div class="docs-faq-item">
+                    <strong>Can I build on top of the AirLink Protocol?</strong>
+                    <p>Yes. We are currently developing an SDK that will allow third-party developers to integrate mesh messaging into their own applications. Check our GitHub for early-access documentation.</p>
+                </div>
+                <div class="docs-faq-item">
+                    <strong>How does the app handle data collisions?</strong>
+                    <p>We use a custom CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance) layer specifically tuned for the shared radio space of mobile devices.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <div class="container" style="text-align: center; padding: 4rem 0;">
+            <p>&copy; 2026 AirLink Project. Technical Documentation Ver 1.4.2</p>
+        </div>
+    </footer>
+
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <script src="/script.js"></script>
+</body>
+
+</html>

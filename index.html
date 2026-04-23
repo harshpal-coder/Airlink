@@ -278,10 +278,31 @@
                             <stop offset="100%" style="stop-color:var(--primary-color);stop-opacity:0.2" />
                         </linearGradient>
                     </defs>
-                </svg>
+    </section>
+
+    <section id="our-mission" class="glass-section focus-reveal">
+        <div class="container">
+            <div class="mission-grid">
+                <div class="mission-text" data-reveal>
+                    <h2 style="font-size: 2.5rem;">Our <span class="gradient-text">Mission</span></h2>
+                    <p>At AirLink, we believe that the ability to communicate is a fundamental human right, not a privilege dependent on corporate infrastructure or centralized gatekeepers. In an era where digital surveillance and network outages are becoming increasingly common, we are committed to building a world where people can stay connected on their own terms.</p>
+                    <p>Our goal is to decentralize the very fabric of communication. By leveraging the power of peer-to-peer mesh networking, AirLink transforms every smartphone into a node, creating a resilient, self-healing network that grows stronger with every user. Whether it's a natural disaster, a remote expedition, or a protest in a signal-jammed area, AirLink ensures that your voice is never silenced.</p>
+                    <p>We are driven by three core pillars: **Resilience**, **Privacy**, and **Freedom**. We use the world-renowned Signal Protocol to ensure that your private conversations stay truly private, and our open-source philosophy ensures that the community can always trust and improve the tools they use. Join us in the mesh revolution.</p>
+                </div>
+                <div class="mission-visual" data-reveal>
+                    <div class="mission-orb-container">
+                        <div class="mission-orb primary"></div>
+                        <div class="mission-orb secondary"></div>
+                        <div class="mission-orb tertiary"></div>
+                        <div class="mission-icon-core">
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
+
 
     <section id="how-it-works" class="glass-section">
         <div class="container">
@@ -401,12 +422,16 @@
                     <div style="color: #FFD700; font-size: 2rem; margin-bottom: 1rem;"><i
                             class="fa-solid fa-code-branch"></i></div>
                     <h4>Mesh Routing</h4>
-                    <p>Intelligent, decentralized routing that finds the optimal path through the network dynamically.
+                    <p>Intelligent, decentralized routing that finds the optimal path through the network dynamically. Our implementation uses an optimized Dijkstra-based algorithm to ensure message delivery even in highly fragmented networks.
                     </p>
                     <div class="click-hint" style="font-size: 0.7rem; color: #FFD700; margin-top: 1rem; opacity: 0.6;">
                         <i class="fa-solid fa-mouse-pointer"></i> Click for Deep Dive
                     </div>
                 </div>
+            </div>
+
+            <div class="tech-detailed-description" data-reveal style="margin-top: 4rem; text-align: center; max-width: 900px; margin-left: auto; margin-right: auto;">
+                <p style="color: var(--text-dim); font-size: 1.1rem; line-height: 1.8;">The AirLink architecture is designed for the most demanding environments. By combining **X3DH** for cryptographic key exchange and the **Double Ratchet** algorithm for ongoing message encryption, we provide the same security standards as industry leaders like Signal and WhatsApp, but in a completely serverless, peer-to-peer environment. Our mesh layer handles the heavy lifting of neighbor discovery and multi-hop routing, allowing users to communicate miles beyond the range of a single Bluetooth or Wi-Fi link.</p>
             </div>
 
             <!-- Tech Deep Dive Container -->
@@ -612,12 +637,12 @@
                     <span class="dot"></span>
                     <span class="dot"></span>
                 </div>
-                <button id="testimonial-next" class="nav-btn" aria-label="Next testimonial">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
             </div>
         </div>
     </section>
+
+
+
 
     <section id="supporters" class="focus-reveal">
         <div class="container">
@@ -1042,6 +1067,7 @@
                     <div class="footer-links">
                         <a href="#features">Features</a>
                         <a href="#tech">Technology</a>
+                        <a href="/docs">Documentation</a>
                         <a href="#download">Download</a>
                         <a href="/pricing">Pricing</a>
                     </div>
@@ -1062,6 +1088,7 @@
                 <div class="footer-column" data-reveal>
                     <h4>Company</h4>
                     <div class="footer-links">
+                        <a href="/about">About Us</a>
                         <a href="/careers">Careers</a>
                         <a href="/privacy">Privacy Policy</a>
                         <a href="/terms">Terms & Conditions</a>
