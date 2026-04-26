@@ -18,7 +18,7 @@ try {
     // --- SMOOTH SCROLLING (LENIS) ---
     lenis = new Lenis({
         duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         direction: 'vertical',
         gestureDirection: 'vertical',
         smooth: true,
@@ -101,11 +101,11 @@ function themeLerpLoop() {
     const targetTheme = window.airlinkThemes[window.currentThemeKey];
     const targetRgb = targetTheme.rgb.split(',').map(Number);
     const targetSecRgb = targetTheme.secondaryRgb.split(',').map(Number);
-    
+
     let changed = false;
     const lerpFactor = 0.05;
 
-    for(let i=0; i<3; i++) {
+    for (let i = 0; i < 3; i++) {
         const diff1 = targetRgb[i] - window.currentThemeRgbArray[i];
         if (Math.abs(diff1) > 0.1) {
             window.currentThemeRgbArray[i] += diff1 * lerpFactor;
@@ -113,7 +113,7 @@ function themeLerpLoop() {
         } else {
             window.currentThemeRgbArray[i] = targetRgb[i];
         }
-        
+
         const diff2 = targetSecRgb[i] - window.currentThemeSecondaryRgbArray[i];
         if (Math.abs(diff2) > 0.1) {
             window.currentThemeSecondaryRgbArray[i] += diff2 * lerpFactor;
@@ -122,14 +122,14 @@ function themeLerpLoop() {
             window.currentThemeSecondaryRgbArray[i] = targetSecRgb[i];
         }
     }
-    
+
     if (changed) {
         const r1 = Math.round(window.currentThemeRgbArray[0]);
         const g1 = Math.round(window.currentThemeRgbArray[1]);
         const b1 = Math.round(window.currentThemeRgbArray[2]);
         window.airlinkLerp.primaryRgb = `${r1}, ${g1}, ${b1}`;
         window.airlinkLerp.primary = `rgb(${r1}, ${g1}, ${b1})`;
-        
+
         const r2 = Math.round(window.currentThemeSecondaryRgbArray[0]);
         const g2 = Math.round(window.currentThemeSecondaryRgbArray[1]);
         const b2 = Math.round(window.currentThemeSecondaryRgbArray[2]);
@@ -138,7 +138,7 @@ function themeLerpLoop() {
     } else {
         isThemeLerpActive = false; // Pause loop when colors are stable
     }
-    
+
     requestAnimationFrame(themeLerpLoop);
 }
 // Start lerp loop
@@ -150,17 +150,17 @@ function applyTheme(themeKey, save = true) {
 
     window.currentThemeKey = themeKey;
     isThemeLerpActive = true; // Re-active loop when theme changes
-    
+
     document.body.classList.add('theme-transition');
-    
+
     const root = document.documentElement;
-    
+
     root.style.setProperty('--primary-color', theme.primary);
     root.style.setProperty('--secondary-color', theme.secondary);
     root.style.setProperty('--accent-glow', theme.glow);
-    
+
     if (save) localStorage.setItem('airlink-theme', themeKey);
-    
+
     setTimeout(() => {
         document.body.classList.remove('theme-transition');
     }, 600);
@@ -325,7 +325,7 @@ function updateNavIndicator(element) {
     if (!navIndicator || !element) return;
     const rect = element.getBoundingClientRect();
     const parentRect = element.parentElement.getBoundingClientRect();
-    
+
     navIndicator.style.width = `${rect.width}px`;
     navIndicator.style.left = `${rect.left - parentRect.left}px`;
 }
@@ -377,7 +377,7 @@ function initPremiumScrollAnimations() {
     const navBorderPath = document.getElementById('nav-border-path');
     const navBorderTrack = document.getElementById('nav-border-track');
     const navLinksItems = document.querySelectorAll('.nav-link');
-    
+
     let lastScrollPos = window.pageYOffset || document.documentElement.scrollTop;
     let trackVelocity = 0;
     let isCheckingScroll = false; // Throttle flag
@@ -407,17 +407,17 @@ function initPremiumScrollAnimations() {
 
         // Velocity for tracks
         const delta = currentScrollY - lastScrollPos;
-        trackVelocity = (trackVelocity + delta * 0.15) * 0.9; 
+        trackVelocity = (trackVelocity + delta * 0.15) * 0.9;
         lastScrollPos = currentScrollY;
 
         // 1. Navbar & Scroll Progress (Restored Logic)
         if (navbar) {
             if (currentScrollY > 50) {
                 navbar.classList.add('scrolled');
-            } else if (!document.body.classList.contains('blog-page') && 
-                       !document.body.classList.contains('careers-page') && 
-                       !document.body.classList.contains('pricing-page') &&
-                       !document.body.classList.contains('legal-page')) {
+            } else if (!document.body.classList.contains('blog-page') &&
+                !document.body.classList.contains('careers-page') &&
+                !document.body.classList.contains('pricing-page') &&
+                !document.body.classList.contains('legal-page')) {
                 navbar.classList.remove('scrolled');
             }
         }
@@ -425,24 +425,24 @@ function initPremiumScrollAnimations() {
         if (navBorderPath && navbar) {
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrolled = (currentScrollY / height) * 100;
-            
+
             // Dynamic Path & Dot Sync
             const rect = navbar.getBoundingClientRect();
             const w = rect.width;
             const h = rect.height;
             const r = Math.min(w, h) / 2;
-            
+
             // Custom Path: Start from top-center and go clockwise
-            const d = `M ${w/2},0 L ${w-r},0 A ${r},${r} 0 0 1 ${w},${r} L ${w},${h-r} A ${r},${r} 0 0 1 ${w-r},${h} L ${r},${h} A ${r},${r} 0 0 1 0,${h-r} L 0,${r} A ${r},${r} 0 0 1 ${r},0 L ${w/2},0`;
-            
+            const d = `M ${w / 2},0 L ${w - r},0 A ${r},${r} 0 0 1 ${w},${r} L ${w},${h - r} A ${r},${r} 0 0 1 ${w - r},${h} L ${r},${h} A ${r},${r} 0 0 1 0,${h - r} L 0,${r} A ${r},${r} 0 0 1 ${r},0 L ${w / 2},0`;
+
             navBorderPath.setAttribute('d', d);
             if (navBorderTrack) navBorderTrack.setAttribute('d', d);
-            
+
             try {
                 const pathLength = navBorderPath.getTotalLength();
                 navBorderPath.style.strokeDasharray = pathLength;
                 navBorderPath.style.strokeDashoffset = pathLength - (pathLength * (scrolled / 100));
-            } catch(e) {
+            } catch (e) {
                 // Total length might fail if SVG is not yet in DOM/rendered, but usually fine here
             }
         }
@@ -479,7 +479,7 @@ function initPremiumScrollAnimations() {
                 if (mock.classList.contains('center')) speed = 0.12;
                 else if (mock.classList.contains('left')) speed = 0.05;
                 else if (mock.classList.contains('right')) speed = 0.08;
-                
+
                 const yOffset = currentScrollY * speed;
                 mock.style.transform = getPhoneTransform(mock, yOffset);
             });
@@ -491,7 +491,7 @@ function initPremiumScrollAnimations() {
             const secCenter = rect.top + rect.height / 2;
             const viewCenter = vh / 2;
             const distance = Math.abs(secCenter - viewCenter);
-            
+
             if (distance < vh * 0.35) {
                 sec.classList.add('in-focus');
             } else {
@@ -520,12 +520,12 @@ function initPremiumScrollAnimations() {
         if (signalPathActive && signalPathSection) {
             const rect = signalPathSection.getBoundingClientRect();
             const viewHeight = window.innerHeight;
-            
+
             // Calculate progress based on scroll position within the section
             let progress = (viewHeight * 0.8 - rect.top) / (rect.height + viewHeight * 0.4);
             progress = Math.max(0, Math.min(1, progress));
-            
-            const pathLength = 1000; 
+
+            const pathLength = 1000;
             signalPathActive.style.strokeDashoffset = pathLength * (1 - progress);
         }
 
@@ -550,7 +550,7 @@ function initPremiumScrollAnimations() {
         } else if (el.classList.contains('center')) {
             base = `translateZ(100px)`;
         }
-        
+
         return `${base} translateY(${yOffset}px)`;
     }
 
@@ -672,7 +672,7 @@ function initMeshEcosystem() {
         const hW = hRect.width || hubCore.offsetWidth || 120;
         const hH = hRect.height || hubCore.offsetHeight || 120;
 
-        
+
         const hX = (hRect.left + hW / 2) - containerRect.left;
         const hY = (hRect.top + hH / 2) - containerRect.top;
 
@@ -699,14 +699,14 @@ function initMeshEcosystem() {
             dot.setAttribute("r", "2");
             dot.setAttribute("fill", "var(--primary-color)");
             dot.style.filter = "blur(1px)";
-            
+
             const anim = document.createElementNS("http://www.w3.org/2000/svg", "animate");
             anim.setAttribute("attributeName", "cx");
             anim.setAttribute("from", hX);
             anim.setAttribute("to", nX);
             anim.setAttribute("dur", (Math.random() * 2 + 2) + "s");
             anim.setAttribute("repeatCount", "indefinite");
-            
+
             const animY = document.createElementNS("http://www.w3.org/2000/svg", "animate");
             animY.setAttribute("attributeName", "cy");
             animY.setAttribute("from", hY);
@@ -725,10 +725,10 @@ function initMeshEcosystem() {
         drawConnections();
     });
     ro.observe(container);
-    
+
     // Initial draw with retries to ensure final positions are captured
-    setTimeout(drawConnections, 500); 
-    setTimeout(drawConnections, 2000); 
+    setTimeout(drawConnections, 500);
+    setTimeout(drawConnections, 2000);
 }
 
 // Initialize on Load
@@ -778,7 +778,7 @@ tiltElements.forEach(el => {
         const rect = el.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        
+
         // Calculate percentages for CSS variables (Spotlight tracking)
         const mouseX = (x / rect.width) * 100;
         const mouseY = (y / rect.height) * 100;
@@ -1424,9 +1424,9 @@ function renderPremiumSupporters(premiumSupporters) {
     premiumSupporters.forEach(supporter => {
         const item = document.createElement('div');
         item.className = 'premium-supporter-item';
-        
+
         const init = supporter.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-        
+
         item.innerHTML = `
             <div class="premium-supporter-avatar">${init}</div>
             <div class="premium-supporter-info">
@@ -1481,8 +1481,6 @@ async function fetchSupporters() {
         // Only update if the data has actually changed (add, edit, or delete)
         if (currentJsonString !== lastJsonString) {
             const supporters = JSON.parse(currentJsonString);
-            // Temporary Mock for UI Verification
-            supporters.push({ name: "Rajat Sharma", amount: 501 });
             lastJsonString = currentJsonString;
 
             // Reset state for a fresh sync
@@ -1525,7 +1523,7 @@ async function fetchSupporters() {
             const GOAL_AMOUNT = 2500;
             const progressFill = document.getElementById('goal-progress-fill');
             const percentText = document.getElementById('goal-percent');
-            
+
             if (progressFill && percentText) {
                 const percent = Math.min(Math.max((totalCollected / GOAL_AMOUNT) * 100, 0), 100);
                 progressFill.style.width = `${percent}%`;
@@ -2819,19 +2817,19 @@ async function initLiveVisitorCounter() {
 
     const countDisplay = document.createElement('strong');
     const labelText = document.createTextNode(' visitors online now');
-    
+
     async function updateCounter() {
         try {
             const response = await fetch(`${BACKEND_URL}?action=getLiveVisitors`);
             const data = await response.json();
-            
+
             let count = data.status === 'success' ? data.count : null;
-            
+
             // Fallback to Simulation if Real Data fails or is 0
             if (count === null || count === 0) {
                 const hours = new Date().getHours();
                 let baseCount = 42;
-                if (hours >= 18 && hours <= 23) baseCount = 85; 
+                if (hours >= 18 && hours <= 23) baseCount = 85;
                 else if (hours >= 0 && hours <= 4) baseCount = 20;
                 count = Math.floor(baseCount + (Math.random() * 15));
             }
@@ -2839,7 +2837,7 @@ async function initLiveVisitorCounter() {
             // Update UI with smooth transition
             const textElement = liveContainer.querySelector('.live-text');
             textElement.style.opacity = '0';
-            
+
             setTimeout(() => {
                 textElement.innerHTML = '';
                 countDisplay.textContent = count;
@@ -2870,7 +2868,7 @@ function initCustomCursor() {
     const body = document.body;
 
     if (!dot || !outline) return;
-    
+
     // Safety: Only hide the real cursor if we have the custom one ready
     document.documentElement.classList.add('custom-cursor-active');
 
@@ -2907,7 +2905,7 @@ function initCustomCursor() {
 
     // Hover Detection
     const interactiveElements = 'a, button, [role="button"], .glass, .glass-card, .blog-card, .supporter-card, .faq-question, .read-more, .nav-link, .btn-nav-cta, .social-link';
-    
+
     document.addEventListener('mouseover', (e) => {
         if (e.target.closest(interactiveElements)) {
             body.classList.add('cursor-hovered');
@@ -2923,40 +2921,40 @@ function initCustomCursor() {
     // Active/Click Detection & Mesh Ping
     document.addEventListener('mousedown', (e) => {
         body.classList.add('cursor-active');
-        
+
         // Spawn Ripple
         const ripple = document.createElement('div');
         ripple.className = 'cursor-ping';
         ripple.style.left = `${e.clientX}px`;
         ripple.style.top = `${e.clientY}px`;
         document.body.appendChild(ripple);
-        
+
         // Cleanup
         setTimeout(() => ripple.remove(), 600);
     });
-    
+
     document.addEventListener('mouseup', () => body.classList.remove('cursor-active'));
 
     // --- NEW: Magnetic Interaction ---
     const magneticElements = document.querySelectorAll('.btn, .nav-link, .btn-nav-cta, .social-link, .glass-card');
-    
+
     magneticElements.forEach(el => {
         el.addEventListener('mousemove', (e) => {
             const rect = el.getBoundingClientRect();
             const x = e.clientX - rect.left - rect.width / 2;
             const y = e.clientY - rect.top - rect.height / 2;
-            
+
             // Subtle pull effect
             el.style.transform = `translate(${x * 0.3}px, ${y * 0.5}px) scale(1.02)`;
             el.classList.add('magnetic-target');
-            
+
             // Magnetize the cursor dot slightly to the center
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
             mouseX = lerp(mouseX, centerX, 0.2);
             mouseY = lerp(mouseY, centerY, 0.2);
         });
-        
+
         el.addEventListener('mouseleave', () => {
             el.style.transform = '';
             el.classList.remove('magnetic-target');
@@ -3065,16 +3063,16 @@ function initScenarioSimulator() {
     function setupScenario(id) {
         const config = scenarios[id];
         activeScenario = id;
-        
+
         // Update UI
         btns.forEach(b => b.classList.toggle('active', b.dataset.scenario === id));
         atm.className = 'scenario-atm-overlay ' + config.atmClass;
-        
+
         // Update Text with fade
         const info = document.querySelector('.scenario-info');
         info.style.opacity = '0';
         info.style.transform = 'translateY(10px)';
-        
+
         setTimeout(() => {
             title.textContent = config.title;
             desc.textContent = config.desc;
@@ -3100,24 +3098,24 @@ function initScenarioSimulator() {
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const config = scenarios[activeScenario];
-        
+
         particles.forEach((p, i) => {
             p.update();
             p.draw();
-            
+
             for (let j = i + 1; j < particles.length; j++) {
                 const p2 = particles[j];
                 const dx = p.x - p2.x;
                 const dy = p.y - p2.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                
+
                 if (dist < config.linkDist) {
                     ctx.beginPath();
                     ctx.moveTo(p.x, p.y);
                     ctx.lineTo(p2.x, p2.y);
-                    ctx.strokeStyle = activeScenario === 'emergency' 
+                    ctx.strokeStyle = activeScenario === 'emergency'
                         ? `rgba(255, 77, 77, ${1 - dist / config.linkDist})`
-                    : `rgba(${window.airlinkLerp.primaryRgb}, ${1 - dist / config.linkDist})`;
+                        : `rgba(${window.airlinkLerp.primaryRgb}, ${1 - dist / config.linkDist})`;
                     ctx.lineWidth = 1;
                     ctx.stroke();
                 }
@@ -3166,14 +3164,14 @@ function initStickyUseCases() {
             onUpdate: (self) => {
                 // Update progress bar fill
                 if (fill) fill.style.height = (self.progress * 100) + "%";
-                
+
                 // Calculate which card is active (0 to 3)
                 // Use a slight offset to switch exactly in the middle of segments
                 const index = Math.min(
                     Math.floor(self.progress * cards.length),
                     cards.length - 1
                 );
-                
+
                 // Update active classes
                 cards.forEach((card, i) => {
                     if (i === index) {
@@ -3184,7 +3182,7 @@ function initStickyUseCases() {
                         card.classList.remove('active');
                     }
                 });
-                
+
                 labels.forEach((label, i) => {
                     if (i === index) {
                         if (!label.classList.contains('active')) {
@@ -3202,9 +3200,9 @@ function initStickyUseCases() {
     cards.forEach((card, i) => {
         const bg = card.querySelector('.card-bg');
         if (bg) {
-            tl.fromTo(bg, 
-                { scale: 1 }, 
-                { scale: 1.1, ease: "none", duration: 1 }, 
+            tl.fromTo(bg,
+                { scale: 1 },
+                { scale: 1.1, ease: "none", duration: 1 },
                 i // This maps the animation to the segment
             );
         }
@@ -3222,19 +3220,19 @@ window.addEventListener('load', () => {
 
 // ===== AIRLINK HANDSHAKE (MQTT) =====
 (function initAirLinkHandshake() {
-    const fab           = document.getElementById('handshake-fab');
-    const modal         = document.getElementById('handshake-modal');
-    const closeBtn      = document.getElementById('handshake-modal-close');
-    const retryBtn      = document.getElementById('hs-retry-btn');
+    const fab = document.getElementById('handshake-fab');
+    const modal = document.getElementById('handshake-modal');
+    const closeBtn = document.getElementById('handshake-modal-close');
+    const retryBtn = document.getElementById('hs-retry-btn');
     const disconnectBtn = document.getElementById('hs-disconnect-btn');
 
-    const stateInit  = document.getElementById('hs-state-init');
+    const stateInit = document.getElementById('hs-state-init');
     const stateReady = document.getElementById('hs-state-ready');
-    const stateConn  = document.getElementById('hs-state-connected');
+    const stateConn = document.getElementById('hs-state-connected');
     const stateError = document.getElementById('hs-state-error');
 
-    const qrImg        = document.getElementById('hs-qr-img');
-    const peerIdText   = document.getElementById('hs-peer-id-text');
+    const qrImg = document.getElementById('hs-qr-img');
+    const peerIdText = document.getElementById('hs-peer-id-text');
     const swipeCounter = document.getElementById('hs-swipe-counter');
 
     if (!fab || !modal) return;
@@ -3247,17 +3245,17 @@ window.addEventListener('load', () => {
         document.body.appendChild(remoteCursor);
     }
     // Cursor position state — starts at screen center
-    let remoteCursorX = window.innerWidth  / 2;
+    let remoteCursorX = window.innerWidth / 2;
     let remoteCursorY = window.innerHeight / 2;
     let lastHoveredElement = null;
 
     // --- MQTT config ---
     const MQTT_BROKER = 'wss://broker.hivemq.com:8884/mqtt';
-    let mqttClient  = null;
-    let sessionId   = null;
+    let mqttClient = null;
+    let sessionId = null;
     let sessionReady = false;
     let phoneConnected = false;
-    let swipeCount  = 0;
+    let swipeCount = 0;
 
     // --- Helpers ---
     function showState(state) {
@@ -3291,15 +3289,15 @@ window.addEventListener('load', () => {
         swipeCount = 0;
 
         // Clean up old client
-        if (mqttClient) { try { mqttClient.end(true); } catch(e) {} mqttClient = null; }
+        if (mqttClient) { try { mqttClient.end(true); } catch (e) { } mqttClient = null; }
 
         // New session code
         sessionId = generateSessionId();
         const scrollTopic = `airlink/${sessionId}/scroll`;
-        const ackTopic    = `airlink/${sessionId}/ack`;
+        const ackTopic = `airlink/${sessionId}/ack`;
 
         mqttClient = mqtt.connect(MQTT_BROKER, {
-            clientId: `al-desktop-${sessionId}-${Math.random().toString(36).substring(2,6)}`,
+            clientId: `al-desktop-${sessionId}-${Math.random().toString(36).substring(2, 6)}`,
             clean: true,
             connectTimeout: 10000,
             reconnectPeriod: 0  // No auto-reconnect — we handle it manually
@@ -3353,10 +3351,10 @@ window.addEventListener('load', () => {
 
                 // --- Remote cursor: relative move (dx/dy) ---
                 if (data.action === 'move' && typeof data.dx === 'number') {
-                    remoteCursorX = Math.max(0, Math.min(window.innerWidth,  remoteCursorX + data.dx));
+                    remoteCursorX = Math.max(0, Math.min(window.innerWidth, remoteCursorX + data.dx));
                     remoteCursorY = Math.max(0, Math.min(window.innerHeight, remoteCursorY + data.dy));
                     remoteCursor.style.left = remoteCursorX + 'px';
-                    remoteCursor.style.top  = remoteCursorY + 'px';
+                    remoteCursor.style.top = remoteCursorY + 'px';
                     remoteCursor.classList.add('visible');
                     remoteCursor.classList.remove('clicking');
 
@@ -3385,7 +3383,7 @@ window.addEventListener('load', () => {
                     const ripple = document.createElement('div');
                     ripple.className = 'airlink-click-ripple';
                     ripple.style.left = remoteCursorX + 'px';
-                    ripple.style.top  = remoteCursorY + 'px';
+                    ripple.style.top = remoteCursorY + 'px';
                     document.body.appendChild(ripple);
                     ripple.addEventListener('animationend', () => ripple.remove());
 
@@ -3407,7 +3405,7 @@ window.addEventListener('load', () => {
                     remoteCursor.classList.remove('visible');
                     showState(stateReady);
                 }
-            } catch(e) { /* ignore malformed */ }
+            } catch (e) { /* ignore malformed */ }
         });
 
         mqttClient.on('error', (err) => {
