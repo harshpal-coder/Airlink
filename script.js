@@ -1408,6 +1408,36 @@ function createSupporterCard(name, amount, tier) {
     return card;
 }
 
+function renderPremiumSupporters(premiumSupporters) {
+    const container = document.getElementById('premium-supporters-list');
+    const column = document.getElementById('premium-supporters-column');
+    if (!container || !column) return;
+
+    if (premiumSupporters.length === 0) {
+        column.style.display = 'none';
+        return;
+    }
+
+    column.style.display = 'flex';
+    container.innerHTML = '';
+
+    premiumSupporters.forEach(supporter => {
+        const item = document.createElement('div');
+        item.className = 'premium-supporter-item';
+        
+        const init = supporter.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        
+        item.innerHTML = `
+            <div class="premium-supporter-avatar">${init}</div>
+            <div class="premium-supporter-info">
+                <span class="premium-supporter-name">${supporter.name}</span>
+                <span class="premium-supporter-amount">₹${supporter.amount}</span>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
 function renderTrack(trackId, tier) {
     const container = trackContainers[trackId];
     if (!container) return;
@@ -1451,12 +1481,16 @@ async function fetchSupporters() {
         // Only update if the data has actually changed (add, edit, or delete)
         if (currentJsonString !== lastJsonString) {
             const supporters = JSON.parse(currentJsonString);
+            // Temporary Mock for UI Verification
+            supporters.push({ name: "Rajat Sharma", amount: 501 });
             lastJsonString = currentJsonString;
 
             // Reset state for a fresh sync
             for (let id in supportersByTrack) supportersByTrack[id] = [];
 
             let totalCollected = 0;
+
+            let premiumSupporters = [];
 
             // Sort everything back into tracks
             supporters.forEach(supporter => {
@@ -1466,7 +1500,10 @@ async function fetchSupporters() {
 
                 let trackId;
 
-                if (amount === 101) trackId = 1;
+                if (amount > 101) {
+                    premiumSupporters.push({ name: supporter.name, amount: amount });
+                    trackId = 1; // Also keep them in track 1 for the scrolling feed
+                } else if (amount === 101) trackId = 1;
                 else if (amount === 51) trackId = 2;
                 else if (amount === 21) trackId = 3;
                 else if (amount === 11) trackId = 4;
@@ -1474,6 +1511,9 @@ async function fetchSupporters() {
 
                 supportersByTrack[trackId].unshift({ name: supporter.name, amount: amount });
             });
+
+            // Render Premium Supporters Sidebar
+            renderPremiumSupporters(premiumSupporters);
 
             // Update the live total money UI
             const totalMoneyEl = document.getElementById('total-money-amount');

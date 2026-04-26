@@ -6,17 +6,17 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-P347BXJRDS"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', 'G-P347BXJRDS');
     </script>
 
     <!-- Microsoft Clarity -->
     <script type="text/javascript">
-        (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
         })(window, document, "clarity", "script", "we8md9ust6");
     </script>
 
@@ -25,7 +25,8 @@
     <title>Airlink | Secure P2P Mesh Messaging</title>
     <meta name="description"
         content="Airlink is a secure, decentralized messaging app that works without internet. Uses mesh networking and Signal Protocol encryption.">
-    <meta name="keywords" content="AirLink, P2P messaging, mesh networking, offline messaging, decentralized messaging, Signal Protocol, secure communication, no internet messaging, peer-to-peer, Bluetooth messaging, Wi-Fi Direct chat, encrypted offline messaging">
+    <meta name="keywords"
+        content="AirLink, P2P messaging, mesh networking, offline messaging, decentralized messaging, Signal Protocol, secure communication, no internet messaging, peer-to-peer, Bluetooth messaging, Wi-Fi Direct chat, encrypted offline messaging">
     <link rel="canonical" href="https://myairlink.vercel.app/">
 
     <!-- Structured Data (JSON-LD) -->
@@ -245,7 +246,11 @@
                             <h3>Voice Messaging</h3>
                             <p>Offline voice notes with real-time waveform.</p>
                             <div class="waveform-container tiny">
-                                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                <div class="bar"></div>
+                                <div class="bar"></div>
+                                <div class="bar"></div>
+                                <div class="bar"></div>
+                                <div class="bar"></div>
                             </div>
                         </div>
                     </div>
@@ -285,9 +290,19 @@
             <div class="mission-grid">
                 <div class="mission-text" data-reveal>
                     <h2 style="font-size: 2.5rem;">Our <span class="gradient-text">Mission</span></h2>
-                    <p>At AirLink, we believe that the ability to communicate is a fundamental human right, not a privilege dependent on corporate infrastructure or centralized gatekeepers. In an era where digital surveillance and network outages are becoming increasingly common, we are committed to building a world where people can stay connected on their own terms.</p>
-                    <p>Our goal is to decentralize the very fabric of communication. By leveraging the power of peer-to-peer mesh networking, AirLink transforms every smartphone into a node, creating a resilient, self-healing network that grows stronger with every user. Whether it's a natural disaster, a remote expedition, or a protest in a signal-jammed area, AirLink ensures that your voice is never silenced.</p>
-                    <p>We are driven by three core pillars: **Resilience**, **Privacy**, and **Freedom**. We use the world-renowned Signal Protocol to ensure that your private conversations stay truly private, and our open-source philosophy ensures that the community can always trust and improve the tools they use. Join us in the mesh revolution.</p>
+                    <p>At AirLink, we believe that the ability to communicate is a fundamental human right, not a
+                        privilege dependent on corporate infrastructure or centralized gatekeepers. In an era where
+                        digital surveillance and network outages are becoming increasingly common, we are committed to
+                        building a world where people can stay connected on their own terms.</p>
+                    <p>Our goal is to decentralize the very fabric of communication. By leveraging the power of
+                        peer-to-peer mesh networking, AirLink transforms every smartphone into a node, creating a
+                        resilient, self-healing network that grows stronger with every user. Whether it's a natural
+                        disaster, a remote expedition, or a protest in a signal-jammed area, AirLink ensures that your
+                        voice is never silenced.</p>
+                    <p>We are driven by three core pillars: **Resilience**, **Privacy**, and **Freedom**. We use the
+                        world-renowned Signal Protocol to ensure that your private conversations stay truly private, and
+                        our open-source philosophy ensures that the community can always trust and improve the tools
+                        they use. Join us in the mesh revolution.</p>
                 </div>
                 <div class="mission-visual" data-reveal>
                     <div class="mission-orb-container">
@@ -312,10 +327,13 @@
             </div>
             <div class="signal-path-container">
                 <svg class="main-path-svg" viewBox="0 0 1000 400">
-                    <path d="M50,200 C200,200 300,100 500,200 C700,300 800,200 950,200" id="signal-path-line" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="4" stroke-dasharray="10 10" />
-                    <path d="M50,200 C200,200 300,100 500,200 C700,300 800,200 950,200" id="signal-path-active" fill="none" stroke="var(--primary-color)" stroke-width="4" stroke-dasharray="1000" stroke-dashoffset="1000" />
+                    <path d="M50,200 C200,200 300,100 500,200 C700,300 800,200 950,200" id="signal-path-line"
+                        fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="4" stroke-dasharray="10 10" />
+                    <path d="M50,200 C200,200 300,100 500,200 C700,300 800,200 950,200" id="signal-path-active"
+                        fill="none" stroke="var(--primary-color)" stroke-width="4" stroke-dasharray="1000"
+                        stroke-dashoffset="1000" />
                 </svg>
-                
+
                 <div class="path-steps">
                     <div class="path-step s1" data-reveal>
                         <div class="step-blob"><i class="fa-solid fa-search"></i></div>
@@ -422,7 +440,9 @@
                     <div style="color: #FFD700; font-size: 2rem; margin-bottom: 1rem;"><i
                             class="fa-solid fa-code-branch"></i></div>
                     <h4>Mesh Routing</h4>
-                    <p>Intelligent, decentralized routing that finds the optimal path through the network dynamically. Our implementation uses an optimized Dijkstra-based algorithm to ensure message delivery even in highly fragmented networks.
+                    <p>Intelligent, decentralized routing that finds the optimal path through the network dynamically.
+                        Our implementation uses an optimized Dijkstra-based algorithm to ensure message delivery even in
+                        highly fragmented networks.
                     </p>
                     <div class="click-hint" style="font-size: 0.7rem; color: #FFD700; margin-top: 1rem; opacity: 0.6;">
                         <i class="fa-solid fa-mouse-pointer"></i> Click for Deep Dive
@@ -430,8 +450,14 @@
                 </div>
             </div>
 
-            <div class="tech-detailed-description" data-reveal style="margin-top: 4rem; text-align: center; max-width: 900px; margin-left: auto; margin-right: auto;">
-                <p style="color: var(--text-dim); font-size: 1.1rem; line-height: 1.8;">The AirLink architecture is designed for the most demanding environments. By combining **X3DH** for cryptographic key exchange and the **Double Ratchet** algorithm for ongoing message encryption, we provide the same security standards as industry leaders like Signal and WhatsApp, but in a completely serverless, peer-to-peer environment. Our mesh layer handles the heavy lifting of neighbor discovery and multi-hop routing, allowing users to communicate miles beyond the range of a single Bluetooth or Wi-Fi link.</p>
+            <div class="tech-detailed-description" data-reveal
+                style="margin-top: 4rem; text-align: center; max-width: 900px; margin-left: auto; margin-right: auto;">
+                <p style="color: var(--text-dim); font-size: 1.1rem; line-height: 1.8;">The AirLink architecture is
+                    designed for the most demanding environments. By combining **X3DH** for cryptographic key exchange
+                    and the **Double Ratchet** algorithm for ongoing message encryption, we provide the same security
+                    standards as industry leaders like Signal and WhatsApp, but in a completely serverless, peer-to-peer
+                    environment. Our mesh layer handles the heavy lifting of neighbor discovery and multi-hop routing,
+                    allowing users to communicate miles beyond the range of a single Bluetooth or Wi-Fi link.</p>
             </div>
 
             <!-- Tech Deep Dive Container -->
@@ -455,8 +481,12 @@
             <div class="recognition-grid">
                 <div class="recognition-text" data-reveal>
                     <h2 style="font-size: 2.5rem;">Academic <span class="gradient-text">Recognition</span></h2>
-                    <p>The foundation of AirLink is built upon rigorous academic research and innovation in decentralized mesh networking. Our protocols are designed to ensure resilience and security even in the most challenging environments.</p>
-                    <p>Our research paper explores the optimization of Dijkstra-based routing algorithms for dynamic peer-to-peer networks, providing a theoretical framework for the seamless connectivity AirLink offers.</p>
+                    <p>The foundation of AirLink is built upon rigorous academic research and innovation in
+                        decentralized mesh networking. Our protocols are designed to ensure resilience and security even
+                        in the most challenging environments.</p>
+                    <p>Our research paper explores the optimization of Dijkstra-based routing algorithms for dynamic
+                        peer-to-peer networks, providing a theoretical framework for the seamless connectivity AirLink
+                        offers.</p>
                     <div style="margin-top: 2rem;">
                         <a href="/research%20paper/airlink_research_paper.pdf" target="_blank" class="btn btn-primary">
                             <i class="fa-solid fa-file-pdf"></i> Read Research Paper
@@ -507,7 +537,8 @@
     <section id="use-cases" class="focus-reveal">
         <div class="container">
             <div style="text-align: center; margin-bottom: 5rem;" data-reveal>
-                <h2 style="font-size: 2.5rem;" class="scroll-glow">Where to use <span class="gradient-text">Airlink?</span></h2>
+                <h2 style="font-size: 2.5rem;" class="scroll-glow">Where to use <span
+                        class="gradient-text">Airlink?</span></h2>
                 <p style="color: var(--text-dim);">Designed for the moments when traditional networks let you down.</p>
             </div>
 
@@ -534,15 +565,18 @@
                 <div class="scenario-viewport">
                     <div class="scenario-atm-overlay" id="scenario-atm"></div>
                     <canvas id="scenario-canvas"></canvas>
-                    
+
                     <div class="scenario-info glass">
                         <div id="scenario-text">
                             <h3 id="scenario-title">Outdoor Adventure</h3>
-                            <p id="scenario-desc">Stay in touch while hiking or camping in areas with zero cellular coverage.</p>
+                            <p id="scenario-desc">Stay in touch while hiking or camping in areas with zero cellular
+                                coverage.</p>
                         </div>
                         <div class="scenario-stats">
-                            <div class="stat"><span class="label">Mesh Density:</span> <span id="stat-density">Low</span></div>
-                            <div class="stat"><span class="label">Reliability:</span> <span id="stat-reliability" style="color: var(--success-color);">High</span></div>
+                            <div class="stat"><span class="label">Mesh Density:</span> <span
+                                    id="stat-density">Low</span></div>
+                            <div class="stat"><span class="label">Reliability:</span> <span id="stat-reliability"
+                                    style="color: var(--success-color);">High</span></div>
                         </div>
                     </div>
                 </div>
@@ -570,7 +604,8 @@
                                 <i class="fa-solid fa-star"></i>
                                 <i class="fa-solid fa-star"></i>
                             </div>
-                            <p>"AirLink is a game-changer for my hiking trips. I no longer worry about losing contact with my group when we're deep in the mountains."</p>
+                            <p>"AirLink is a game-changer for my hiking trips. I no longer worry about losing contact
+                                with my group when we're deep in the mountains."</p>
                         </div>
                         <div class="testimonial-user">
                             <div class="user-avatar-placeholder">
@@ -593,7 +628,8 @@
                                 <i class="fa-solid fa-star"></i>
                                 <i class="fa-solid fa-star"></i>
                             </div>
-                            <p>"Reliable communication is critical during emergencies. This app provides a resilient mesh network that works when traditional networks fail."</p>
+                            <p>"Reliable communication is critical during emergencies. This app provides a resilient
+                                mesh network that works when traditional networks fail."</p>
                         </div>
                         <div class="testimonial-user">
                             <div class="user-avatar-placeholder">
@@ -616,11 +652,13 @@
                                 <i class="fa-solid fa-star"></i>
                                 <i class="fa-solid fa-star"></i>
                             </div>
-                            <p>"The implementation of the Signal Protocol in a peer-to-peer environment is impressive. Finally, a truly private messaging solution."</p>
+                            <p>"The implementation of the Signal Protocol in a peer-to-peer environment is impressive.
+                                Finally, a truly private messaging solution."</p>
                         </div>
                         <div class="testimonial-user">
                             <div class="user-avatar-placeholder">
-                                <img src="assets/avatars/amara.png" alt="Dr. Amara Okafor" loading="lazy" decoding="async">
+                                <img src="assets/avatars/amara.png" alt="Dr. Amara Okafor" loading="lazy"
+                                    decoding="async">
                             </div>
                             <div class="user-meta">
                                 <strong>Dr. Amara Okafor</strong>
@@ -639,11 +677,13 @@
                                 <i class="fa-solid fa-star"></i>
                                 <i class="fa-solid fa-star"></i>
                             </div>
-                            <p>"Managing large-scale outdoor events is much easier now. My team stays in sync without being hampered by network congestion."</p>
+                            <p>"Managing large-scale outdoor events is much easier now. My team stays in sync without
+                                being hampered by network congestion."</p>
                         </div>
                         <div class="testimonial-user">
                             <div class="user-avatar-placeholder">
-                                <img src="assets/avatars/leo.png" alt="Leo Van der Berg" loading="lazy" decoding="async">
+                                <img src="assets/avatars/leo.png" alt="Leo Van der Berg" loading="lazy"
+                                    decoding="async">
                             </div>
                             <div class="user-meta">
                                 <strong>Leo Van der Berg</strong>
@@ -664,6 +704,9 @@
                     <span class="dot"></span>
                     <span class="dot"></span>
                 </div>
+                <button id="testimonial-next" class="nav-btn" aria-label="Next testimonial">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
             </div>
         </div>
     </section>
@@ -675,7 +718,7 @@
         <div class="container">
             <div class="supporters-header" data-reveal>
                 <h2 class="section-title">Our <span class="gradient-text">Supporters</span></h2>
-                
+
                 <div class="supporters-stats">
                     <div id="total-supporters-container" class="stat-pill glass">
                         <i class="fa-solid fa-users"></i>
@@ -791,7 +834,8 @@
                     <label for="supporter-email"><i class="fa-solid fa-envelope"></i> Email Address</label>
                     <div class="email-otp-row">
                         <div class="email-suggestion-wrapper">
-                            <input type="email" id="supporter-email" placeholder="e.g. you@example.com" autocomplete="email" />
+                            <input type="email" id="supporter-email" placeholder="e.g. you@example.com"
+                                autocomplete="email" />
                             <span id="email-ghost"></span>
                         </div>
                         <button id="send-otp-btn" class="btn-send-otp">Send OTP</button>
@@ -801,7 +845,8 @@
                 <div id="otp-section" class="otp-section hidden">
                     <div class="form-group">
                         <div class="otp-inputs" id="otp-inputs-container">
-                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" />
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric"
+                                autocomplete="one-time-code" />
                             <input type="text" class="otp-input" maxlength="1" inputmode="numeric" />
                             <input type="text" class="otp-input" maxlength="1" inputmode="numeric" />
                             <input type="text" class="otp-input" maxlength="1" inputmode="numeric" />
@@ -818,7 +863,8 @@
                         <button id="change-email-btn" class="btn-edit-email hidden">Change email</button>
                     </div>
                     <div class="resend-container">
-                        <span style="font-size:0.82rem; color:var(--text-dim); margin-right: 0.5rem;">Didn't receive it?</span>
+                        <span style="font-size:0.82rem; color:var(--text-dim); margin-right: 0.5rem;">Didn't receive
+                            it?</span>
                         <button id="resend-otp-btn" class="btn-resend-otp" disabled>
                             <svg class="resend-timer-svg" viewBox="0 0 32 32">
                                 <circle class="bg" cx="16" cy="16" r="14"></circle>
@@ -828,14 +874,16 @@
                         </button>
                     </div>
                 </div>
-                <button class="btn-step-next" id="step1-next" style="display: none !important;">Verify & Continue <i class="fa-solid fa-arrow-right"></i></button>
+                <button class="btn-step-next" id="step1-next" style="display: none !important;">Verify & Continue <i
+                        class="fa-solid fa-arrow-right"></i></button>
             </div>
 
 
             <!-- STEP 2: Amount -->
             <div class="payment-step hidden" id="payment-step-2">
                 <h3 class="step-title">Support the Launch</h3>
-                <p class="step-subtitle">Your donation directly funds our Play Store debut, covering developer account and publishing costs.</p>
+                <p class="step-subtitle">Your donation directly funds our Play Store debut, covering developer account
+                    and publishing costs.</p>
                 <div class="tier-chips">
                     <button class="tier-chip" data-amount="11">
                         <span class="tier-amount">₹11</span>
@@ -897,8 +945,8 @@
                 <p class="step-subtitle">Enter your UPI Transaction ID to confirm.</p>
                 <div class="form-group">
                     <label for="transaction-id"><i class="fa-solid fa-receipt"></i> Transaction ID (UTR)</label>
-                    <input type="text" id="transaction-id" placeholder="e.g. 503842716294"
-                        inputmode="numeric" pattern="[0-9]{12}" maxlength="12" autocomplete="off" />
+                    <input type="text" id="transaction-id" placeholder="e.g. 503842716294" inputmode="numeric"
+                        pattern="[0-9]{12}" maxlength="12" autocomplete="off" />
                     <span style="font-size:0.78rem; color: var(--text-dim); margin-top: 0.3rem; display:block;">
                         <i class="fa-solid fa-circle-info" style="color: var(--primary-color);"></i>
                         12-digit number shown in your UPI app after payment
@@ -1026,14 +1074,16 @@
                 <h2 style="font-size: 2.5rem;">Latest <span class="gradient-text">Insights</span></h2>
                 <p style="color: var(--text-dim);">Stay updated with the latest from the mesh.</p>
             </div>
-            <div id="home-blog-grid" class="home-blog-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+            <div id="home-blog-grid" class="home-blog-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
                 <!-- Homepage blog cards will be injected here -->
                 <div style="text-align:center; padding: 3rem; grid-column: 1/-1;">
                     <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color);"></i>
                 </div>
             </div>
             <div style="text-align: center;" data-reveal>
-                <a href="/blog" class="btn btn-secondary">Explore All Posts <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i></a>
+                <a href="/blog" class="btn btn-secondary">Explore All Posts <i class="fa-solid fa-arrow-right"
+                        style="margin-left: 8px;"></i></a>
             </div>
         </div>
     </section>
@@ -1043,7 +1093,8 @@
             <div class="newsletter-wrapper glass">
                 <div class="newsletter-content">
                     <h2 class="gradient-text">Subscribe to our Newsletter</h2>
-                    <p>Get notified about the latest mesh technology, project updates, and upcoming webinars from AirLink.</p>
+                    <p>Get notified about the latest mesh technology, project updates, and upcoming webinars from
+                        AirLink.</p>
                 </div>
                 <form id="newsletter-form" class="newsletter-form">
                     <div class="input-form-group">
@@ -1071,9 +1122,11 @@
                         <img src="assets/logo.png" alt="AirLink Logo">
                         AirLink
                     </div>
-                    <p>Decentralized mesh messaging for a connected world. Stay connected, even when the internet lets you down.</p>
+                    <p>Decentralized mesh messaging for a connected world. Stay connected, even when the internet lets
+                        you down.</p>
                     <div class="footer-socials">
-                        <a href="https://github.com/harshpal-coder/Airlink-App" target="_blank" class="social-link" title="GitHub">
+                        <a href="https://github.com/harshpal-coder/Airlink-App" target="_blank" class="social-link"
+                            title="GitHub">
                             <i class="fa-brands fa-github"></i>
                         </a>
                         <a href="#" class="social-link" title="Twitter">
@@ -1189,8 +1242,18 @@
     <!-- Emergency Ticker Tape -->
     <div id="emergency-ticker" class="emergency-ticker">
         <div class="ticker-inner">
-            <span>&#9888; INTERNET SHUTDOWN DETECTED &nbsp;&nbsp;&nbsp; &#9642; ALL CENTRALIZED APPS: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; WHATSAPP: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; TELEGRAM: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; SIGNAL: OFFLINE &nbsp;&nbsp;&nbsp; &#9888; AIRLINK P2P MESH: ACTIVE &amp; ENCRYPTED &nbsp;&nbsp;&nbsp; &#9642; COMMUNICATE WITHOUT INTERNET &nbsp;&nbsp;&nbsp; &#9642; MESH NODES ROUTING MESSAGES &nbsp;&nbsp;&nbsp; &#9642; ZERO DEPENDENCY ON INTERNET PROVIDERS &nbsp;&nbsp;&nbsp; &#9888; STAY CONNECTED WITH AIRLINK &nbsp;&nbsp;&nbsp;</span>
-            <span aria-hidden="true">&#9888; INTERNET SHUTDOWN DETECTED &nbsp;&nbsp;&nbsp; &#9642; ALL CENTRALIZED APPS: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; WHATSAPP: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; TELEGRAM: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; SIGNAL: OFFLINE &nbsp;&nbsp;&nbsp; &#9888; AIRLINK P2P MESH: ACTIVE &amp; ENCRYPTED &nbsp;&nbsp;&nbsp; &#9642; COMMUNICATE WITHOUT INTERNET &nbsp;&nbsp;&nbsp; &#9642; MESH NODES ROUTING MESSAGES &nbsp;&nbsp;&nbsp; &#9642; ZERO DEPENDENCY ON INTERNET PROVIDERS &nbsp;&nbsp;&nbsp; &#9888; STAY CONNECTED WITH AIRLINK &nbsp;&nbsp;&nbsp;</span>
+            <span>&#9888; INTERNET SHUTDOWN DETECTED &nbsp;&nbsp;&nbsp; &#9642; ALL CENTRALIZED APPS: OFFLINE
+                &nbsp;&nbsp;&nbsp; &#9642; WHATSAPP: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; TELEGRAM: OFFLINE
+                &nbsp;&nbsp;&nbsp; &#9642; SIGNAL: OFFLINE &nbsp;&nbsp;&nbsp; &#9888; AIRLINK P2P MESH: ACTIVE &amp;
+                ENCRYPTED &nbsp;&nbsp;&nbsp; &#9642; COMMUNICATE WITHOUT INTERNET &nbsp;&nbsp;&nbsp; &#9642; MESH NODES
+                ROUTING MESSAGES &nbsp;&nbsp;&nbsp; &#9642; ZERO DEPENDENCY ON INTERNET PROVIDERS &nbsp;&nbsp;&nbsp;
+                &#9888; STAY CONNECTED WITH AIRLINK &nbsp;&nbsp;&nbsp;</span>
+            <span aria-hidden="true">&#9888; INTERNET SHUTDOWN DETECTED &nbsp;&nbsp;&nbsp; &#9642; ALL CENTRALIZED APPS:
+                OFFLINE &nbsp;&nbsp;&nbsp; &#9642; WHATSAPP: OFFLINE &nbsp;&nbsp;&nbsp; &#9642; TELEGRAM: OFFLINE
+                &nbsp;&nbsp;&nbsp; &#9642; SIGNAL: OFFLINE &nbsp;&nbsp;&nbsp; &#9888; AIRLINK P2P MESH: ACTIVE &amp;
+                ENCRYPTED &nbsp;&nbsp;&nbsp; &#9642; COMMUNICATE WITHOUT INTERNET &nbsp;&nbsp;&nbsp; &#9642; MESH NODES
+                ROUTING MESSAGES &nbsp;&nbsp;&nbsp; &#9642; ZERO DEPENDENCY ON INTERNET PROVIDERS &nbsp;&nbsp;&nbsp;
+                &#9888; STAY CONNECTED WITH AIRLINK &nbsp;&nbsp;&nbsp;</span>
         </div>
     </div>
 
@@ -1315,7 +1378,8 @@
                         <span class="hs-success-ring"></span>
                     </div>
                     <h3 class="hs-connected-title">Handshake Complete!</h3>
-                    <p class="hs-connected-sub">Your phone is now synced. <br>Swipe up/down on your phone to scroll this page.</p>
+                    <p class="hs-connected-sub">Your phone is now synced. <br>Swipe up/down on your phone to scroll this
+                        page.</p>
                     <div class="hs-live-indicator">
                         <span class="hs-live-dot"></span>
                         <span>P2P Channel Active</span>
