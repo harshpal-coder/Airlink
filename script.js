@@ -772,7 +772,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // 3D Tilt & Interactive Spotlight Logic
-const tiltElements = document.querySelectorAll('.feature-card, .tech-card, .use-case-card, .link-item, .supporter-tier');
+const tiltElements = document.querySelectorAll('.feature-card, .tech-card, .use-case-card, .link-item, .supporter-tier, .certificate-container');
 tiltElements.forEach(el => {
     el.addEventListener('mousemove', (e) => {
         const rect = el.getBoundingClientRect();
