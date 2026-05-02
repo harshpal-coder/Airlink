@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P347BXJRDS"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-P347BXJRDS');
+    </script>
+
+    <title>What is Mesh Networking? | AirLink Help Center</title>
+    <meta name="description" content="A comprehensive guide to understanding decentralized mesh networking and how it powers offline communication in AirLink.">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .article-container {
+            max-width: 800px;
+            margin: 120px auto 60px;
+            padding: 0 1.5rem;
+        }
+
+        .article-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .article-content {
+            line-height: 1.8;
+            font-size: 1.15rem;
+            color: var(--text-main);
+        }
+
+        .article-content h2 {
+            margin: 3rem 0 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .article-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .article-content ul {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .article-content li {
+            margin-bottom: 0.8rem;
+        }
+
+        .info-box {
+            padding: 2rem;
+            margin: 3rem 0;
+            border-radius: 20px;
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid var(--primary-color);
+        }
+
+        .article-footer {
+            margin-top: 6rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas-mesh"></canvas>
+
+    <nav id="navbar">
+        <div class="container nav-content">
+            <a href="/" class="logo">
+                <img src="/assets/logo.png" alt="Airlink Logo">
+                <span>AirLink</span>
+            </a>
+            <div class="nav-links">
+                <a href="/help" class="nav-link">Help Center</a>
+                <a href="/docs" class="nav-link">Docs</a>
+            </div>
+        </div>
+    </nav>
+
+    <article class="article-container">
+        <header class="article-header" data-reveal>
+            <a href="/help" class="back-link" style="margin-bottom: 2rem;"><i class="fa-solid fa-arrow-left"></i> Back to Help Center</a>
+            <h1 style="font-size: 3rem;">What is <span class="gradient-text">Mesh Networking?</span></h1>
+            <p style="color: var(--text-dim); margin-top: 1rem;">Published on April 28, 2026 • 8 min read</p>
+        </header>
+
+        <div class="article-content" data-reveal>
+            <p>In the traditional world of digital communication, we rely on a "hub-and-spoke" model. When you send a message on WhatsApp or post a photo on Instagram, your device connects to a central server—usually owned by a massive corporation—which then relays that data to its destination. This works well, until it doesn't.</p>
+            
+            <p>Mesh networking is a fundamental shift away from this centralized model. Instead of relying on a single hub, mesh networking allows every device in the network to act as a router for every other device. It's a decentralized web of connections where every participant helps keep the network alive.</p>
+
+            <h2>How It Works</h2>
+            <p>At its core, a mesh network is self-configuring and self-healing. When you open AirLink, your device begins scanning for other AirLink-enabled devices nearby using Bluetooth Low Energy and Wi-Fi Direct. Once a neighbor is found, a secure connection is established.</p>
+            
+            <p>If you want to send a message to a friend who is too far away for a direct connection, AirLink searches the mesh. It finds a path through other devices between you and your friend. Your message "hops" from device to device until it reaches its goal. Each intermediate node only sees encrypted data; they never see the content of your message.</p>
+
+            <div class="info-box">
+                <h4>Key Advantage: Resilience</h4>
+                <p>In a traditional network, if the cell tower or router fails, everyone is disconnected. In a mesh network, if one node moves away or loses power, the network automatically calculates a new path. It is remarkably difficult to shut down.</p>
+            </div>
+
+            <h2>Why Mesh Networking Matters</h2>
+            <p>Why do we need this technology in an era of 5G and satellite internet? There are three primary reasons:</p>
+            
+            <ul>
+                <li><strong>Resilience in Emergencies:</strong> During natural disasters, cellular infrastructure is often the first thing to fail. Mesh networks provide a vital lifeline for emergency services and citizens to coordinate help.</li>
+                <li><strong>Privacy and Sovereignty:</strong> Because there is no central server, there is no single place for governments or corporations to monitor your data. You own the network you create.</li>
+                <li><strong>Connectivity in Remote Areas:</strong> For hikers, researchers, or people in rural areas with zero coverage, mesh networking turns individual devices into a collective infrastructure.</li>
+            </ul>
+
+            <h2>The Future of the Mesh</h2>
+            <p>As more people join the AirLink ecosystem, the mesh becomes stronger. With every new user, the potential paths for data increase, the range of the network expands, and the resilience of the community grows. We believe that decentralized communication is not just a backup plan—it's the future of a free and open digital world.</p>
+        </div>
+
+        <footer class="article-footer" data-reveal>
+            <div class="was-helpful">
+                <p>Was this article helpful?</p>
+                <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+                    <button class="btn btn-secondary" style="padding: 0.5rem 1.5rem;">Yes</button>
+                    <button class="btn btn-secondary" style="padding: 0.5rem 1.5rem;">No</button>
+                </div>
+            </div>
+            <div class="share-article">
+                <p>Share this article:</p>
+                <div style="margin-top: 1rem; display: flex; gap: 1rem; font-size: 1.2rem;">
+                    <a href="#" style="color: var(--text-dim);"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" style="color: var(--text-dim);"><i class="fa-brands fa-linkedin"></i></a>
+                    <a href="#" style="color: var(--text-dim);"><i class="fa-solid fa-link"></i></a>
+                </div>
+            </div>
+        </footer>
+    </article>
+
+    <script src="/script.js"></script>
+</body>
+
+</html>

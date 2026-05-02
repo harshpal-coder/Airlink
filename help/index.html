@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P347BXJRDS"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-P347BXJRDS');
+    </script>
+
+    <title>Help Center | AirLink - Support & Knowledge Base</title>
+    <meta name="description" content="Find answers to your questions about AirLink. Comprehensive guides on mesh networking, security, and using the decentralized messaging app.">
+    <meta name="keywords" content="AirLink help, mesh networking guide, offline messaging support, secure p2p chat help, airlink tutorial">
+    <link rel="canonical" href="https://myairlink.vercel.app/help">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+
+    <style>
+        .help-hero {
+            padding: 120px 0 60px;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0, 242, 255, 0.05), transparent);
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 2rem auto 0;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: white;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .search-container input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 20px var(--accent-glow);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .help-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .category-card {
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-color);
+            background: var(--surface-hover);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            display: inline-block;
+        }
+
+        .category-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-card p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        .popular-articles {
+            margin-top: 6rem;
+        }
+
+        .article-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .article-item {
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .article-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary-color);
+            padding-left: 2.5rem;
+        }
+
+        .article-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .article-info span {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .article-item i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .article-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="help-page">
+    <canvas id="canvas-mesh"></canvas>
+
+    <nav id="navbar">
+        <svg class="nav-border-progress" id="nav-border-svg">
+            <path id="nav-border-track" fill="none" />
+            <path id="nav-border-path" fill="none" />
+        </svg>
+        <div class="container nav-content">
+            <a href="/" class="logo">
+                <img src="/assets/logo.png" alt="Airlink Logo">
+                <span>AirLink</span>
+            </a>
+            <div class="nav-links-wrapper">
+                <div class="nav-links" id="nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/docs" class="nav-link">Docs</a>
+                    <a href="/help" class="nav-link active">Help</a>
+                    <a href="/#download" class="btn-nav-cta">Download</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="help-hero">
+        <div class="container">
+            <h1 data-reveal>How can we <span class="gradient-text">help?</span></h1>
+            <div class="search-container" data-reveal>
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search for articles, guides, or keywords...">
+            </div>
+        </div>
+    </header>
+
+    <section class="container">
+        <div class="help-categories">
+            <div class="category-card glass" data-reveal>
+                <div class="category-icon"><i class="fa-solid fa-rocket"></i></div>
+                <h3>Getting Started</h3>
+                <p>Learn the basics of AirLink and set up your first mesh network in minutes.</p>
+            </div>
+            <div class="category-card glass" data-reveal>
+                <div class="category-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3>Security & Privacy</h3>
+                <p>Understand how the Signal Protocol and P2P encryption keep your data safe.</p>
+            </div>
+            <div class="category-card glass" data-reveal>
+                <div class="category-icon"><i class="fa-solid fa-wifi"></i></div>
+                <h3>Mesh Networking</h3>
+                <p>Deep dive into node discovery, routing algorithms, and network resilience.</p>
+            </div>
+            <div class="category-card glass" data-reveal>
+                <div class="category-icon"><i class="fa-solid fa-bug"></i></div>
+                <h3>Troubleshooting</h3>
+                <p>Solutions for common connection issues and technical hiccups.</p>
+            </div>
+        </div>
+
+        <div class="popular-articles">
+            <h2 data-reveal>Popular <span class="gradient-text">Articles</span></h2>
+            <div class="article-list">
+                <a href="/help/articles/what-is-mesh-networking" class="article-item glass" data-reveal>
+                    <div class="article-info">
+                        <h4>What is Mesh Networking?</h4>
+                        <span>A beginner-friendly guide to decentralized communication.</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+                <a href="/help/articles/how-to-pair-devices" class="article-item glass" data-reveal>
+                    <div class="article-info">
+                        <h4>How to Pair Devices Securely</h4>
+                        <span>Using QR codes to establish trusted P2P channels.</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+                <a href="/help/articles/understanding-e2ee" class="article-item glass" data-reveal>
+                    <div class="article-info">
+                        <h4>Understanding End-to-End Encryption</h4>
+                        <span>Why Signal Protocol is the gold standard for AirLink.</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+                <a href="/help/articles/optimizing-battery-life" class="article-item glass" data-reveal>
+                    <div class="article-info">
+                        <h4>Optimizing Battery Life</h4>
+                        <span>Tips for maintaining high mesh presence with low power.</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+                <a href="/help/articles/offline-voice-notes" class="article-item glass" data-reveal>
+                    <div class="article-info">
+                        <h4>Offline Voice Notes</h4>
+                        <span>How to send audio messages without an internet connection.</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+                <a href="/help/articles/troubleshooting-connections" class="article-item glass" data-reveal>
+                    <div class="article-info">
+                        <h4>Troubleshooting Connections</h4>
+                        <span>What to do when nodes aren't discovering each other.</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="glass" style="margin-top: 6rem; padding: 4rem; text-align: center; border-radius: 40px;" data-reveal>
+            <h2 style="margin-bottom: 1rem;">Still have <span class="gradient-text">questions?</span></h2>
+            <p style="color: var(--text-dim); margin-bottom: 2.5rem;">Our support team and community are here to help you stay connected.</p>
+            <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+                <a href="mailto:support@airlink.app" class="btn btn-primary"><i class="fa-solid fa-envelope"></i> Contact Support</a>
+                <a href="https://github.com/harshpal-coder/Airlink-App/discussions" target="_blank" class="btn btn-secondary"><i class="fa-brands fa-github"></i> Community Forum</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container" style="text-align: center; padding: 4rem 0; border-top: 1px solid var(--glass-border); margin-top: 6rem;">
+            <p>&copy; 2026 AirLink Project. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <script src="/script.js"></script>
+</body>
+
+</html>
